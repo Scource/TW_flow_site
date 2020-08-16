@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+
+
+<h1>{{proc.proc_process_name}}</h1>
+
+{% for t in task %}
+    
+	{{t.tasks_created}}
+
+{% endfor %}
+
+
+{% for z in coms %}
+    
+	{{z.com_body}}
+
+{% endfor %}
+
+
+
+<form  method="POST" action="{% url 'info_flow:if_show_proc' proc.id %}">
+{% csrf_token %}
+{{ com_form.as_p }}
+
+<input type="submit" value="Dodaj komentarz">
+</form>
+
+{% endblock %}

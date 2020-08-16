@@ -1,0 +1,115 @@
+ <head>
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" crossorigin="anonymous" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" rel="stylesheet"/>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous" integrity="sha384-xBuQ/xzmlsLoJpyjoggmTEz8OWUFM0/RC5BsqQBDX2v5cMvDHcMakNTNrHIW2I5f"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" crossorigin="anonymous" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" crossorigin="anonymous" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"></script>
+
+{{ task_form.media }}
+</head>
+
+
+
+
+<h1>{{proc.id}}</h1>
+<h1>{{proc.proc_author.id}}</h1>
+
+
+
+
+<form  method="POST" action="{% url 'info_flow:if_edit_proc' proc.id %}" autocomplete="off" >
+{% csrf_token %}
+{{proc_form}}
+{{ task_form.management_form }}
+
+<div>
+{% for z in task %}
+    
+	{{z.tasks_name}}
+	<input type="button" value="wywal zadanie">
+{% endfor %}
+</div>
+
+
+<div id="form_set">
+    {% for form in task_form.forms %}
+        <table class='no_error'>
+          {{ form.as_table }}
+        </table> 
+    {% endfor %}
+</div>
+<input type="button" value="Add More" id="add_more">
+<div id="empty_form" style="display:none">
+    <table class='no_error'>
+        {{ task_form.empty_form }}
+    </table>
+</div>
+<input type="submit" value="OK">
+</form>
+
+
+<script>
+    $('#add_more').click(function() {
+		var form_idx = $('#id_form-TOTAL_FORMS').val();
+		$('#form_set').append($('#empty_form').html().replace(/__prefix__/g, form_idx));
+		$('#id_form-TOTAL_FORMS').val(parseInt(form_idx) + 1);
+
+
+    jQuery(function ($) {
+    var datepickerDict = {};
+    var isBootstrap4 = $.fn.collapse.Constructor.VERSION.split('.').shift() == "4";
+    function fixMonthEndDate(e, picker) {
+        e.date && picker.val().length && picker.val(e.date.endOf('month').format('YYYY-MM-DD'));
+    }
+    $("[dp_config]:not([disabled])").each(function (i, element) {
+        var $element = $(element), data = {};
+        try {
+            data = JSON.parse($element.attr('dp_config'));
+        }
+        catch (x) { }
+        if (data.id && data.options) {
+            data.$element = $element.datetimepicker(data.options);
+            data.datepickerdata = $element.data("DateTimePicker");
+            datepickerDict[data.id] = data;
+            data.$element.next('.input-group-addon').on('click', function(){
+                data.datepickerdata.show();
+            });
+            if(isBootstrap4){
+                data.$element.on("dp.show", function (e) {
+                    $('.collapse.in').addClass('show');
+                });
+            }
+        }
+    });
+    $.each(datepickerDict, function (id, to_picker) {
+        if (to_picker.linked_to) {
+            var from_picker = datepickerDict[to_picker.linked_to];
+            from_picker.datepickerdata.maxDate(to_picker.datepickerdata.date() || false);
+            to_picker.datepickerdata.minDate(from_picker.datepickerdata.date() || false);
+            from_picker.$element.on("dp.change", function (e) {
+                to_picker.datepickerdata.minDate(e.date || false);
+            });
+            to_picker.$element.on("dp.change", function (e) {
+                if (to_picker.picker_type == 'MONTH') fixMonthEndDate(e, to_picker.$element);
+                from_picker.datepickerdata.maxDate(e.date || false);
+            });
+            if (to_picker.picker_type == 'MONTH') {
+                to_picker.$element.on("dp.hide", function (e) {
+                    fixMonthEndDate(e, to_picker.$element);
+                });
+                fixMonthEndDate({ date: to_picker.datepickerdata.date() }, to_picker.$element);
+            }
+        }
+    });
+    if(isBootstrap4) {
+        $('body').on('show.bs.collapse','.bootstrap-datetimepicker-widget .collapse',function(e){
+            $(e.target).addClass('in');
+        });
+        $('body').on('hidden.bs.collapse','.bootstrap-datetimepicker-widget .collapse',function(e){
+            $(e.target).removeClass('in');
+        });
+    }
+});
+    });
+
+
+</script>

@@ -1,0 +1,120 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>{% block title %}{% endblock %}</title>
+
+    {% load static %}
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" 
+    crossorigin="anonymous"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+
+
+    <link rel="stylesheet" type="text/css" href="{% static 'css/base_style.css' %}">
+
+{% block head %}
+{% endblock %}
+
+{% block scripts %}
+    <script src="{% static 'js/main.js' %}"></script>
+{% endblock %}
+
+</head>
+<body>
+
+<div class=page>
+<div class=user_info margin-left=auto>
+ {% if user.is_authenticated %}
+    Zalogowano jako &#160; &#160; <b><u>{{ user.get_username }}</u></b> &#160;&#160; 
+     <button type="button" class="btn btn-light"><a href="{% url 'logout'%}?next={{request.path}}"> Wyloguj </a></button>
+   {% else %}
+     <button type="button" class="btn btn-light"><a href="{% url 'login'%}?next={{request.path}}"> Zaloguj </a></button>
+   {% endif %} 
+</div>
+
+<div class="header">
+<h3 align="center">Tutaj kiedyś będzie logo czy coś</h3>
+</div>
+
+<div class="menu">
+
+<!--             <ul class="dropdown">
+    <li><a href="{% url 'info_flow:if_index' %}"><i class="fas fa-home"></a></i></li>
+    <li>Linki 1
+        <ul class="dropdown-content">
+            <li><a href="{% url 'info_flow:if_processes' %}">Procesy</a></li>
+            <li><a href="#">element 1</a></li>
+        </ul>
+    </li>
+
+    <li>Linki 2
+        <ul class="dropdown-content">
+            <li><a href="#">element 3</a></li>
+            <li><a href="#">element 4</a></li>
+        </ul>
+    </li>
+</ul>  -->
+
+        <div class="btn-group">
+            <div class="dropdown show">
+              <a class="btn btn-secondary" href="{% url 'info_flow:if_index' %}" role="button">
+                <i class="fas fa-home"></i>
+              </a>
+
+            </div>
+
+            <div class="dropdown show">
+              <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Procesy
+              </a>
+
+              <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                <a class="dropdown-item" href="{% url 'info_flow:if_processes' %}">Procesy</a>
+                <a class="dropdown-item" href="{% url 'info_flow:if_new_proc' %}">Nowy proces</a>
+              </div>
+
+
+            </div>  
+            <div class="dropdown show">
+              <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Dropsdgsdgsdgsdgsdgsdnk
+              </a>
+
+              <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                <a class="dropdown-item" href="#">Actiogsdgsgsn</a>
+                <a class="dropdown-item" href="#">Ansagagaother action</a>
+                <a class="dropdown-item" href="#">Somegsdgsdgshing else here</a>
+              </div>
+
+         </div>     
+    </div>  
+</div>
+
+
+        <div class="main">
+          {% block content %}
+        {% endblock %}
+        </div>
+        
+
+
+<div class='footer'>
+    create by
+   home
+</div>
+
+</div>
+    
+
+    
+
+</body>
+</html>
+
