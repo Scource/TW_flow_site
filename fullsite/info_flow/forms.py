@@ -1,5 +1,5 @@
 from django import forms
-from .models import tasks, process, comments
+from .models import tasks, process, comments, posts, files, messages
 from bootstrap_datepicker_plus import DateTimePickerInput
 from django.forms import modelformset_factory
 
@@ -37,3 +37,21 @@ class CommForm(forms.ModelForm):
 	class Meta:
 		model=comments
 		fields=['com_body']
+
+
+class PostsForm(forms.ModelForm):
+	class Meta:
+		model=posts
+		fields=['posts_title', 'posts_text']
+
+
+class FileForm(forms.ModelForm):
+	class Meta(object):
+		model=files
+		fields=['files_document']
+
+class MessageForm(forms.ModelForm):
+	class Meta(object):
+		model=messages
+		fields=['mess_text']
+		

@@ -1,4 +1,4 @@
-button.btn-outline-secondary .btn-cst {
+.btn-cst {
   background-color: #000; 
-  border-color: #000;
+  color: red;
 }

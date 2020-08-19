@@ -130,3 +130,12 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static_root')
 
 # Redirect to home URL after login (Default redirects to /accounts/profile/)
 LOGIN_REDIRECT_URL = '/info_flow/'
+
+
+#File uploading
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = 'media/'
+
+
+
+CSRF_COOKIE_HTTPONLY = True

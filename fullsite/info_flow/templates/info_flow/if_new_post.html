@@ -6,7 +6,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" crossorigin="anonymous" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" crossorigin="anonymous" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"></script> -->
 
-{{ process_form.media }}
 {% endblock %}
 
 {% load static %}
@@ -22,14 +21,12 @@
 
 {% block content %}
 
-<form  method="POST" action="{% url 'info_flow:if_new_proc' %}" enctype="multipart/form-data">
+<form  method="POST" action="{% url 'info_flow:if_new_post' %}">
 {% csrf_token %}
-{{ process_form.as_p }}
-{{ file_form.as_p }}
+{{ post_form.as_p }}
 
 
-<input type="submit" name='save_process' value="Zakończ">
-<input type="submit" name='add_tasks' value="Dodaj zadania">
+<input type="submit" name='save_post' value="Dodaj">
 </form>
 
 {% endblock %}

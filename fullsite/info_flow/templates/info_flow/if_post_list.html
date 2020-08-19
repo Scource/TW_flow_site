@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'info_flow/css/if_css.css' %}">
+
+
+{% block scripts %}
+	{{block.super}}
+    <script src="{% static 'info_flow/js/if_js.js' %}"></script>
+{% endblock %}
+
+
+{% block content %}
+
+<button type= button class="btn btn-cst"><a href="{% url 'info_flow:if_new_post' %}">Dodaj +</a></button>
+
+		
+<table class="table table-hover table-dark table-sm">
+	<tr>
+		<th>ID</th>
+		<th>Tytuł</th>
+		<th>Autor</th>
+		<th>Utworzono</th>
+
+
+	</tr>
+	{% for p in post_list %}
+	<tr class='clickable-row' id=url data-url="{% url 'info_flow:if_show_post' p.id %}" data-id={{p.id}}>
+		<td>{{p.id}}</td>
+		<td>{{p.posts_title}}</td>
+		<td>{{p.posts_author}}</td>
+		<td>{{p.posts_created}}</td>
+	{% endfor %}
+	</tr>
+
+</table>
+
+{% endblock %}

@@ -3,6 +3,15 @@
 
 
 <h1>{{proc.proc_process_name}}</h1>
+<!-- JAK TU ZAADRESOWAC DO FILESOW!!!!!!!!!!!!!!! -->
+<h1>{% for f in fi %}
+    
+	{{f.files_name}}
+	{{f.files_document}}
+	<a href="{% url 'info_flow:download_file' f.id %}" download > Download File</a>
+{% endfor %}</h1>
+
+
 
 {% for t in task %}
     

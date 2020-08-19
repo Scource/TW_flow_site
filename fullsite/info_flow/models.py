@@ -5,12 +5,7 @@ from django.conf import settings
 # Create your models here.
 
 
-class files(models.Model):
-	files_name=models.CharField(max_length=300)
-	files_is_private=models.IntegerField()
-	files_added = models.DateTimeField(auto_now_add=True)
-	files_by_user=models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET('deleted'))
-	files_document = models.FileField(upload_to='doccsss/')
+
 	
 
 class category(models.Model):
@@ -33,7 +28,7 @@ class process(models.Model):
 	proc_is_private=models.BooleanField(default=True)
 	proc_is_deleted=models.BooleanField(default=False)
 	proc_assigned = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET('deleted'), null=True, blank=True, related_name='assigned_user')
-	proc_file=models.ForeignKey(files, on_delete=models.CASCADE, null=True, blank=True)
+	#proc_file=models.ForeignKey(files, on_delete=models.CASCADE, null=True, blank=True)
 
 
 	class Meta():
@@ -42,6 +37,14 @@ class process(models.Model):
 			("can_view", "Can see processes"),
 
 			)
+
+
+class files(models.Model):
+	files_name=models.CharField(max_length=300)
+	files_added = models.DateTimeField(auto_now_add=True)
+	files_by_user=models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET('deleted'))
+	files_document = models.FileField(upload_to='doccsss/')
+	files_proc=models.ForeignKey(process, on_delete=models.CASCADE)
 
 class tasks(models.Model):
 	tasks_name = models.CharField(max_length=150, blank=False)
@@ -77,10 +80,9 @@ class messages(models.Model):
 	mess_created = models.DateTimeField(auto_now_add=True)
 	mess_modified = models.DateTimeField(auto_now=True)
 	mess_text=models.TextField()
-	mess_is_deleted=models.IntegerField()
+	mess_is_deleted=models.BooleanField(default=False)
 	mess_posts=models.ForeignKey(posts, on_delete=models.CASCADE)
-	mess_file=models.ForeignKey(files, on_delete=models.CASCADE)
-
+	
 class archive_posts(models.Model):
 	arch_posts_title=models.CharField(max_length=150)
 	arch_posts_author=models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET('deleted'))
