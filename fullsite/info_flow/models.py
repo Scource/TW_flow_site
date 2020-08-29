@@ -1,10 +1,12 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.conf import settings
+import os
 
 # Create your models here.
 
-
+def user_directory_path(instance, filename):
+	return 'user_files\\{0}\\{1}'.format(instance.files_by_user.username, filename)
 
 	
 
@@ -25,26 +27,15 @@ class process(models.Model):
 	proc_end_date = models.DateTimeField(null=True, blank=True)
 	proc_category = models.ForeignKey(category, on_delete=models.CASCADE)
 	proc_is_active=models.BooleanField(default=True)
-	proc_is_private=models.BooleanField(default=True)
+	proc_is_private=models.BooleanField(default=False)
 	proc_is_deleted=models.BooleanField(default=False)
 	proc_assigned = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET('deleted'), null=True, blank=True, related_name='assigned_user')
-	#proc_file=models.ForeignKey(files, on_delete=models.CASCADE, null=True, blank=True)
 
+	def __str__(self):
+		return self.proc_process_name
 
 	class Meta():
 		ordering=['proc_created']
-		permissions=(
-			("can_view", "Can see processes"),
-
-			)
-
-
-class files(models.Model):
-	files_name=models.CharField(max_length=300)
-	files_added = models.DateTimeField(auto_now_add=True)
-	files_by_user=models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET('deleted'))
-	files_document = models.FileField(upload_to='doccsss/')
-	files_proc=models.ForeignKey(process, on_delete=models.CASCADE)
 
 class tasks(models.Model):
 	tasks_name = models.CharField(max_length=150, blank=False)
@@ -55,16 +46,19 @@ class tasks(models.Model):
 	tasks_end_date = models.DateTimeField(null=True, blank=True)
 	tasks_assigned = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET('deleted'), null=True,  blank=True)
 	tasks_is_active=models.BooleanField(default=True)
+	tasks_is_deleted=models.BooleanField(default=False)
 	tasks_proc=models.ForeignKey(process, on_delete=models.CASCADE)
-	tasks_file=models.ForeignKey(files, on_delete=models.CASCADE, null=True, blank=True)
+
+	def __str__(self):
+		return self.tasks_name
 
 class comments(models.Model):
 	com_author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET('deleted'))
 	com_body = models.TextField(null=True)
 	com_created = models.DateTimeField(auto_now_add=True)
 	com_modified = models.DateTimeField(auto_now=True)
-	com_file=models.ForeignKey(files, on_delete=models.CASCADE, null=True, blank=True)
 	com_proc=models.ForeignKey(process, on_delete=models.CASCADE)
+	com_is_deleted=models.BooleanField(default=False)
 
 class posts(models.Model):
 	posts_title=models.CharField(max_length=150)
@@ -73,7 +67,13 @@ class posts(models.Model):
 	posts_modified = models.DateTimeField(auto_now=True)
 	posts_text=models.TextField()
 	posts_is_deleted=models.BooleanField(default=False)
-	post_file=models.ForeignKey(files, on_delete=models.CASCADE, null=True, blank=True)
+	post_level=models.IntegerField(default=0)
+
+	def __str__(self):
+		return self.posts_title
+
+	class Meta():
+		ordering=['-post_level']
 
 class messages(models.Model):
 	mess_author=models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET('deleted'))
@@ -95,10 +95,24 @@ class archive_posts(models.Model):
 class user_status(models.Model):
 	us_name=models.CharField(max_length=20)
 
-
 class user_profile(models.Model):
 	user = models.OneToOneField(User, on_delete=models.CASCADE)
 	user_department = models.CharField(max_length=100)
 	user_profile_info = models.TextField()
 	user_status = models.ForeignKey(user_status, on_delete=models.SET('deleted'))
+
+
+class files(models.Model):
+	files_name=models.CharField(max_length=300)
+	files_added = models.DateTimeField(auto_now_add=True)
+	files_by_user=models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+	files_is_deleted=models.BooleanField(default=False)
+	files_document = models.FileField(upload_to=user_directory_path, blank=True, null=True)
+	files_proc=models.ForeignKey(process, on_delete=models.CASCADE, blank=True, null=True)
+	files_posts=models.ForeignKey(posts, on_delete=models.CASCADE, blank=True, null=True)
+
+
+	def delete_file(self, *args, **kwargs):
+		os.remove(os.path.join(settings.MEDIA_ROOT, str(self.files_document)))
+        
 

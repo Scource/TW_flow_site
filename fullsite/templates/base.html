@@ -16,8 +16,9 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
 
-
+    {% block mycss %}
     <link rel="stylesheet" type="text/css" href="{% static 'css/base_style.css' %}">
+    {% endblock %}
 
 {% block head %}
 {% endblock %}
@@ -44,24 +45,6 @@
 </div>
 
 <div class="menu">
-
-<!--             <ul class="dropdown">
-    <li><a href="{% url 'info_flow:if_index' %}"><i class="fas fa-home"></a></i></li>
-    <li>Linki 1
-        <ul class="dropdown-content">
-            <li><a href="{% url 'info_flow:if_processes' %}">Procesy</a></li>
-            <li><a href="#">element 1</a></li>
-        </ul>
-    </li>
-
-    <li>Linki 2
-        <ul class="dropdown-content">
-            <li><a href="#">element 3</a></li>
-            <li><a href="#">element 4</a></li>
-        </ul>
-    </li>
-</ul>  -->
-
         <div class="btn-group">
             <div class="dropdown show">
               <a class="btn btn-secondary" href="{% url 'info_flow:if_index' %}" role="button">
@@ -106,6 +89,35 @@
               </div>
             </div>   
 
+            <div class="dropdown show">
+              <a class="btn btn-secondary dropdown-toggle"  role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Zarzadzanie MB
+              </a>
+
+              <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                <a class="dropdown-item" href="#">Tutaj</a>
+                <a class="dropdown-item" href="#">Umowy</a>
+                <a class="dropdown-item" href="#">Miałyby</a>
+                <a class="dropdown-item" href="#">Wrzucać</a>
+                <a class="dropdown-item" href="#">Info o</a>
+                <a class="dropdown-item" href="#">Nowych/Zmianach</a>
+                <a class="dropdown-item" href="#">POB i SE</a>
+              </div>
+            </div>   
+
+                        <div class="dropdown show">
+              <a class="btn btn-secondary dropdown-toggle"  role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Wytwórcy
+              </a>
+
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                <a class="dropdown-item" href="#">Zestawienie</a>
+                <a class="dropdown-item" href="#">Wytwórców</a>
+                <a class="dropdown-item" href="#">Damiana</a>
+                <a class="dropdown-item" href="#">W formie</a>
+                <a class="dropdown-item" href="#">Tabeli</a>
+              </div>
+            </div>   
 
     </div>  
 </div>
@@ -119,8 +131,6 @@
 
 
 <div class='footer'>
-    create by
-   home
 </div>
 
 </div>

@@ -1,5 +1,11 @@
 {% extends "base.html" %}
 
+{% block title%}
+Nowy proces
+{% endblock %}
+
+
+
 {% block head %}
 <!-- <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" crossorigin="anonymous" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" rel="stylesheet"/>
 <script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous" integrity="sha384-xBuQ/xzmlsLoJpyjoggmTEz8OWUFM0/RC5BsqQBDX2v5cMvDHcMakNTNrHIW2I5f"></script>
@@ -25,9 +31,9 @@
 <form  method="POST" action="{% url 'info_flow:if_new_proc' %}" enctype="multipart/form-data">
 {% csrf_token %}
 {{ process_form.as_p }}
-{{ file_form.as_p }}
-
-
+{{ file_form.files_document }}
+<br>
+<br>
 <input type="submit" name='save_process' value="Zakończ">
 <input type="submit" name='add_tasks' value="Dodaj zadania">
 </form>

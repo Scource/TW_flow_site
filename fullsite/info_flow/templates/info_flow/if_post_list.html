@@ -1,9 +1,12 @@
 {% extends "base.html" %}
 
 {% load static %}
-
 <link rel="stylesheet" type="text/css" href="{% static 'info_flow/css/if_css.css' %}">
 
+
+{% block title%}
+Lista postów
+{% endblock %}
 
 {% block scripts %}
 	{{block.super}}
@@ -13,24 +16,36 @@
 
 {% block content %}
 
-<button type= button class="btn btn-cst"><a href="{% url 'info_flow:if_new_post' %}">Dodaj +</a></button>
+<button type= button class="btn btn-cst"><a href="{% url 'info_flow:if_new_post' %}">Dodaj nowy wpis+</a></button>
 
 		
 <table class="table table-hover table-dark table-sm">
 	<tr>
-		<th>ID</th>
 		<th>Tytuł</th>
 		<th>Autor</th>
 		<th>Utworzono</th>
+		<th>Edytuj</th>
+		<th>Usun</th>
 
 
 	</tr>
 	{% for p in post_list %}
-	<tr class='clickable-row' id=url data-url="{% url 'info_flow:if_show_post' p.id %}" data-id={{p.id}}>
-		<td>{{p.id}}</td>
+	<tr class='clickable-row' id=url data-url="{% url 'info_flow:if_show_post' 123 %}" data-id={{p.id}}>
 		<td>{{p.posts_title}}</td>
 		<td>{{p.posts_author}}</td>
 		<td>{{p.posts_created}}</td>
+		<td>
+			{% if user.is_authenticated and user == p.posts_author %}
+			<a type="button" href="{% url 'info_flow:if_edit_post' p.id%}" class="btn btn-outline-secondary btn-sm btn-cst" >Edytuj</a>
+			{% endif %}
+		</td>
+		<td>
+			{% if user.is_authenticated and user == p.posts_author %}
+			<a type="button" href="{% url 'info_flow:if_delete_post' p.id%}" class="btn btn-outline-secondary btn-sm btn-cst" >Usuń</a>
+			
+			{% endif %}
+		</td>
+		
 	{% endfor %}
 	</tr>
 

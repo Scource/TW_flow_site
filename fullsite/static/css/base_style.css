@@ -28,7 +28,7 @@ html, body {
 .header {
   margin-right: 200px;
   margin-left: 200px;
-  flex: 0 0 200px;
+  flex: 0 0 100px;
   background-color: #5c5b5b;
 }
 

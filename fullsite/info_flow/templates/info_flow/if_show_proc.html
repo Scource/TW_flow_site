@@ -1,38 +1,106 @@
 {% extends "base.html" %}
+
+
+{% block title%}
+{{proc.proc_process_name}}
+{% endblock %}
+
+
+
 {% block content %}
 
+	<div class="proc_main">
+	
+	<p><h4>{{proc.proc_process_name}}</h4></p>
+	<ul>
+		<p>Autor: {{proc.proc_author}}<p>
+		<p>Utworzono: {{proc.proc_created}}<p>
+		<p>Data pocztku: {{proc.proc_start_date|default_if_none:"Brak"}}<p>
+		<p>Data końca: {{proc.proc_end_date|default_if_none:"Brak"}}<p>
+		<p>Kategoria: {{proc.proc_category}}<p>
+		<p>Osoba oddelogowana: {{proc.proc_assigned|default_if_none:"Brak"}}<p>
+		<p>{{proc.proc_description}}<p>
+	</ul>
 
-<h1>{{proc.proc_process_name}}</h1>
-<!-- JAK TU ZAADRESOWAC DO FILESOW!!!!!!!!!!!!!!! -->
-<h1>{% for f in fi %}
+	<p><h5>Załaczniki:</h5></p>
+	{% for f in fi %}
+		{{f.files_name}}
+		<a type= "button" href="{% url 'info_flow:download_file' f.id %}" download> Download File</a><br>
+	{% empty %}
+    {% endfor %}
+    <br>
+
+	</div>
+
+	<div class="proc_tasks">
+		<h5>Przypisane zadania:</h5>
+
+	{% for t in task %}
+<div class="container-fluid p-3">
+	<div class="row ">
+		<div class="col-lg-12">
+		  <div class="row">
+		    <div class="col border border-dark col-md-auto">
+		      Nazwa zadania:
+		    </div>
+		    <div class="col border border-dark">
+		      {{t.tasks_name}}
+		    </div>
+		  </div>
+
+		  <div class="row border border-dark">
+		    <div class="col border border-dark">
+		      Data od:
+		    </div>
+		    <div class="col border border-dark">
+		      {{t.tasks_start_date|default_if_none:"Brak"}}
+		    </div>
+		    <div class="col border border-dark">
+		      Data do:
+		    </div>
+		    <div class="col border border-dark">
+		     {{t.tasks_end_date|default_if_none:"Brak"}}
+		    </div>
+		   	<div class="col border border-dark">
+		      Przypisano do:
+		    </div>
+		     <div class="col border border-dark">
+		     {{t.tasks_assigned|default_if_none:"Brak"}}
+		    </div>
+		  </div>
+		  <div class="row ">
+		    <div class="col border border-dark">
+		    {{t.tasks_description}}
+		    </div>
+		  </div>
+		</div>
+		{% endfor %}
+   
     
-	{{f.files_name}}
-	{{f.files_document}}
-	<a href="{% url 'info_flow:download_file' f.id %}" download > Download File</a>
-{% endfor %}</h1>
+	
+	
+	<div class="col-lg-12 p-3">
+		<div class="row ">
+		      Komentarze:
+		 </div>
 
+		 
+		{% for z in coms %}
+		<div class="row border border-dark p-3 m-3">
+				Autor:&nbsp; {{z.com_author}}&nbsp;&nbsp;&nbsp;&nbsp; Dodano:&nbsp; {{z.com_created}}<br>
 
+			    {{z.com_body}}
+		</div>
+		{% endfor %}
 
-{% for t in task %}
-    
-	{{t.tasks_created}}
-
-{% endfor %}
-
-
-{% for z in coms %}
-    
-	{{z.com_body}}
-
-{% endfor %}
-
-
-
-<form  method="POST" action="{% url 'info_flow:if_show_proc' proc.id %}">
-{% csrf_token %}
-{{ com_form.as_p }}
-
-<input type="submit" value="Dodaj komentarz">
-</form>
+		<form  method="POST" action="{% url 'info_flow:if_show_proc' proc.id %}">
+			{% csrf_token %}
+			{{ com_form.as_p }}
+			<input type="submit" value="Dodaj komentarz">
+		</form>
+		
+	</div>
+	 </div>
+</div>
 
 {% endblock %}

@@ -1,9 +1,26 @@
+{% extends "base.html" %}
+
+{% block title%}
+{{post.posts_title}}
+{% endblock %}
+
+{% block content %}
 
 <h1>{{post.id}}</h1>
 
 
-<form  method="POST" action="{% url 'info_flow:if_edit_post' post.id %}" autocomplete="off" >
+<form  method="POST" action="{% url 'info_flow:if_edit_post' post.id %}" autocomplete="off" enctype="multipart/form-data">
 {% csrf_token %}
-{{post_form}}
+{{post_form.as_p}}
+{{ file_form.files_document }}
+
+{% for f in fi %}
+    {{f.files_name}}
+	<a type="button" href="{% url 'info_flow:if_delete_post_file' f.id%}" class="btn btn-outline-secondary btn-sm btn-cst" >Usuń plik</a><br>
+{% endfor %}
+
+<br>
+<br>
 <input type="submit" value="Zmień">
 </form>
+{% endblock %}

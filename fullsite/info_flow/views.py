@@ -20,11 +20,13 @@ def index(request):
 @login_required
 @permission_required('info_flow.view_process')
 def if_processes(request):
-	proc_list = process.objects.all()
+	proc_list = process.objects.all().filter(proc_is_deleted=False)
 	context={'proc_list':proc_list}
 	return render(request, 'info_flow/if_processes.html', context)
 
+
 @login_required
+@permission_required('info_flow.add_process')
 def if_new_proc(request):
 	username=request.user
 	if request.method=='POST':
@@ -34,12 +36,13 @@ def if_new_proc(request):
 			newProcess=process_form.save(commit=False)
 			newProcess.proc_author_id=request.user.id
 			newProcess.save()
-
-			newFile=file_form.save(commit=False)
-			newFile.files_proc_id=newProcess.id
-			newFile.files_by_user_id=request.user.id
-			newFile.files_name=request.FILES['files_document'].name
-			newFile.save()
+			for f in request.FILES.getlist('files_document'):
+				#newFile=f.save(commit=False)
+				newFile = files(files_document=f)
+				newFile.files_proc_id=newProcess.id
+				newFile.files_by_user_id=request.user.id
+				newFile.files_name=f
+				newFile.save()
 
 			if 'save_process' in request.POST:
 				return redirect('info_flow:if_processes')
@@ -51,11 +54,13 @@ def if_new_proc(request):
 		context={'process_form':process_form, 'file_form':file_form}
 		return render(request, 'info_flow/if_new_proc.html', context)
 
+
 @login_required
+@permission_required('info_flow.add_tasks')
 def if_add_task(request, pid):
 	proc=process.objects.get(pk = pid)
 	if not request.user.id==proc.proc_author.id:
-		return HttpResponseForbidden("You are not allowed to edit thissfasfasf Post")
+		return HttpResponseForbidden("Nie ma takiego podgladania")
 	if request.method=='POST':
 		task_form=TaskFormSet(request.POST)
 		if task_form.is_valid():
@@ -68,6 +73,17 @@ def if_add_task(request, pid):
 		task_form=TaskFormSet(queryset=tasks.objects.none())
 		context={'task_form':task_form, 'proc':proc}
 	return render(request, 'info_flow/if_add_task.html', context)
+
+
+@login_required
+@permission_required('info_flow.delete_tasks')
+def if_delete_task(request, task_id):
+    delete_tasks=tasks.objects.get(id=task_id)
+    proc_id=delete_tasks.tasks_proc_id
+    delete_tasks.tasks_is_deleted = True
+    delete_tasks.save()
+    return redirect('info_flow:if_edit_proc', pid=proc_id)
+
 
 @login_required
 @permission_required('info_flow.view_process')
@@ -86,23 +102,29 @@ def if_show_proc(request, pid):
 		fi=files.objects.all().filter(files_proc_id = pid)
 		coms=comments.objects.all().filter(com_proc_id=pid)
 		proc=process.objects.get(pk = pid)
-		task=tasks.objects.all().filter(tasks_proc_id=pid)
+		task=tasks.objects.all().filter(tasks_proc_id=pid, tasks_is_deleted=False)
 		context={'proc':proc,'task':task, 'com_form':com_form, 'coms':coms, 'fi':fi}
 	return render(request, 'info_flow/if_show_proc.html', context)
 
 @login_required
-#@permission_required('polls.can_vote', raise_exception=True)
+@permission_required('info_flow.change_process')
 def if_edit_proc(request, pid):
 	proc=process.objects.get(pk = pid)
-
 	if not request.user.id==proc.proc_author.id:
-		return HttpResponseForbidden("You are not allowed to edit thissfasfasf Post")
-	task=tasks.objects.all().filter(tasks_proc_id=pid)
+		return HttpResponseForbidden("Nie ma takiego podgladania")
+	task=tasks.objects.all().filter(tasks_proc_id=pid, tasks_is_deleted=False)
 	if request.method=='POST':
+		file_form=FileForm(request.POST, request.FILES)
 		proc_form=ProcessForm(request.POST, instance=proc)		
 		task_form=TaskFormPos(request.POST)
-		if proc_form.is_valid():
+		if proc_form.is_valid()  & file_form.is_valid():
 			proc_form.save()
+			for f in request.FILES.getlist('files_document'):
+				newFile = files(files_document=f)
+				newFile.files_proc_id=pid
+				newFile.files_by_user_id=request.user.id
+				newFile.files_name=f
+				newFile.save()
 		if task_form.is_valid():
 			for form in task_form:
 				if form.is_valid():
@@ -110,82 +132,129 @@ def if_edit_proc(request, pid):
 					newForm.tasks_proc_id=pid
 					newForm.save()
 		return redirect('info_flow:if_show_proc', pid=pid)
-
-	else:		
+	else:
+		file_form=FileForm()
+		fi=files.objects.all().filter(files_proc_id = pid)
 		proc_form=ProcessForm(instance=proc)		
 		task_form=TaskFormPos(queryset=tasks.objects.none())
-		context={'proc':proc,'task':task, 'proc_form':proc_form, 'task_form':task_form}
+		context={'proc':proc,'task':task, 'proc_form':proc_form, 'task_form':task_form, 'fi':fi, 'file_form':file_form}
 	return render(request, 'info_flow/if_edit_proc.html', context)
 
 
 @login_required
+@permission_required('info_flow.delete_process')
+def if_delete_proc(request, proc_id):
+    delete_proc=process.objects.get(id=proc_id)
+    delete_proc.proc_is_deleted = True
+    delete_proc.save()
+    del_conn_com=comments.objects.all().filter(com_proc_id=proc_id).update(com_is_deleted=True)
+    deleted_files=files.objects.all().filter(files_proc_id=proc_id).update(files_is_deleted=True)
+    return redirect('info_flow:if_processes')
+
+
+
+@login_required
+@permission_required('info_flow.view_posts')
 def if_post_list(request):
-	post_list=posts.objects.all()
+	post_list=posts.objects.all().filter(posts_is_deleted=False)
 	context={'post_list':post_list}
 	return render(request, 'info_flow/if_post_list.html' ,context)
 
 
 
 @login_required
+@permission_required('info_flow.add_posts')
 def if_new_post(request):
 	if request.method=='POST':
-		post_form=PostsForm(request.POST)		
-		if post_form.is_valid():
+		post_form=PostsForm(request.POST)
+		file_form=FileForm(request.POST, request.FILES)		
+		if post_form.is_valid() & file_form.is_valid():
 			newPost=post_form.save(commit=False)
 			newPost.posts_author=request.user
 			newPost.save()
+			for f in request.FILES.getlist('files_document'):
+				newFile = files(files_document=f)
+				newFile.files_posts_id=newPost.id
+				newFile.files_by_user_id=request.user.id
+				newFile.files_name=f
+				newFile.save()
+
 		return redirect('info_flow:if_post_list')
 	else:
+		file_form=FileForm()
 		post_form=PostsForm()
-		context={'post_form':post_form}
+		context={'post_form':post_form, 'file_form':file_form}
 		return render(request, 'info_flow/if_new_post.html', context)
 
 
 @login_required
+@permission_required('info_flow.view_posts')
 def if_show_post(request, pid):
 	post=posts.objects.get(pk = pid)
-	mess=messages.objects.all().filter(mess_posts_id=pid)
+	mess=messages.objects.all().filter(mess_posts_id=pid, mess_is_deleted=False)
 	mess_form=MessageForm()
-	context={'post':post, 'mess':mess, 'mess_form':mess_form}
-
-	return render(request, 'info_flow/if_show_post.html', context)
-
-@ensure_csrf_cookie
-@csrf_protect
-@login_required
-def if_add_message(request):
-	if request.is_ajax and request.method == "POST":
-		messForm=MessageForm(request.POST)
-		post_id=request.POST['post_id']
+	if request.method=='POST':
+		messForm=MessageForm(request.POST)		
 		if messForm.is_valid():
-
 			newMes=messForm.save(commit=False)
 			newMes.mess_author = request.user
-			newMes.mess_posts_id = post_id
-		
+			newMes.mess_posts_id = pid
 			newMes.save()
-			return HttpResponse('success')
-	else:
-		return HttpResponse("unsuccesful")
+		return redirect('info_flow:if_show_post', pid=pid)
+
+	context={'post':post, 'mess':mess, 'mess_form':mess_form}
+	return render(request, 'info_flow/if_show_post.html', context)
+
 
 @login_required
+@permission_required('info_flow.delete_messages')
+def if_del_mess(request, mess_id):
+    delete_mess=messages.objects.get(id=mess_id)
+    postid=delete_mess.mess_posts_id
+    delete_mess.mess_is_deleted = True
+    delete_mess.save()
+    return redirect('info_flow:if_show_post', pid=postid)
+
+@login_required
+@permission_required('info_flow.delete_posts')
+def if_delete_post(request, post_id):
+    delete_post=posts.objects.get(id=post_id)
+    delete_post.posts_is_deleted = True
+    delete_post.save()
+    del_conn_mess=messages.objects.all().filter(mess_posts_id=post_id).update(mess_is_deleted=True)
+    deleted_files=files.objects.all().filter(files_posts_id=post_id).update(files_is_deleted=True)
+    return redirect('info_flow:if_post_list')
+
+
+@login_required
+@permission_required('info_flow.change_posts')
 def if_edit_post(request, pid):
 	post=posts.objects.get(pk = pid)
 	if not request.user.id==post.posts_author.id:
-		return HttpResponseForbidden("You are not allowed to edit thissfasfasf Post")
+		return HttpResponseForbidden("Nie ma takiego podgaldania")
 	if request.method=='POST':
-		post_form=PostsForm(request.POST, instance=post)		
-		if post_form.is_valid():
+		post_form=PostsForm(request.POST, instance=post)
+		file_form=FileForm(request.POST, request.FILES)	
+		if post_form.is_valid() & file_form.is_valid():
 			post_form.save()
+			for f in request.FILES.getlist('files_document'):
+				newFile = files(files_document=f)
+				newFile.files_posts_id=pid
+				newFile.files_by_user_id=request.user.id
+				newFile.files_name=f
+				newFile.save()
 		return redirect('info_flow:if_show_post', pid=pid)
 
-	else:		
+	else:
+		fi=files.objects.all().filter(files_posts_id = pid)
+		file_form=FileForm()
 		post_form=PostsForm(instance=post)		
-		context={'post_form':post_form, 'post':post}
+		context={'post_form':post_form, 'post':post, 'file_form':file_form, 'fi':fi }
 	return render(request, 'info_flow/if_edit_post.html', context)
 
 
 @login_required
+@permission_required('info_flow.view_files')
 def download_file(request, fid):
     # fill these variables with real values
     obj = files.objects.get(pk=fid)
@@ -195,11 +264,21 @@ def download_file(request, fid):
     response['Content-Disposition'] = "attachment; filename=" + name
     return response
 
-    # fl_path = files.objects.get(id=fid).files_document
-    # filename = files.objects.get(id=fid).files_name
 
-    # fl = open(fl_path, 'rb')
-    # mime_type, _ = mimetypes.guess_type(fl_path)
-    # response = HttpResponse(fl, content_type=mime_type)
-    # response['Content-Disposition'] = "attachment; filename=%s" % filename
-    # return response
+@login_required
+@permission_required('info_flow.delete_files')
+def if_delete_file(request, file_id):
+    delete_file=files.objects.get(id=file_id)
+    proc_id=delete_file.files_proc_id
+    delete_file.delete()
+    delete_file.delete_file()
+    return redirect('info_flow:if_edit_proc', pid=proc_id)
+
+@login_required
+@permission_required('info_flow.delete_files')
+def if_delete_post_file(request, file_id):
+    delete_file=files.objects.get(id=file_id)
+    post_id=delete_file.files_posts_id
+    delete_file.delete()
+    delete_file.delete_file()
+    return redirect('info_flow:if_edit_post', pid=post_id)

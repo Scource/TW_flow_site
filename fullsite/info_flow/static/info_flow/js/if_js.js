@@ -11,30 +11,7 @@ jQuery(document).ready(function() {
     });
 
 
-
-/*    $('.addComm').click(function(){ 
-	let id; 
-	id = $(this).attr("data-postid"); 
-	let str;
-	str = $('#mesinput').val();
-	let us ;
-	us = "{{user.id}}";
-	$.ajax({ 
-	    type:"POST", 
-	    url: "if_add_message",
-	    data: { 
-	             post_id: id,
-	             text : str,
-	             auth : us,
-	             csrfmiddlewaretoken : '{{csrf_token}}',
-	}, 
-	success: function(data) 
-	{ alert("A user with this username already exists.") }
-	}) });
-*/
-
-
-	$("#addMess").submit(function (e) {
+/*	$("#delID").onclick(function (e) {
         // preventing from page reload and default actions
         e.preventDefault();
         var us;
@@ -48,12 +25,18 @@ jQuery(document).ready(function() {
             url: "if_add_message",
             data: data,
             success: function (response) {
+            	console.log(data);
                 // on successfull creating object
                 // 1. clear the form.
-                $("#addMess").trigger('reset');}
+                $("#addMess").trigger('reset');
 
+                var instance = JSON.parse(response["newMes"]);
+                var fields = instance[0]["fields"];
+
+
+                }
         })
-    })
+    })*/
 
 
 

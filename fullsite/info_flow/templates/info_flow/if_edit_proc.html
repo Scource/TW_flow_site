@@ -1,57 +1,65 @@
- <head>
-<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" crossorigin="anonymous" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" rel="stylesheet"/>
+{% extends "base.html" %}
+{% block content %}
+<head>
+<!-- <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" crossorigin="anonymous" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" rel="stylesheet"/>
 <script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous" integrity="sha384-xBuQ/xzmlsLoJpyjoggmTEz8OWUFM0/RC5BsqQBDX2v5cMvDHcMakNTNrHIW2I5f"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" crossorigin="anonymous" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" crossorigin="anonymous" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" crossorigin="anonymous" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"></script> -->
 
 {{ task_form.media }}
 </head>
 
-
-
-
 <h1>{{proc.id}}</h1>
-<h1>{{proc.proc_author.id}}</h1>
 
 
-
-
-<form  method="POST" action="{% url 'info_flow:if_edit_proc' proc.id %}" autocomplete="off" >
+<form  method="POST" action="{% url 'info_flow:if_edit_proc' proc.id %}" autocomplete="off" enctype="multipart/form-data">
 {% csrf_token %}
-{{proc_form}}
+{{proc_form.as_p}}
 {{ task_form.management_form }}
 
+
+{% for f in fi %}    
+    {{f.files_name}}
+    <a type="button" href="{% url 'info_flow:if_delete_file' f.id%}" class="btn btn-outline-secondary btn-sm btn-cst" >Usuń plik</a><br>
+{% endfor %}
+
+{{ file_form.files_document }}<br>
+<br>
+<p>Aktualne zadania w procesie</p>
 <div>
 {% for z in task %}
-    
-	{{z.tasks_name}}
-	<input type="button" value="wywal zadanie">
+    {{z.tasks_name}}
+    <a type="button" href="{% url 'info_flow:if_delete_task' z.id%}" class="btn btn-outline-secondary btn-sm btn-cst" >Usuń</a><br>
 {% endfor %}
 </div>
+
 
 
 <div id="form_set">
     {% for form in task_form.forms %}
         <table class='no_error'>
-          {{ form.as_table }}
+          {{ form.as_table }}<br>
         </table> 
     {% endfor %}
 </div>
-<input type="button" value="Add More" id="add_more">
+<input type="button" value="Dodaj zadanie" id="add_more">
 <div id="empty_form" style="display:none">
     <table class='no_error'>
-        {{ task_form.empty_form }}
+        {{ task_form.empty_form }}<br>
     </table>
 </div>
-<input type="submit" value="OK">
+<br>
+<br>
+
+<input type="submit" value="Zapisz zmiany">
 </form>
 
 
 <script>
     $('#add_more').click(function() {
-		var form_idx = $('#id_form-TOTAL_FORMS').val();
-		$('#form_set').append($('#empty_form').html().replace(/__prefix__/g, form_idx));
-		$('#id_form-TOTAL_FORMS').val(parseInt(form_idx) + 1);
+        var form_idx = $('#id_form-TOTAL_FORMS').val();
+        $('#form_set').append($('#empty_form').html().replace(/__prefix__/g, form_idx));
+        $('#id_form-TOTAL_FORMS').val(parseInt(form_idx) + 1);
 
 
     jQuery(function ($) {
@@ -113,3 +121,5 @@
 
 
 </script>
+
+{% endblock %}

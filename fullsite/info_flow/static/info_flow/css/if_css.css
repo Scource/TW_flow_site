@@ -1,4 +1,7 @@
-.btn-cst {
-  background-color: #000; 
-  color: red;
+
+.proc_body_container {
+display: flex;
+margin-top: 50px;
+margin: 30px;
+background-color: red;
 }
