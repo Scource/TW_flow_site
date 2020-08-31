@@ -9,6 +9,8 @@ from django.contrib.auth.decorators import login_required, permission_required, 
 
 from django.http import HttpResponseForbidden
 import mimetypes
+import os
+from django.conf import settings
 
 
 # Create your views here.
@@ -258,7 +260,7 @@ def if_edit_post(request, pid):
 def download_file(request, fid):
     # fill these variables with real values
     obj = files.objects.get(pk=fid)
-    filename = obj.files_document.url
+    filename = settings.BASE_DIR+obj.files_document.url
     name = obj.files_name
     response = FileResponse(open(filename, 'rb'))
     response['Content-Disposition'] = "attachment; filename=" + name

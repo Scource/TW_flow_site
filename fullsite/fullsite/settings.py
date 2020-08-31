@@ -11,9 +11,13 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+import mimetypes
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+#mimetypes
+mimetypes.add_type("text/css", ".css", True)
 
 
 # Quick-start development settings - unsuitable for production
@@ -25,7 +29,7 @@ SECRET_KEY = 'u2hka!$b-e8yr-*)8b0m#f@ct0l=y@h^yz9qv-e_=1b1)@&q!w'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -124,19 +128,21 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
     
     ]
-
-
 STATIC_ROOT = os.path.join(BASE_DIR, 'static_root')
 
+
+print("static root", STATIC_ROOT)
+print("static root", BASE_DIR)
+
 # Redirect to home URL after login (Default redirects to /accounts/profile/)
-LOGIN_REDIRECT_URL = '/info_flow/'
+LOGIN_REDIRECT_URL = ''
 
 
 #File uploading
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, '/media/')
-
-
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 
 CSRF_COOKIE_HTTPONLY = True
+
+

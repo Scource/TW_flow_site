@@ -6,7 +6,7 @@ import os
 # Create your models here.
 
 def user_directory_path(instance, filename):
-	return 'user_files\\{0}\\{1}'.format(instance.files_by_user.username, filename)
+	return 'user_files/{0}/{1}'.format(instance.files_by_user.username, filename)
 
 	
 
