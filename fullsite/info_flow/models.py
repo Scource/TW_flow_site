@@ -107,7 +107,7 @@ class files(models.Model):
 	files_added = models.DateTimeField(auto_now_add=True)
 	files_by_user=models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 	files_is_deleted=models.BooleanField(default=False)
-	files_document = models.FileField(upload_to=user_directory_path, blank=True, null=True)
+	files_document = models.FileField(upload_to=user_directory_path, blank=True, null=True)#
 	files_proc=models.ForeignKey(process, on_delete=models.CASCADE, blank=True, null=True)
 	files_posts=models.ForeignKey(posts, on_delete=models.CASCADE, blank=True, null=True)
 
