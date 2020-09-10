@@ -18,6 +18,8 @@ class TaskForm(forms.ModelForm):
 
 TaskFormSet=modelformset_factory(tasks, form=TaskForm, extra=1)
 TaskFormPos=modelformset_factory(tasks, form=TaskForm, extra=0)
+TaskFormPoint=modelformset_factory(tasks, form=TaskForm, extra=1)
+TaskFormPointEdit=modelformset_factory(tasks, form=TaskForm, extra=0)
 
  #extra=1, fields =('tasks_name', 'tasks_description', 'tasks_deadline_dt', 'tasks_assigned', 'tasks_is_active'))
 

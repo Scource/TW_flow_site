@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+
+{% block title%}
+{{task.tasks_name}}
+{% endblock %}
+
+
+
+{% block content %}
+
+	<div class="proc_main">
+	
+	<p><h4>{{task.tasks_name}}</h4></p>
+	<ul>
+		<p>Data pocztku: {{task.tasks_start_date|default_if_none:"Brak"}}<p>
+		<p>Data końca: {{task.tasks_end_date|default_if_none:"Brak"}}<p>
+		<p>Osoba oddelogowana: {{task.tasks_assigned|default_if_none:"Brak"}}<p>
+		<p>{{task.tasks_description}}<p>
+	</ul>
+
+	<p><h5>Załaczniki:</h5></p>
+	{% for f in fi %}
+		{{f.files_name}}
+		<a type= "button" href="{% url 'info_flow:download_file' f.id %}" download> Download File</a><br>
+	{% empty %}
+    {% endfor %}
+    <br>
+
+	</div>
+
+	<div class="proc_tasks">
+		<h5>Przypisane zadania:</h5>
+
+	{% for p in point %}
+<div class="container-fluid p-3">
+	<div class="row ">
+		<div class="col-lg-12">
+		  <div class="row">
+		    <div class="col border border-dark col-md-auto">
+		      Nazwa zadania:
+		    </div>
+		    <div class="col border border-dark">
+		      {{p.tasks_name}}
+		    </div>
+		  </div>
+
+		  <div class="row border border-dark">
+		    <div class="col border border-dark">
+		      Data od:
+		    </div>
+		    <div class="col border border-dark">
+		      {{p.tasks_start_date|default_if_none:"Brak"}}
+		    </div>
+		    <div class="col border border-dark">
+		      Data do:
+		    </div>
+		    <div class="col border border-dark">
+		     {{p.tasks_end_date|default_if_none:"Brak"}}
+		    </div>
+		   	<div class="col border border-dark">
+		      Przypisano do:
+		    </div>
+		     <div class="col border border-dark">
+		     {{p.tasks_assigned|default_if_none:"Brak"}}
+		    </div>
+		  </div>
+		  <div class="row ">
+		    <div class="col border border-dark">
+		    {{p.tasks_description}}
+		    </div>
+		  </div>
+		</div>
+		{% endfor %}
+ </div>
+</div>
+
+{% endblock %}

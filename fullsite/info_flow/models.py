@@ -48,6 +48,7 @@ class tasks(models.Model):
 	tasks_is_active=models.BooleanField(default=True)
 	tasks_is_deleted=models.BooleanField(default=False)
 	tasks_proc=models.ForeignKey(process, on_delete=models.CASCADE)
+	tasks_tasks=models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True)
 
 	def __str__(self):
 		return self.tasks_name
@@ -73,7 +74,7 @@ class posts(models.Model):
 		return self.posts_title
 
 	class Meta():
-		ordering=['-post_level']
+		ordering=['-post_level', 'posts_modified']
 
 class messages(models.Model):
 	mess_author=models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET('deleted'))
@@ -110,6 +111,7 @@ class files(models.Model):
 	files_document = models.FileField(upload_to=user_directory_path, blank=True, null=True)#
 	files_proc=models.ForeignKey(process, on_delete=models.CASCADE, blank=True, null=True)
 	files_posts=models.ForeignKey(posts, on_delete=models.CASCADE, blank=True, null=True)
+	files_tasks=models.ForeignKey(tasks, on_delete=models.CASCADE, blank=True, null=True)
 
 
 	def delete_file(self, *args, **kwargs):

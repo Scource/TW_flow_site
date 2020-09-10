@@ -1,59 +1,52 @@
- 
- <!DOCTYPE html>
 {% extends "base.html" %}
 
 {% block title%}
-Dodaj zadanie
+Nowy proces
+{% endblock %}
+
+
+
+{% block head %}
+<!-- <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" crossorigin="anonymous" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" rel="stylesheet"/>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous" integrity="sha384-xBuQ/xzmlsLoJpyjoggmTEz8OWUFM0/RC5BsqQBDX2v5cMvDHcMakNTNrHIW2I5f"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" crossorigin="anonymous" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" crossorigin="anonymous" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"></script> -->
+
+{{ task_form.media }}
+{% endblock %}
+
+{% load static %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'info_flow/css/if_css.css' %}">
+
+
+{% block scripts %}
+	{{block.super}}
+    <script src="{% static 'info_flow/js/if_js.js' %}"></script>
 {% endblock %}
 
 
 {% block content %}
 
-
-    <head>
-<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" crossorigin="anonymous" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" rel="stylesheet"/>
-<script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous" integrity="sha384-xBuQ/xzmlsLoJpyjoggmTEz8OWUFM0/RC5BsqQBDX2v5cMvDHcMakNTNrHIW2I5f"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" crossorigin="anonymous" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" crossorigin="anonymous" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"></script>
-
-{{ task_form.media }}
-
-</head>
-
-
-
 <h1>{{proc.id}}</h1>
 
-<form  method="POST" action="{% url 'info_flow:if_add_task' proc.id %}">
+<form  method="POST" action="{% url 'info_flow:if_add_task' proc.id %}" enctype="multipart/form-data">
 {% csrf_token %}
-{{ task_form.management_form }}
-<div id="form_set">
-    {% for form in task_form.forms %}
+{{ task_form.as_p }}
+{{ file_form.files_document }}
+<br>
+<br>
 
-        <table class='no_error'>
-           {{ form.as_table }}
-        </table> 
-    {% endfor %}
-</div>
-<input type="button" value="Add More" id="add_more">
-<div id="empty_form" style="display:none">
-    <table class='no_error'>
-        {{ task_form.empty_form }}
-    </table>
-</div>
-<input type="submit" value="OK">
+<input type="submit" name='save_task' value="zapisz zadanie">
+<input type="submit" name='add_point' value="dodaj punkt">
+<input type="submit" name='save_process' value="Zakoncz poroces">
 </form>
-
-
-
-
 
 <script>
     $('#add_more').click(function() {
-		var form_idx = $('#id_form-TOTAL_FORMS').val();
-		$('#form_set').append($('#empty_form').html().replace(/__prefix__/g, form_idx));
-		$('#id_form-TOTAL_FORMS').val(parseInt(form_idx) + 1);
-
+        var form_idx = $('#id_form-TOTAL_FORMS').val();
+        $('#form_set').append($('#empty_form').html().replace(/__prefix__/g, form_idx));
+        $('#id_form-TOTAL_FORMS').val(parseInt(form_idx) + 1);
 
 
     jQuery(function ($) {
@@ -116,4 +109,6 @@ Dodaj zadanie
 
 </script>
 
+
 {% endblock %}
+

@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, get_list_or_404, redirec
 from django.http import HttpResponse, FileResponse
 from .models import tasks, process, comments, posts, messages, files
 
-from .forms import TaskFormSet, ProcessForm, TaskForm, CommForm, TaskFormPos, PostsForm, FileForm, MessageForm
+from .forms import TaskFormSet, ProcessForm, TaskForm, CommForm, TaskFormPos, PostsForm, FileForm, MessageForm, TaskFormPoint, TaskFormPointEdit
 
 from django.views.decorators.csrf import csrf_protect, ensure_csrf_cookie
 from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
@@ -64,17 +64,31 @@ def if_add_task(request, pid):
 	if not request.user.id==proc.proc_author.id:
 		return HttpResponseForbidden("Nie ma takiego podgladania")
 	if request.method=='POST':
-		task_form=TaskFormSet(request.POST)
-		if task_form.is_valid():
-			for form in task_form:
-				newTask=form.save(commit=False)
-				newTask.tasks_proc_id=pid
-				newTask.save()
-		return redirect('info_flow:if_processes')
+
+		task_form=TaskForm(request.POST)
+		file_form=FileForm(request.POST, request.FILES)
+		if task_form.is_valid() & file_form.is_valid():
+			newTask=task_form.save(commit=False)
+			newTask.tasks_proc_id=pid
+			newTask.save()
+			for f in request.FILES.getlist('files_document'):
+				#newFile=f.save(commit=False)
+				newFile = files(files_document=f)
+				newFile.files_tasks_id=newTask.id
+				newFile.files_by_user_id=request.user.id
+				newFile.files_name=f
+				newFile.save()
+			if 'save_process' in request.POST:
+				return redirect('info_flow:if_processes')
+			elif 'save_task' in request.POST:
+				return redirect('info_flow:if_add_task', pid=pid)
+			elif 'add_point' in request.POST:
+				return redirect('info_flow:if_add_point', tid=newTask.id)
 	else:
-		task_form=TaskFormSet(queryset=tasks.objects.none())
-		context={'task_form':task_form, 'proc':proc}
-	return render(request, 'info_flow/if_add_task.html', context)
+		file_form=FileForm()
+		task_form=TaskForm()
+		context={'task_form':task_form, 'file_form':file_form, 'proc':proc}
+		return render(request, 'info_flow/if_add_task.html', context)
 
 
 @login_required
@@ -104,9 +118,19 @@ def if_show_proc(request, pid):
 		fi=files.objects.all().filter(files_proc_id = pid)
 		coms=comments.objects.all().filter(com_proc_id=pid)
 		proc=process.objects.get(pk = pid)
-		task=tasks.objects.all().filter(tasks_proc_id=pid, tasks_is_deleted=False)
+		task=tasks.objects.all().filter(tasks_proc_id=pid, tasks_is_deleted=False, tasks_tasks_id__isnull=True)
 		context={'proc':proc,'task':task, 'com_form':com_form, 'coms':coms, 'fi':fi}
 	return render(request, 'info_flow/if_show_proc.html', context)
+
+
+@login_required
+@permission_required('info_flow.view_tasks')
+def if_show_task(request, tid):
+	fi=files.objects.all().filter(files_tasks_id = tid)
+	task=tasks.objects.get(pk = tid)
+	point=tasks.objects.all().filter(tasks_tasks_id=tid, tasks_is_deleted=False)
+	context={'point':point,'task':task, 'fi':fi}
+	return render(request, 'info_flow/if_show_task.html', context)
 
 @login_required
 @permission_required('info_flow.change_process')
@@ -114,7 +138,7 @@ def if_edit_proc(request, pid):
 	proc=process.objects.get(pk = pid)
 	if not request.user.id==proc.proc_author.id:
 		return HttpResponseForbidden("Nie ma takiego podgladania")
-	task=tasks.objects.all().filter(tasks_proc_id=pid, tasks_is_deleted=False)
+	task=tasks.objects.all().filter(tasks_proc_id=pid, tasks_is_deleted=False, tasks_tasks_id__isnull=True)
 	if request.method=='POST':
 		file_form=FileForm(request.POST, request.FILES)
 		proc_form=ProcessForm(request.POST, instance=proc)		
@@ -144,15 +168,73 @@ def if_edit_proc(request, pid):
 
 
 @login_required
+@permission_required('info_flow.change_tasks')
+def if_edit_task(request, tid):
+	task=tasks.objects.get(pk = tid)
+	# if not request.user.id==proc.proc_author.id:
+	# 	return HttpResponseForbidden("Nie ma takiego podgladania")
+	point=tasks.objects.all().filter(tasks_tasks_id=tid, tasks_is_deleted=False)
+	if request.method=='POST':
+		file_form=FileForm(request.POST, request.FILES)
+		task_form=TaskForm(request.POST, instance=task)
+		point_form=TaskFormPointEdit(request.POST)
+		if task_form.is_valid()  & file_form.is_valid():
+			task_form.save()
+			for f in request.FILES.getlist('files_document'):
+				newFile = files(files_document=f)
+				newFile.files_tasks_id=tid
+				newFile.files_by_user_id=request.user.id
+				newFile.files_name=f
+				newFile.save()
+		if point_form.is_valid():
+			for form in point_form:
+				if form.is_valid():
+					newForm=form.save(commit=False)
+					newForm.tasks_proc_id=task.tasks_proc_id
+					newForm.tasks_tasks_id=tid
+					newForm.save()
+		return redirect('info_flow:if_show_task', tid=tid)
+	else:
+		file_form=FileForm()
+		fi=files.objects.all().filter(files_tasks_id = tid)
+		task_form=TaskForm(instance=task)		
+		point_form=TaskFormPointEdit(queryset=tasks.objects.none())
+		context={'point':point, 'task':task, 'point_form':point_form, 'task_form':task_form, 'fi':fi, 'file_form':file_form}
+	return render(request, 'info_flow/if_edit_task.html', context)
+
+
+@login_required
 @permission_required('info_flow.delete_process')
 def if_delete_proc(request, proc_id):
     delete_proc=process.objects.get(id=proc_id)
     delete_proc.proc_is_deleted = True
     delete_proc.save()
     del_conn_com=comments.objects.all().filter(com_proc_id=proc_id).update(com_is_deleted=True)
+    del_conn_task=tasks.objects.all().filter(tasks_proc_id=proc_id).update(tasks_is_deleted=True)
     deleted_files=files.objects.all().filter(files_proc_id=proc_id).update(files_is_deleted=True)
     return redirect('info_flow:if_processes')
 
+
+@login_required
+
+def if_add_point(request, tid):
+	task=tasks.objects.get(pk = tid)
+	if request.method=='POST':
+		point_form=TaskFormPoint(request.POST)
+		if point_form.is_valid():
+			for form in point_form:
+				newPoint=form.save(commit=False)
+				newPoint.tasks_proc_id=task.tasks_proc_id
+				newPoint.tasks_tasks_id=tid
+				newPoint.save()
+			if 'save_process' in request.POST:
+				return redirect('info_flow:if_processes')
+			elif 'add_task' in request.POST:
+				return redirect('info_flow:if_add_task', pid=task.tasks_proc_id)
+	else:
+		point_form=TaskFormPoint(queryset=tasks.objects.none())
+		context={'point_form':point_form, 'task':task}
+		return render(request, 'info_flow/if_add_point.html', context)
 
 
 @login_required
@@ -267,6 +349,8 @@ def download_file(request, fid):
     return response
 
 
+
+### ZAMIENIĆ TE 3 jakoś na 1############
 @login_required
 @permission_required('info_flow.delete_files')
 def if_delete_file(request, file_id):
@@ -284,3 +368,13 @@ def if_delete_post_file(request, file_id):
     delete_file.delete()
     delete_file.delete_file()
     return redirect('info_flow:if_edit_post', pid=post_id)
+
+
+@login_required
+@permission_required('info_flow.delete_files')
+def if_delete_post_file(request, file_id):
+    delete_file=files.objects.get(id=file_id)
+    task_id=delete_file.files_tasks_id
+    delete_file.delete()
+    delete_file.delete_file()
+    return redirect('info_flow:if_edit_task', pid=task_id)
