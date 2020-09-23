@@ -7,14 +7,16 @@ class TaskForm(forms.ModelForm):
 
 	class Meta:
 		model = tasks
-		fields =['tasks_name', 'tasks_description', 'tasks_start_date', 'tasks_end_date', 'tasks_assigned', 'tasks_is_active']
+		fields =['tasks_name', 'tasks_description', 'tasks_start_date', 'tasks_end_date', 'tasks_assigned']
 		widgets = {
             'tasks_start_date': DateTimePickerInput(),
             'tasks_end_date': DateTimePickerInput(),
             #'tasks_proc': forms.HiddenInput()
 
             }
-
+		labels = {
+			'tasks_name': 'Nazwa zadania', 'tasks_description': 'Opis', 'tasks_assigned': 'Przypisano', 'tasks_start_date': 'Data poczatku', 'tasks_end_date': 'Data końca', 
+		}
 
 TaskFormSet=modelformset_factory(tasks, form=TaskForm, extra=1)
 TaskFormPos=modelformset_factory(tasks, form=TaskForm, extra=0)

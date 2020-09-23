@@ -36,6 +36,9 @@ class process(models.Model):
 
 	class Meta():
 		ordering=['proc_created']
+		permissions = (
+		('check_proc', 'Check proc'),
+		)
 
 class tasks(models.Model):
 	tasks_name = models.CharField(max_length=150, blank=False)
@@ -52,6 +55,24 @@ class tasks(models.Model):
 
 	def __str__(self):
 		return self.tasks_name
+
+	def toggle_active(task_id):
+		task_status=tasks.objects.get(id=task_id)
+		if task_status.tasks_is_active==True:
+			task_status.tasks_is_active=False
+		else:
+			task_status.tasks_is_active=True
+		task_status.save()
+
+
+	def set_assignation(task_id, user):
+		task_status=tasks.objects.get(id=task_id)
+		task_status.tasks_assigned=user
+		task_status.save()
+		if task_status.tasks_tasks_id==None:
+			return task_id
+		else:
+			return task_status.tasks_tasks_id
 
 class comments(models.Model):
 	com_author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET('deleted'))

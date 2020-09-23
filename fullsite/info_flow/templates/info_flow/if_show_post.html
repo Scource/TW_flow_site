@@ -18,7 +18,19 @@
 {% block content %}
 
 <h2>{{post.posts_title}}</h2>
+<p>{{post.posts_author}}, Utworzono: {{post.posts_created}}</p>
 <p>{{post.posts_text}}</p>
+
+{% for f in fi %}
+        {{f.files_name}}
+        <a type= "button" href="{% url 'info_flow:download_file' f.id %}" download> Download File</a><br>
+    {% empty %}
+    {% endfor %}
+    <br>
+
+
+
+
 
 {% for m in mess %}
             <li class="list-group-item">

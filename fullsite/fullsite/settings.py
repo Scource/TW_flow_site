@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'info_flow.apps.InfoFlowConfig'
+    'info_flow.apps.InfoFlowConfig',
+    # 'guardian'
 ]
 
 MIDDLEWARE = [
@@ -74,6 +75,12 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'fullsite.wsgi.application'
+
+
+# AUTHENTICATION_BACKENDS = (
+#     'django.contrib.auth.backends.ModelBackend', # this is default
+#     'guardian.backends.ObjectPermissionBackend',
+# )
 
 
 # Database
@@ -131,8 +138,6 @@ STATICFILES_DIRS = [
 STATIC_ROOT = os.path.join(BASE_DIR, 'static_root')
 
 
-print("static root", STATIC_ROOT)
-print("static root", BASE_DIR)
 
 # Redirect to home URL after login (Default redirects to /accounts/profile/)
 LOGIN_REDIRECT_URL = ''

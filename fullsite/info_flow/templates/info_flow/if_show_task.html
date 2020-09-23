@@ -8,8 +8,13 @@
 
 
 {% block content %}
+	<p>punkty aktywne {{points_data.points_number_active}}/{{points_data.points_number}}</p>
+	<a type= "button" href="{% url 'info_flow:accept_task' task.id %}" > Zmień aktywację</a><br>
+	<a type= "button" href="{% url 'info_flow:assign_task' task.id %}" > Przyjmnij</a><br>
+
 
 	<div class="proc_main">
+
 	
 	<p><h4>{{task.tasks_name}}</h4></p>
 	<ul>
@@ -63,6 +68,7 @@
 		    </div>
 		     <div class="col border border-dark">
 		     {{p.tasks_assigned|default_if_none:"Brak"}}
+		     <a type= "button" href="{% url 'info_flow:assign_task' p.id %}" > Przyjmnij</a><br>
 		    </div>
 		  </div>
 		  <div class="row ">

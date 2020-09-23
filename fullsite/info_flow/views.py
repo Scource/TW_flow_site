@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, get_list_or_404, redirect
 from django.http import HttpResponse, FileResponse
-from .models import tasks, process, comments, posts, messages, files
-
+from .models import tasks, process, comments, posts, messages, files, category
+from .filters import ProcessFilter, PostsFilter
 from .forms import TaskFormSet, ProcessForm, TaskForm, CommForm, TaskFormPos, PostsForm, FileForm, MessageForm, TaskFormPoint, TaskFormPointEdit
 
 from django.views.decorators.csrf import csrf_protect, ensure_csrf_cookie
@@ -11,6 +11,7 @@ from django.http import HttpResponseForbidden
 import mimetypes
 import os
 from django.conf import settings
+from .services import get_tasks_in_proc, get_points_in_task
 
 
 # Create your views here.
@@ -19,11 +20,16 @@ from django.conf import settings
 def index(request):
 	return render(request, 'info_flow/if_index.html')
 
+#@userpasstest decorator check!
 @login_required
 @permission_required('info_flow.view_process')
-def if_processes(request):
-	proc_list = process.objects.all().filter(proc_is_deleted=False)
-	context={'proc_list':proc_list}
+def if_processes(request, cat):
+	if not request.user.groups.filter(name=cat).exists():
+		return HttpResponseForbidden("Nie ma takiego podgladania")
+	cat_id=category.objects.get(cat_name=cat).id
+	proc_list = process.objects.all().filter(proc_is_deleted=False, proc_is_private=False, proc_category=cat_id)
+	proc_f=ProcessFilter(request.GET, queryset=proc_list)
+	context={'proc_list':proc_list, 'proc_f':proc_f, }
 	return render(request, 'info_flow/if_processes.html', context)
 
 
@@ -104,6 +110,7 @@ def if_delete_task(request, task_id):
 @login_required
 @permission_required('info_flow.view_process')
 def if_show_proc(request, pid):
+	tasks_data = get_tasks_in_proc(pid)
 	if request.method=='POST':
 		com_form=CommForm(request.POST)
 		if com_form.is_valid():
@@ -119,17 +126,18 @@ def if_show_proc(request, pid):
 		coms=comments.objects.all().filter(com_proc_id=pid)
 		proc=process.objects.get(pk = pid)
 		task=tasks.objects.all().filter(tasks_proc_id=pid, tasks_is_deleted=False, tasks_tasks_id__isnull=True)
-		context={'proc':proc,'task':task, 'com_form':com_form, 'coms':coms, 'fi':fi}
+		context={'proc':proc,'task':task, 'com_form':com_form, 'coms':coms, 'fi':fi, 'tasks_data':tasks_data}
 	return render(request, 'info_flow/if_show_proc.html', context)
 
 
 @login_required
 @permission_required('info_flow.view_tasks')
 def if_show_task(request, tid):
+	points_data=get_points_in_task(tid)
 	fi=files.objects.all().filter(files_tasks_id = tid)
 	task=tasks.objects.get(pk = tid)
 	point=tasks.objects.all().filter(tasks_tasks_id=tid, tasks_is_deleted=False)
-	context={'point':point,'task':task, 'fi':fi}
+	context={'point':point,'task':task, 'fi':fi, 'points_data':points_data}
 	return render(request, 'info_flow/if_show_task.html', context)
 
 @login_required
@@ -241,7 +249,8 @@ def if_add_point(request, tid):
 @permission_required('info_flow.view_posts')
 def if_post_list(request):
 	post_list=posts.objects.all().filter(posts_is_deleted=False)
-	context={'post_list':post_list}
+	posts_f=PostsFilter(request.GET, queryset=post_list)
+	context={'posts_f':posts_f}
 	return render(request, 'info_flow/if_post_list.html' ,context)
 
 
@@ -275,6 +284,7 @@ def if_new_post(request):
 @permission_required('info_flow.view_posts')
 def if_show_post(request, pid):
 	post=posts.objects.get(pk = pid)
+	fi=files.objects.all().filter(files_posts_id = pid)
 	mess=messages.objects.all().filter(mess_posts_id=pid, mess_is_deleted=False)
 	mess_form=MessageForm()
 	if request.method=='POST':
@@ -286,7 +296,7 @@ def if_show_post(request, pid):
 			newMes.save()
 		return redirect('info_flow:if_show_post', pid=pid)
 
-	context={'post':post, 'mess':mess, 'mess_form':mess_form}
+	context={'post':post, 'mess':mess, 'mess_form':mess_form, 'fi':fi}
 	return render(request, 'info_flow/if_show_post.html', context)
 
 
@@ -378,3 +388,24 @@ def if_delete_post_file(request, file_id):
     delete_file.delete()
     delete_file.delete_file()
     return redirect('info_flow:if_edit_task', pid=task_id)
+
+
+@login_required
+def user_profile(request):
+	priv_proc=process.objects.all().filter(proc_is_private=True, proc_author=request.user, proc_is_deleted=False)
+	user_proc=process.objects.all().filter(proc_assigned_id=request.user, proc_is_deleted=False, proc_is_private=False)
+	user_tasks=tasks.objects.all().filter(tasks_assigned_id=request.user, tasks_is_deleted=False)
+	context={'user_proc':user_proc, 'user_tasks':user_tasks, 'priv_proc':priv_proc}
+	return render(request, 'info_flow/user_profile.html', context)
+
+@login_required
+def accept_task(request, task_id):
+	tasks.toggle_active(task_id)
+	return redirect('info_flow:if_show_task', tid=task_id)
+
+
+@login_required
+def assign_task(request, task_id):
+	user=request.user
+	redirect_id=tasks.set_assignation(task_id, user)
+	return redirect('info_flow:if_show_task', tid=redirect_id)

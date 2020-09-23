@@ -6,7 +6,9 @@ from . import views
 app_name='info_flow'
 urlpatterns = [
     path('', views.index, name='if_index'),
-    path('processes/', views.if_processes, name='if_processes'),
+    path('user/', views.user_profile, name='user_profile'),
+
+    path('processes/<str:cat>/', views.if_processes, name='if_processes'),
     path('processes/create', views.if_new_proc, name='if_new_proc'),
     path('processes/add_task/<int:pid>/', views.if_add_task, name='if_add_task'),
     path('processes/task_<int:tid>/add_point/', views.if_add_point, name='if_add_point'),
@@ -15,6 +17,8 @@ urlpatterns = [
     path('processes/edit/<int:pid>/', views.if_edit_proc, name='if_edit_proc'),
     path('processes/edit/task_<int:tid>/', views.if_edit_task, name='if_edit_task'),
     path('processes/show/task_<int:tid>/', views.if_show_task, name='if_show_task'),
+    path('processes/change/task_<int:task_id>/', views.accept_task, name='accept_task'),
+    path('processes/assign/task_<int:task_id>/', views.assign_task, name='assign_task'),
 
 
     path('processes/delete/<int:proc_id>', views.if_delete_proc, name='if_delete_proc'),

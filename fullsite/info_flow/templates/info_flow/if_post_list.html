@@ -16,6 +16,11 @@ Lista postów
 
 {% block content %}
 
+<form method="get">
+    {{ posts_f.form.as_table }}
+    <button type="submit" class="btn btn-outline-secondary btn-sm btn-cst">Szukaj</button>
+</form>
+
 <button type= button class="btn btn-cst"><a href="{% url 'info_flow:if_new_post' %}">Dodaj nowy wpis+</a></button>
 
 		
@@ -29,9 +34,9 @@ Lista postów
 
 
 	</tr>
-	{% for p in post_list %}
+	{% for p in posts_f.qs %}
 	<tr class='clickable-row' id=url data-url="{% url 'info_flow:if_show_post' 123 %}" data-id={{p.id}}>
-		<td>{{p.posts_title}}</td>
+		<td>{{p.posts_title}}</td></div>
 		<td>{{p.posts_author}}</td>
 		<td>{{p.posts_created}}</td>
 		<td>

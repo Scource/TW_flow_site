@@ -16,6 +16,10 @@ Lista procesów
 
 {% block content %}
 
+<form method="get">
+    {{ proc_f.form.as_table }}
+    <button type="submit" class="btn btn-outline-secondary btn-sm btn-cst">Search</button>
+</form>
 
 <h1>Procesy</h1>
 
@@ -26,18 +30,16 @@ Lista procesów
 		<th>Poczatek</th>
 		<th>Koniec</th>
 		<th>Autor</th>
-		<th>Kategoria</th>
 		<th></th>
 		<th></th>
 	</tr>
-	{% for p in proc_list %}
+	{% for p in proc_f.qs %}
 	<tr class='clickable-row' id=url data-url="{% url 'info_flow:if_show_proc' 123 %}" data-id={{p.id}}>
 		<td>{{p.proc_process_name}}</td>
 		<td>{{p.proc_category}}</td>
 		<td>{{p.proc_start_date}}</td>
 		<td>{{p.proc_end_date}}</td>
 		<td>{{p.proc_author}}</td>
-		<td>{{p.proc_category}}</td>
 		<td>
 			{% if user.is_authenticated and user == p.proc_author %}
 			<a type="button" href="{% url 'info_flow:if_edit_proc' p.id%}" class="btn btn-outline-secondary btn-sm btn-cst" >Edytuj</a>
