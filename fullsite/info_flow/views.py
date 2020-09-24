@@ -53,7 +53,7 @@ def if_new_proc(request):
 				newFile.save()
 
 			if 'save_process' in request.POST:
-				return redirect('info_flow:if_processes')
+				return redirect('info_flow:if_processes', cat=newProcess.proc_category)
 			elif 'add_tasks' in request.POST:
 				return redirect('info_flow:if_add_task', pid=newProcess.id)
 	else:
@@ -85,7 +85,7 @@ def if_add_task(request, pid):
 				newFile.files_name=f
 				newFile.save()
 			if 'save_process' in request.POST:
-				return redirect('info_flow:if_processes')
+				return redirect('info_flow:if_processes', cat=proc.proc_category)
 			elif 'save_task' in request.POST:
 				return redirect('info_flow:if_add_task', pid=pid)
 			elif 'add_point' in request.POST:
@@ -220,7 +220,7 @@ def if_delete_proc(request, proc_id):
     del_conn_com=comments.objects.all().filter(com_proc_id=proc_id).update(com_is_deleted=True)
     del_conn_task=tasks.objects.all().filter(tasks_proc_id=proc_id).update(tasks_is_deleted=True)
     deleted_files=files.objects.all().filter(files_proc_id=proc_id).update(files_is_deleted=True)
-    return redirect('info_flow:if_processes')
+    return redirect('info_flow:if_processes', cat=delete_proc.proc_category)
 
 
 @login_required
@@ -236,7 +236,7 @@ def if_add_point(request, tid):
 				newPoint.tasks_tasks_id=tid
 				newPoint.save()
 			if 'save_process' in request.POST:
-				return redirect('info_flow:if_processes')
+				return redirect('info_flow:if_processes', cat=process.objects.get(id=task.tasks_proc_id).proc_category)
 			elif 'add_task' in request.POST:
 				return redirect('info_flow:if_add_task', pid=task.tasks_proc_id)
 	else:
