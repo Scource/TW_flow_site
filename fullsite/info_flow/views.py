@@ -24,8 +24,8 @@ def index(request):
 @login_required
 @permission_required('info_flow.view_process')
 def if_processes(request, cat):
-	if not request.user.groups.filter(name=cat).exists():
-		return HttpResponseForbidden("Nie ma takiego podgladania")
+	# if not request.user.groups.filter(name=cat).exists():
+	# 	return HttpResponseForbidden("Nie ma takiego podgladania")
 	cat_id=category.objects.get(cat_name=cat).id
 	proc_list = process.objects.all().filter(proc_is_deleted=False, proc_is_private=False, proc_category=cat_id)
 	proc_f=ProcessFilter(request.GET, queryset=proc_list)

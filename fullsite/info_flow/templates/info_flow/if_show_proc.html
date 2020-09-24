@@ -8,9 +8,9 @@
 
 
 {% block content %}
-	<p>ilość tasków {{tasks_data.task}}</p>
-	<p>zadania {{tasks_data.tasks_number_active}}/{{tasks_data.tasks_number}}</p>
-	<p>punkty {{tasks_data.points_number_active}}/{{tasks_data.points_number}}</p>
+	<p>Zadań w procesie {{tasks_data.task}}</p>
+	<p>Zadania aktywne {{tasks_data.tasks_number_active}}/{{tasks_data.tasks_number}}</p>
+
 
 	<div class="proc_main">
 	
@@ -47,7 +47,7 @@
 		      Nazwa zadania:
 		    </div>
 		    <div class="col border border-dark">
-		      {{t.tasks_name}}
+		      {{t.tasks_name}} Aktywny: {{t.tasks_is_active}}
 		     <a type="button" href="{% url 'info_flow:if_show_task' t.id%}" class="btn btn-outline-secondary btn-sm btn-cst" >Przejdź</a><br>
 		    </div>
 		  </div>

@@ -2,29 +2,36 @@
 
 
 {% block content %}
+TUTAJ BĘDĄ ŁADNIEJSZE TABELE
 
+
+<p>Procesy prywatne</p><br>
 {%for p in priv_proc%}
-PRYWATNY
- {{ p.proc_process_name}}
+Nazwa: {{ p.proc_process_name}}
+  <a type="button" href="{% url 'info_flow:if_show_proc' p.id%}" class="btn btn-outline-secondary btn-sm btn-cst" >Przejdź</a><br>
 {% endfor %}
-
+<br>
+<p>Przypisane Procesy </p>
+<br>	
 {%for p in user_proc%}
- PROCES
- {{ p.proc_process_name}}
+Nazwa:  {{ p.proc_process_name}}
+  <a type="button" href="{% url 'info_flow:if_show_proc' p.id%}" class="btn btn-outline-secondary btn-sm btn-cst" >Przejdź</a><br>
 {% endfor %}
 
+<br>
 
+<p>Zadania i punkty</p>
 {% for t in user_tasks %}
 	{% if t.tasks_tasks_id is None %}
-		ZADANIE
-		{{t.tasks_name}}
-		{{t.tasks_is_active}}
+		Typ: Zadanie,
+		Nazwa: {{t.tasks_name}},
+		Aktywne: {{t.tasks_is_active}}
 		<a type="button" href="{% url 'info_flow:if_show_task' t.id%}" class="btn btn-outline-secondary btn-sm btn-cst" >Przejdź</a><br>
 
 	{%else%}
-		PUNKT
-		{{t.tasks_name}}
-		{{t.tasks_is_active}}
+		Typ: Punkt,
+		Nazwa: {{t.tasks_name}},
+		Aktywne: {{t.tasks_is_active}}
 		<a type="button" href="{% url 'info_flow:if_show_task' t.id%}" class="btn btn-outline-secondary btn-sm btn-cst" >Przejdź</a><br>
 
 	{% endif%}

@@ -67,9 +67,7 @@
 
               <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                 <a class="dropdown-item" href="{% url 'info_flow:if_new_proc' %}">Nowy proces</a>
-                {% if perms.info_flow.check_proc %}
                 <a class="dropdown-item" href="{% url 'info_flow:if_processes' 'AMI' %}">AMI</a>
-                {% endif %}
                 <a class="dropdown-item" href="{% url 'info_flow:if_processes' 'Uzgodnienia' %}">Uzgodnienia</a>
                 <a class="dropdown-item" href="{% url 'info_flow:if_processes' 'Korekty' %}">Korekty</a>
                 <a class="dropdown-item" href="{% url 'info_flow:if_processes' 'Wrzutki' %}">Wrzutki</a>

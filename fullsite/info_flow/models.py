@@ -35,7 +35,7 @@ class process(models.Model):
 		return self.proc_process_name
 
 	class Meta():
-		ordering=['proc_created']
+		ordering=['-proc_modified', '-proc_created', '-proc_is_active']
 		permissions = (
 		('check_proc', 'Check proc'),
 		)

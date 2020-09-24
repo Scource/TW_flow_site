@@ -12,7 +12,7 @@ urlpatterns = [
     path('processes/create', views.if_new_proc, name='if_new_proc'),
     path('processes/add_task/<int:pid>/', views.if_add_task, name='if_add_task'),
     path('processes/task_<int:tid>/add_point/', views.if_add_point, name='if_add_point'),
-    path('processes/<int:pid>/', views.if_show_proc, name='if_show_proc'),
+    path('processes/show/<int:pid>/', views.if_show_proc, name='if_show_proc'),
 
     path('processes/edit/<int:pid>/', views.if_edit_proc, name='if_edit_proc'),
     path('processes/edit/task_<int:tid>/', views.if_edit_task, name='if_edit_task'),
