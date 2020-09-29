@@ -4,26 +4,36 @@
 <link rel="stylesheet" type="text/css" href="{% static 'info_flow/css/if_css.css' %}">
 
 {% block title%}
-Lista procesów
+Lista procesów 
 {% endblock %}
 
 
-{% block scripts %}
-	{{block.super}}
-    <script src="{% static 'info_flow/js/if_js.js' %}"></script>
-{% endblock %}
+{% block head %}
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" crossorigin="anonymous" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" rel="stylesheet"/>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous" integrity="sha384-xBuQ/xzmlsLoJpyjoggmTEz8OWUFM0/RC5BsqQBDX2v5cMvDHcMakNTNrHIW2I5f"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" crossorigin="anonymous" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" crossorigin="anonymous" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"></script>
+<link href="{% static 'css/templatemo_style.css' %}" rel="stylesheet" type="text/css" />
 
+<script src="{% static 'info_flow/js/if_js.js' %}"></script>
+{% endblock %}
 
 {% block content %}
 
+{% if state %}
+<button type="button" ><a href="{% url 'info_flow:if_processes' cat=cat active='inactive' %}">Pokaż nieaktywne</a></button>
+{% else %}
+<button type="button" ><a href="{% url 'info_flow:if_processes' cat=cat active='active' %}">Pokaż aktywne</a></button>
+{% endif%}
+
+<h3>Procesy w kategorii "{{cat}}"</h3>
+<div class="cleaner h10"></div>
 <form method="get">
     {{ proc_f.form.as_table }}
-    <button type="submit" class="btn btn-outline-secondary btn-sm btn-cst">Search</button>
+    <button type="submit" class="btn btn-outline-secondary btn-sm btn-cst">Szukaj</button>
 </form>
-
-<h1>Procesy</h1>
-
-<table class="table table-hover table-dark table-sm">
+<div class="cleaner h10"></div>
+<table class="table table-hover table-sm">
 	<tr>
 		<th>Tytuł</th>
 		<th>Przypisane</th>
@@ -37,19 +47,20 @@ Lista procesów
 	<tr class='clickable-row' id=url data-url="{% url 'info_flow:if_show_proc' 123 %}" data-id={{p.id}}>
 		<td>{{p.proc_process_name}}</td>
 		<td>{{p.proc_assigned|default_if_none:"Brak"}}</td>
-		<td>{{p.proc_start_date}}</td>
-		<td>{{p.proc_end_date}}</td>
+		<td>{{p.proc_start_date|date:"Y-m-d H:i"}}</td>
+		<td>{{p.proc_end_date|date:"Y-m-d H:i"}}</td>
 		<td>{{p.proc_author}}</td>
 		<td>
 			{% if user.is_authenticated and user == p.proc_author %}
-			<a type="button" href="{% url 'info_flow:if_edit_proc' p.id%}" class="btn btn-outline-secondary btn-sm btn-cst" >Edytuj</a>
+			<a href="{% url 'info_flow:if_edit_proc' p.id%}">Edytuj</a>
 			{% endif %}
 		</td>
 		<td>
 			{% if user.is_authenticated and user == p.proc_author %}
-			<a type="button" href="{% url 'info_flow:if_delete_proc' p.id%}" class="btn btn-outline-secondary btn-sm btn-cst" >Usuń</a>
+			<a href="{% url 'info_flow:if_delete_proc' p.id%}"  >Usuń</a>
 			{% endif %}
 		</td>
+
 	{% endfor %}
 	</tr>
 

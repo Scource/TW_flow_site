@@ -35,7 +35,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
-    'bootstrap_datepicker_plus',
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -43,6 +43,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'info_flow.apps.InfoFlowConfig',
+    'bootstrap_datepicker_plus',
+    'bootstrap4',
+    'widget_tweaks',
     # 'guardian'
 ]
 

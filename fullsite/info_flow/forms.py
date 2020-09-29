@@ -7,10 +7,20 @@ class TaskForm(forms.ModelForm):
 
 	class Meta:
 		model = tasks
-		fields =['tasks_name', 'tasks_description', 'tasks_start_date', 'tasks_end_date', 'tasks_assigned']
+		fields =['tasks_name', 'tasks_description', 'tasks_start_date', 'tasks_end_date', 'tasks_assigned' , 'tasks_is_active']
 		widgets = {
-            'tasks_start_date': DateTimePickerInput(),
-            'tasks_end_date': DateTimePickerInput(),
+            'tasks_start_date': DateTimePickerInput(format=('%Y-%m-%d %H:%M'),options={
+                    "showClose": True,
+                    "showClear": True,
+                    "showTodayButton": True,
+                    "sideBySide": True,
+                }),
+            'tasks_end_date': DateTimePickerInput(format=('%Y-%m-%d %H:%M'), options={
+                    "showClose": True,
+                    "showClear": True,
+                    "showTodayButton": True,
+                    "sideBySide": True,
+                }),
             #'tasks_proc': forms.HiddenInput()
 
             }
@@ -30,13 +40,23 @@ TaskFormPointEdit=modelformset_factory(tasks, form=TaskForm, extra=0)
 class ProcessForm(forms.ModelForm):
 	class Meta:
 		model=process
-		fields=['proc_process_name', 'proc_description', 'proc_category', 'proc_start_date', 'proc_end_date', 'proc_is_private']
+		fields=['proc_process_name', 'proc_description', 'proc_category', 'proc_start_date', 'proc_end_date', 'proc_is_private', 'proc_is_active', 'proc_assigned']
 		labels = {
 			'proc_process_name': 'Nazwa', 'proc_description': 'Opis', 'proc_category': 'Kategoria', 'proc_start_date': 'Data poczatku', 'proc_end_date': 'Data końca', 'proc_is_private': 'Prywatny proces', 
         }
 		widgets = {
-            'proc_start_date': DateTimePickerInput(),
-            'proc_end_date': DateTimePickerInput(),
+            'proc_start_date': DateTimePickerInput(format=('%Y-%m-%d %H:%M'), options={
+                    "showClose": True,
+                    "showClear": True,
+                    "showTodayButton": True,
+                    "sideBySide": True,
+                }),
+            'proc_end_date': DateTimePickerInput(format=('%Y-%m-%d %H:%M'), options={
+                    "showClose": True,
+                    "showClear": True,
+                    "showTodayButton": True,
+                    "sideBySide": True,
+                }),
             }
 
 

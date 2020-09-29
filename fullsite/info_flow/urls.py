@@ -6,9 +6,10 @@ from . import views
 app_name='info_flow'
 urlpatterns = [
     path('', views.index, name='if_index'),
-    path('user/', views.user_profile, name='user_profile'),
+    path('user/<str:active>', views.user_profile, name='user_profile'),
 
-    path('processes/<str:cat>/', views.if_processes, name='if_processes'),
+    path('processes/<str:cat>/<str:active>', views.if_processes, name='if_processes'),
+    path('processes/', views.if_process_list, name='if_process_list'),
     path('processes/create', views.if_new_proc, name='if_new_proc'),
     path('processes/add_task/<int:pid>/', views.if_add_task, name='if_add_task'),
     path('processes/task_<int:tid>/add_point/', views.if_add_point, name='if_add_point'),

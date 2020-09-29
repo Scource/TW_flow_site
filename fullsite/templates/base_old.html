@@ -1,0 +1,154 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>{% block title %}{% endblock %}</title>
+
+    {% load static %}
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc="
+    crossorigin="anonymous"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+
+    {% block mycss %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/base_style.css' %}">
+    {% endblock %}
+
+{% block head %}
+{% endblock %}
+
+{% block scripts %}
+    <script type="text/javascript" href="{% static 'js/main.js' %}"></script>
+{% endblock %}
+
+</head>
+<body>
+
+<div class=page>
+<div class=user_info margin-left=auto>
+ {% if user.is_authenticated %}
+    Zalogowano jako &#160; &#160; 
+    <b><u>
+
+    
+      <button type="button" class="btn btn-light"><a href="{% url 'info_flow:user_profile' %}"> {{ user.get_username }} </a></button>
+
+    </u></b> &#160;&#160; 
+
+     <button type="button" class="btn btn-light"><a href="{% url 'logout'%}?next={{request.path}}"> Wyloguj </a></button>
+   {% else %}
+     <button type="button" class="btn btn-light"><a href="{% url 'login'%}?next={{request.path}}"> Zaloguj </a></button>
+   {% endif %} 
+</div>
+
+<div class="header">
+<h3 align="center">Tutaj kiedyś będzie logo czy coś</h3>
+</div>
+
+<div class="menu">
+        <div class="btn-group">
+            <div class="dropdown show">
+              <a class="btn btn-secondary" href="{% url 'info_flow:if_index' %}" role="button">
+                <i class="fas fa-home"></i>
+              </a>
+
+            </div>
+
+            <div class="dropdown show">
+              <a class="btn btn-secondary dropdown-toggle" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Praca
+              </a>
+
+              <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                <a class="dropdown-item" href="{% url 'info_flow:if_new_proc' %}">Nowy proces</a>
+                <a class="dropdown-item" href="{% url 'info_flow:if_processes' 'AMI' %}">AMI</a>
+                <a class="dropdown-item" href="{% url 'info_flow:if_processes' 'Uzgodnienia' %}">Uzgodnienia</a>
+                <a class="dropdown-item" href="{% url 'info_flow:if_processes' 'Korekty' %}">Korekty</a>
+                <a class="dropdown-item" href="{% url 'info_flow:if_processes' 'Wrzutki' %}">Wrzutki</a>
+                
+              </div>
+            </div>  
+
+            <div class="dropdown show">
+              <a class="btn btn-secondary dropdown-toggle"  role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Forum
+              </a>
+
+              <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                <a class="dropdown-item" href="{% url 'info_flow:if_post_list' %}">Lista wpisów</a>
+                <a class="dropdown-item" href="{% url 'info_flow:if_new_post' %}">Dodaj wpis</a>
+              </div>
+            </div>   
+
+            <div class="dropdown show">
+              <a class="btn btn-secondary dropdown-toggle"  role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Skrypty
+              </a>
+
+              <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                <a class="dropdown-item" href="#">Tu</a>
+                <a class="dropdown-item" href="#">Kiedyś</a>
+                <a class="dropdown-item" href="#">Wrzucę</a>
+                <a class="dropdown-item" href="#">Wszystkie</a>
+                <a class="dropdown-item" href="#">Programy</a>
+              </div>
+            </div>   
+
+            <div class="dropdown show">
+              <a class="btn btn-secondary dropdown-toggle"  role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Zarzadzanie MB
+              </a>
+
+              <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                <a class="dropdown-item" href="#">Tutaj</a>
+                <a class="dropdown-item" href="#">Umowy</a>
+                <a class="dropdown-item" href="#">Miałyby</a>
+                <a class="dropdown-item" href="#">Wrzucać</a>
+                <a class="dropdown-item" href="#">Info o</a>
+                <a class="dropdown-item" href="#">Nowych/Zmianach</a>
+                <a class="dropdown-item" href="#">POB i SE</a>
+              </div>
+            </div>   
+
+                        <div class="dropdown show">
+              <a class="btn btn-secondary dropdown-toggle"  role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Wytwórcy
+              </a>
+
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                <a class="dropdown-item" href="#">Zestawienie</a>
+                <a class="dropdown-item" href="#">Wytwórców</a>
+                <a class="dropdown-item" href="#">Damiana</a>
+                <a class="dropdown-item" href="#">W formie</a>
+                <a class="dropdown-item" href="#">Tabeli</a>
+              </div>
+            </div>   
+
+    </div>  
+</div>
+
+
+        <div class="main">
+          {% block content %}
+        {% endblock %}
+        </div>
+        
+
+
+<div class='footer'>
+</div>
+
+</div>
+    
+
+    
+
+</body>
+</html>
+

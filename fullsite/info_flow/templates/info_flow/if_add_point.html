@@ -6,48 +6,82 @@
 Dodaj punkt
 {% endblock %}
 
+{% load widget_tweaks %}
+{% load static %}
 
-{% block content %}
 
 
-<head>
+{% block head %}
 <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" crossorigin="anonymous" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" rel="stylesheet"/>
 <script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous" integrity="sha384-xBuQ/xzmlsLoJpyjoggmTEz8OWUFM0/RC5BsqQBDX2v5cMvDHcMakNTNrHIW2I5f"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" crossorigin="anonymous" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" crossorigin="anonymous" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"></script>
-
+<link href="{% static 'css/templatemo_style.css' %}" rel="stylesheet" type="text/css" />
 {{ point_form.media }}
-
-</head>
-
-<h1>{{task.id}}</h1>
+{% endblock %}
 
 
+{% block content %}
 
 
+<div id="templatemo_main">        
+<h2>{{task.tasks_proc.proc_process_name}} <img src="{% static 'images/next-32px.png' %}"/> {{task.tasks_name}} <img src="{% static 'images/next-32px.png' %}"/> Nowy punkt</h2>
 
-<form  method="POST" action="{% url 'info_flow:if_add_point' task.id %}" enctype="multipart/form-data" autocomplete="off">
-{% csrf_token %}
-{{ point_form.management_form }}
-<div id="form_set">
-    {% for form in point_form.forms %}
+        <div id="contact_form">
+        <form  method="POST" action="{% url 'info_flow:if_add_point' task.id %}" enctype="multipart/form-data" autocomplete="off">
+            {% csrf_token %}
+            {{ point_form.management_form }}
+            <div id="form_set">
+            {% for form in point_form.forms %}
 
-        <table class='no_error'>
-           {{ form.as_table }}
-        </table> 
-    {% endfor %}
-</div>
-<input type="button" value="Dodaj punkt" id="add_more">
-<div id="empty_form" style="display:none">
-    <table class='no_error'>
-        {{ point_form.empty_form }}
-    </table>
-</div>
+                <label for='{{form.tasks_name}}'>Tutuł:</label><div > {{form.tasks_name|add_class:"input_field"}}</div>
+                <div class="cleaner h10"></div>
 
-<input type="submit" name='save_process' value="Zakończ">
-<input type="submit" name='add_task' value="Kolejne zadanie">
-</form>
+                <label for='{{form.tasks_description}}'>Opis:</label><div> {{form.tasks_description}}</div>
+                <div class="cleaner h10"></div>
 
+                <label for ='{{form.tasks_start_date}}'>Data pocztku:</label><div> {{form.tasks_start_date|add_class:"input_field"}}</div>
+                <div class="cleaner h10"></div>
+
+                <label for ='{{form.tasks_end_date}}'>Data pocztku:</label><div> {{form.tasks_end_date|add_class:"input_field"}}</div>
+                <div class="cleaner h10"></div>
+
+                <label for ='{{form.tasks_assigned}}'>Przypisz do:</label><div> {{form.tasks_assigned|add_class:"input_field"}}</div>
+                <div class="cleaner h50"></div>
+            {% endfor %}
+             </div>
+
+     <input type="button" value="Dodaj punkt" id="add_more" class="submit_btn float_l">
+            <div id="empty_form" style="display:none">
+                <table class='no_error'>
+
+            <h4>Zadanie "{{task.tasks_name}}" - nowy punkt</h4>
+
+            <label for='{{point_form.tasks_name}}'>Tutuł:</label><div > {{point_form.empty_form.tasks_name|add_class:"input_field"}}</div>
+            <div class="cleaner h10"></div>
+
+            <label for='{{point_form.tasks_description}}'>Opis:</label><div> {{point_form.empty_form.tasks_description}}</div>
+            <div class="cleaner h10"></div>
+
+            <label for ='{{point_form.tasks_start_date}}'>Data pocztku:</label><div> {{point_form.empty_form.tasks_start_date|add_class:"input_field"}}</div>
+            <div class="cleaner h10"></div>
+
+            <label for ='{{point_form.tasks_end_date}}'>Data pocztku:</label><div> {{point_form.empty_form.tasks_end_date|add_class:"input_field"}}</div>
+            <div class="cleaner h10"></div>
+
+            <label for ='{{point_form.tasks_assigned}}'>Przypisz do:</label><div> {{point_form.empty_form.tasks_assigned|add_class:"input_field"}}</div>
+            <div class="cleaner h50"></div>
+
+                </table>
+            </div>
+
+
+            <input type="submit" name='save_process' value="Zakończ" class="submit_btn float_r">
+            <input type="submit" name='add_task' value="Kolejne zadanie" class="submit_btn float_r">
+                       
+        </form>
+        </div>  
+    </div>  
 
 
 

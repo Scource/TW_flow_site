@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'info_flow/css/if_css.css' %}">
+
+{% block title%}
+Lista procesów
+{% endblock %}
+
+
+{% block scripts %}
+	{{block.super}}
+    <script src="{% static 'info_flow/js/if_js.js' %}"></script>
+
+    
+{% endblock %}
+
+
+{% block content %}
+        <div class="col one_fourth fp_services">
+            
+            <h2 class="s1"><img src="{% static 'images/hotel-32px.png' %}" alt="Image 05" /><a href="{% url 'info_flow:if_new_proc' %}">Nowy</a></h2>
+            <p>Dodaj nowy proces to jedenj w powyższych kategorii.</p>
+        </div>
+
+        <div class="col one_fourth fp_services">
+            
+            <h2 class="s1"><img src="{% static 'images/map-32px.png' %}" alt="Image 02" /><a href="{% url 'info_flow:if_processes' cat='Uzgodnienia' active='active' %}">Uzgodnienia</a></h2>
+            <p>Comiesięczne uzgodnienia do rozliczeń.</p>
+        </div>
+        
+        <div class="col one_fourth fp_services">
+            
+            <h2 class="s2"><img src="{% static 'images/notebook-32px.png' %}" alt="Image 03" /><a href="{% url 'info_flow:if_processes' cat='Korekty' active='active' %}">Korekty</a></h2>
+            <p>Procesy zwizne z wysyłaniem korekt na RB.</p>
+        </div>
+        <div class="col one_fourth no_margin_right fp_services">
+            
+            <h2 class="s4"><img src="{% static 'images/post-it-32px.png' %}" alt="Image 04" /><a href="{% url 'info_flow:if_processes' cat='Wrzutki' active='active' %}">Wrzutki</a></h2>
+            <p>Dodatkowe zadania wynikłe podczas pozostałych prac.</p>
+        </div>
+        <div class="col one_fourth fp_services">
+            
+            <h2 class="s1"><img src="{% static 'images/calendar-32px.png' %}" alt="Image 01" /> <a href="{% url 'info_flow:if_processes' cat='AMI' active='active' %}">AMI</a></h2>
+            <p>Zadania zwizane z wymian danych z systemem AMI.</p>
+        </div>
+
+        <div class="cleaner"></div>
+
+
+{% endblock %}

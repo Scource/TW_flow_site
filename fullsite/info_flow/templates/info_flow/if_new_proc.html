@@ -4,38 +4,59 @@
 Nowy proces
 {% endblock %}
 
-
+{% load static %}
+{% load widget_tweaks %}
 
 {% block head %}
-<!-- <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" crossorigin="anonymous" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" rel="stylesheet"/>
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" crossorigin="anonymous" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" rel="stylesheet"/>
 <script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous" integrity="sha384-xBuQ/xzmlsLoJpyjoggmTEz8OWUFM0/RC5BsqQBDX2v5cMvDHcMakNTNrHIW2I5f"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" crossorigin="anonymous" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" crossorigin="anonymous" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"></script> -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" crossorigin="anonymous" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"></script>
+<link href="{% static 'css/templatemo_style.css' %}" rel="stylesheet" type="text/css" />
 
 {{ process_form.media }}
 {% endblock %}
 
-{% load static %}
-
-<link rel="stylesheet" type="text/css" href="{% static 'info_flow/css/if_css.css' %}">
-
-
-{% block scripts %}
-	{{block.super}}
-    <script src="{% static 'info_flow/js/if_js.js' %}"></script>
-{% endblock %}
-
 
 {% block content %}
+<div id="templatemo_main">
+    	
+<h2>Utwórz nowy proces</h2>
+     <div class="half float_l">
+		<div id="contact_form">
+		<form method="POST" action="{% url 'info_flow:if_new_proc' %}" enctype="multipart/form-data" name="contact" autocomplete="off">
+			{% csrf_token %}
 
-<form  method="POST" action="{% url 'info_flow:if_new_proc' %}" enctype="multipart/form-data">
-{% csrf_token %}
-{{ process_form.as_p }}
-{{ file_form.files_document }}
-<br>
-<br>
-<input type="submit" name='save_process' value="Zakończ">
-<input type="submit" name='add_tasks' value="Dodaj zadania">
-</form>
+			<label for='{{process_form.proc_process_name}}'>Tutuł:</label><div class=""> {{process_form.proc_process_name|add_class:"input_field"}}</div>
+			<div class="cleaner h10"></div>
 
+			<label for='{{process_form.proc_description}}'>Opis:</label><div> {{process_form.proc_description}}</div>
+			<div class="cleaner h10"></div>
+
+			<label for ='{{process_form.proc_start_date}}'>Data pocztku:</label><div> {{process_form.proc_start_date|add_class:"input_field"}}</div>
+			<div class="cleaner h10"></div>
+
+			<label for ='{{process_form.proc_end_date}}'>Data pocztku:</label><div> {{process_form.proc_end_date|add_class:"input_field"}}</div>
+			<div class="cleaner h10"></div>
+
+			<label for ='{{process_form.proc_category}}'>Kategoria:</label><div> {{process_form.proc_category|add_class:"input_field"}}</div>
+			<div class="cleaner h10"></div>
+
+			<label for='{{process_form.proc_is_private}}'>Proces prywatny:</label><div> {{process_form.proc_is_private}}</div>
+			<div class="cleaner h10"></div>
+
+			<label for ='{{process_form.proc_assigned}}'>Przypisz do:</label><div> {{process_form.proc_assigned|add_class:"input_field"}}</div>
+            <div class="cleaner h10"></div>
+
+			<div> {{ file_form.files_document|add_class:"input_field"}}</div>
+            <div class="cleaner h10"></div>
+
+				<input type="submit" value="Zakończ" id="submit" name='save_process' class="submit_btn float_l" />
+				<input type="submit" value="Dodaj zadania" id="reset" name='add_tasks' class="submit_btn float_r" />
+											
+		</form>
+		</div>	
+</div>	
+</div>	
 {% endblock %}
+

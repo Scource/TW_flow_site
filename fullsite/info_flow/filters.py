@@ -10,7 +10,6 @@ class ProcessFilter(django_filters.FilterSet):
 		self.filters['proc_author'].label="Autor"
 		self.filters['proc_is_active'].label="Aktywne"
 		self.filters['proc_assigned'].label="Przypisane"
-
 	
 	class Meta:
 		model = process

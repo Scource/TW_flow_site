@@ -1,45 +1,125 @@
 {% extends "base.html" %}
 
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'info_flow/css/if_css.css' %}">
+
+{% block title%}
+Lista procesów uzytkownika
+{% endblock %}
+
+
+{% block head %}
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" crossorigin="anonymous" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" rel="stylesheet"/>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous" integrity="sha384-xBuQ/xzmlsLoJpyjoggmTEz8OWUFM0/RC5BsqQBDX2v5cMvDHcMakNTNrHIW2I5f"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" crossorigin="anonymous" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" crossorigin="anonymous" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"></script>
+<link href="{% static 'css/templatemo_style.css' %}" rel="stylesheet" type="text/css" />
+
+<script src="{% static 'info_flow/js/if_js.js' %}"></script>
+{% endblock %}
+
 
 {% block content %}
-TUTAJ BĘDĄ ŁADNIEJSZE TABELE
+
+{% if state %}
+<button type="button" ><a href="{% url 'info_flow:user_profile' 'inactive' %}">Pokaż nieaktywne</a></button>
+{% else %}
+<button type="button" ><a href="{% url 'info_flow:user_profile' 'active' %}">Pokaż aktywne</a></button>
+{% endif%}
+
+<h4>Procesy prywatne</h4>
+<table class="table table-hover table-sm">
+	<tr>
+		<th>Tytuł</th>
+		<th>Kategoria</th>
+		<th>Poczatek</th>
+		<th>Koniec</th>
+		<th>Autor</th>
+		<th>Edytuj</th>
+		<th>Usuń</th>
+	</tr>
+	{%for p in priv_proc%}
+	<tr class='clickable-row' id=url data-url="{% url 'info_flow:if_show_proc' 123 %}" data-id={{p.id}}>
+		<td>{{p.proc_process_name}}</td>
+		<td>{{p.proc_category}}</td>
+		<td>{{p.proc_start_date|date:"Y-m-d H:i"}}</td>
+		<td>{{p.proc_end_date|date:"Y-m-d H:i"}}</td>
+		<td>{{p.proc_author}}</td>
+		<td>
+			{% if user.is_authenticated and user == p.proc_author %}
+			<a href="{% url 'info_flow:if_edit_proc' p.id%}">Edytuj</a>
+			{% endif %}
+		</td>
+		<td>
+			{% if user.is_authenticated and user == p.proc_author %}
+			<a href="{% url 'info_flow:if_delete_proc' p.id%}"  >Usuń</a>
+			{% endif %}
+		</td>
+
+	{% endfor %}
+	</tr>
+	<div class="cleaner"></div>
+</table>
 
 
-<p>Procesy prywatne</p><br>
-{%for p in priv_proc%}
-Nazwa: {{ p.proc_process_name}}
-  <a type="button" href="{% url 'info_flow:if_show_proc' p.id%}" class="btn btn-outline-secondary btn-sm btn-cst" >Przejdź</a><br>
-{% endfor %}
-<br>
-<p>Przypisane Procesy </p>
-<br>	
-{%for p in user_proc%}
-Nazwa:  {{ p.proc_process_name}}
-  <a type="button" href="{% url 'info_flow:if_show_proc' p.id%}" class="btn btn-outline-secondary btn-sm btn-cst" >Przejdź</a><br>
-{% endfor %}
+<div class="cleaner h30"></div>
+<h4>Procesy przypisane</h4>
+<table class="table table-hover table-sm">
+	<tr>
+		<th>Tytuł</th>
+		<th>Kategoria</th>
+		<th>Poczatek</th>
+		<th>Koniec</th>
+		<th>Autor</th>
+		<th>Edytuj</th>
+		<th>Usuń</th>
+	</tr>
+	{%for p in user_proc%}
+	<tr class='clickable-row' id=url data-url="{% url 'info_flow:if_show_proc' 123 %}" data-id={{p.id}}>
+		<td>{{p.proc_process_name}}</td>
+		<td>{{p.proc_category}}</td>
+		<td>{{p.proc_start_date|date:"Y-m-d H:i"}}</td>
+		<td>{{p.proc_end_date|date:"Y-m-d H:i"}}</td>
+		<td>{{p.proc_author}}</td>
+		<td>
+			{% if user.is_authenticated and user == p.proc_author %}
+			<a href="{% url 'info_flow:if_edit_proc' p.id%}">Edytuj</a>
+			{% endif %}
+		</td>
+		<td>
+			{% if user.is_authenticated and user == p.proc_author %}
+			<a href="{% url 'info_flow:if_delete_proc' p.id%}"  >Usuń</a>
+			{% endif %}
+		</td>
 
-<br>
+	{% endfor %}
+	</tr>
+</table>
 
-<p>Zadania i punkty</p>
-{% for t in user_tasks %}
-	{% if t.tasks_tasks_id is None %}
-		Typ: Zadanie,
-		Nazwa: {{t.tasks_name}},
-		Aktywne: {{t.tasks_is_active}}
-		<a type="button" href="{% url 'info_flow:if_show_task' t.id%}" class="btn btn-outline-secondary btn-sm btn-cst" >Przejdź</a><br>
+<div class="cleaner h30"></div>
+<h4>Przypisane zadania i punkty</h4>
 
-	{%else%}
-		Typ: Punkt,
-		Nazwa: {{t.tasks_name}},
-		Aktywne: {{t.tasks_is_active}}
-		<a type="button" href="{% url 'info_flow:if_show_task' t.id%}" class="btn btn-outline-secondary btn-sm btn-cst" >Przejdź</a><br>
+<table class="table table-hover table-sm">
+	<tr>
+		<th>Tytuł</th>
+		<th>Typ</th>
+		<th>Poczatek</th>
+		<th>Koniec</th>
+		<th>Przejdź</th>
 
-	{% endif%}
-	
+	</tr>
+	{% for t in user_tasks %}
+	<tr class='clickable-row' id=url data-url="{% url 'info_flow:if_show_proc' 123 %}" data-id={{p.id}}>
+		<td>{{t.tasks_name}}</td>
+		<td>{% if t.tasks_tasks_id is None %}Zadanie{%else%}Punkt{% endif%}</td>
+		<td>{{t.tasks_start_date|date:"Y-m-d H:i"}}</td>
+		<td>{{t.tasks_end_date|date:"Y-m-d H:i"}}</td>
+		<td><a href="{% url 'info_flow:if_show_task' t.id%}">Przejdź</a></td>
 
 
-
-{% endfor%}
+	{% endfor %}
+	</tr>
+</table>
 
 
 {% endblock %}

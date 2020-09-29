@@ -1,62 +1,91 @@
 {% extends "base.html" %}
-{% block content %}
-<head>
-<!-- <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" crossorigin="anonymous" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" rel="stylesheet"/>
+
+{% block title%}
+Edytuj {{task.tasks_name}}
+{% endblock %}
+
+{% load widget_tweaks %}
+{% load static %}
+
+{% block head %}
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" crossorigin="anonymous" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" rel="stylesheet"/>
 <script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous" integrity="sha384-xBuQ/xzmlsLoJpyjoggmTEz8OWUFM0/RC5BsqQBDX2v5cMvDHcMakNTNrHIW2I5f"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" crossorigin="anonymous" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" crossorigin="anonymous" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"></script> -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" crossorigin="anonymous" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"></script>
+<link href="{% static 'css/templatemo_style.css' %}" rel="stylesheet" type="text/css" />
 
-{{ task_form.media }}
-</head>
-
-<h1>{{proc.id}}</h1>
-
-
-<form  method="POST" action="{% url 'info_flow:if_edit_proc' proc.id %}" autocomplete="off" enctype="multipart/form-data">
-{% csrf_token %}
-{{proc_form.as_p}}
-{{ task_form.management_form }}
+{{ proc_form.media }}
+{% endblock %}
 
 
-{% for f in fi %}    
-    {{f.files_name}}
-    <a type="button" href="{% url 'info_flow:if_delete_file' f.id%}" class="btn btn-outline-secondary btn-sm btn-cst" >Usuń plik</a><br>
-{% endfor %}
-
-{{ file_form.files_document }}<br>
-<br>
-<p>Aktualne zadania w procesie</p>
-<div>
-{% for z in task %}
-    {{z.tasks_name}}
-    
-    <a type="button" href="{% url 'info_flow:if_delete_task' z.id%}" class="btn btn-outline-secondary btn-sm btn-cst" >Usuń</a>
-    <a type="button" href="{% url 'info_flow:if_edit_task' z.id%}" class="btn btn-outline-secondary btn-sm btn-cst" >Edytuj</a><br>
-    <a type="button" href="{% url 'info_flow:if_show_task' z.id%}" class="btn btn-outline-secondary btn-sm btn-cst" >Przejdź</a><br>
-{% endfor %}
-</div>
+{% block content %}
+<div id="templatemo_main">
+        
+        <div class="half float_l">
+        <h2>Edytuj proces</h2>
+        <div id="contact_form">
+        <form  method="POST" action="{% url 'info_flow:if_edit_proc' proc.id %}" enctype="multipart/form-data">
+            {% csrf_token %}
 
 
+            <label for='{{proc_form.proc_process_name}}'>Tutuł:</label><div class=""> {{proc_form.proc_process_name|add_class:"input_field"}}</div>
+            <div class="cleaner h10"></div>
 
-<div id="form_set">
-    {% for form in task_form.forms %}
-        <table class='no_error'>
-          {{ form.as_table }}<br>
-        </table> 
-    {% endfor %}
-</div>
-<input type="button" value="Dodaj zadanie" id="add_more">
-<div id="empty_form" style="display:none">
-    <table class='no_error'>
-        {{ task_form.empty_form }}<br>
-    </table>
-</div>
-<br>
-<br>
+            <label for='{{proc_form.proc_description}}'>Opis:</label><div> {{proc_form.proc_description}}</div>
+            <div class="cleaner h10"></div>
 
-<input type="submit" value="Zapisz zmiany">
-</form>
+            <label for ='{{proc_form.proc_start_date}}'>Data pocztku:</label><div> {{proc_form.proc_start_date|add_class:"input_field"}}</div>
+            <div class="cleaner h10"></div>
 
+            <label for ='{{proc_form.proc_end_date}}'>Data pocztku:</label><div> {{proc_form.proc_end_date|add_class:"input_field"}}</div>
+            <div class="cleaner h10"></div>
+
+            <label for ='{{proc_form.proc_category}}'>Kategoria:</label><div> {{proc_form.proc_category|add_class:"input_field"}}</div>
+            <div class="cleaner h10"></div>
+
+            <label for='{{proc_form.proc_is_private}}'>Proces prywatny:</label><div>{{proc_form.proc_is_private}}</div>
+            <div class="cleaner h10"></div>
+
+            <label for='{{proc_form.proc_is_private}}'>Proces aktywny:</label><div>{{proc_form.proc_is_active}}</div>
+            <div class="cleaner h10"></div>
+
+            <label for ='{{proc_form.proc_assigned}}'>Przypisz do:</label><div> {{proc_form.proc_assigned|add_class:"input_field"}}</div>
+            <div class="cleaner h10"></div>
+
+            <div> {{ file_form.files_document|add_class:"input_field"}}</div>
+            <div class="cleaner h10"></div>
+
+            {% for f in fi %}                
+            Usuń plik <a type="button" href="{% url 'info_flow:if_delete_file' f.id%}" class="btn btn-outline-secondary btn-sm btn-cst" >{{f.files_name}}</a><br>
+            {% endfor %}
+
+
+            <input type="submit" value="Zapisz zmiany" name='save_process'class="submit_btn float_l" />
+            <input type="submit" value="Dodaj zadania" name='add_tasks' class="submit_btn float_r" />               
+        </form>
+        </div>  
+        </div>
+
+        <div class="half float_r">
+          <div id="sidebar">
+            <h3>Zadania w procesie</h3>
+            <ul class="templatemo_list">
+                {% for z in task %}
+                    <li><a href="{% url 'info_flow:if_show_task' z.id%}" >{{z.tasks_name}}</a>
+                    <a href="{% url 'info_flow:if_edit_task' z.id%}" class="float_r">&nbsp;Edytuj&nbsp;</a>
+                    <a href="{% url 'info_flow:if_delete_task' z.id%}" class="float_r">&nbsp;Usuń&nbsp;</a></li>
+                {% endfor %}
+
+            </ul>
+
+            </div> <!-- end of sidebar -->
+
+        </div>
+
+        
+
+      
+</div>  
 
 <script>
     $('#add_more').click(function() {
@@ -126,3 +155,4 @@
 </script>
 
 {% endblock %}
+

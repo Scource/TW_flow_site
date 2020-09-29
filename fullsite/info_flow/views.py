@@ -23,15 +23,24 @@ def index(request):
 #@userpasstest decorator check!
 @login_required
 @permission_required('info_flow.view_process')
-def if_processes(request, cat):
+def if_processes(request, cat, active):
 	# if not request.user.groups.filter(name=cat).exists():
 	# 	return HttpResponseForbidden("Nie ma takiego podgladania")
+	if active=="active":
+		state=True
+	else:
+		state=False
 	cat_id=category.objects.get(cat_name=cat).id
-	proc_list = process.objects.all().filter(proc_is_deleted=False, proc_is_private=False, proc_category=cat_id)
+	proc_list = process.objects.all().filter(proc_is_deleted=False, proc_is_private=False, proc_category=cat_id, proc_is_active=state)
 	proc_f=ProcessFilter(request.GET, queryset=proc_list)
-	context={'proc_list':proc_list, 'proc_f':proc_f, }
+	context={ 'proc_f':proc_f, 'cat':cat, 'state':state}#'proc_list':proc_list,
 	return render(request, 'info_flow/if_processes.html', context)
 
+
+@login_required
+@permission_required('info_flow.view_process')
+def if_process_list(request):
+	return render(request, 'info_flow/if_process_list.html')
 
 @login_required
 @permission_required('info_flow.add_process')
@@ -159,19 +168,23 @@ def if_edit_proc(request, pid):
 				newFile.files_by_user_id=request.user.id
 				newFile.files_name=f
 				newFile.save()
-		if task_form.is_valid():
-			for form in task_form:
-				if form.is_valid():
-					newForm=form.save(commit=False)
-					newForm.tasks_proc_id=pid
-					newForm.save()
-		return redirect('info_flow:if_show_proc', pid=pid)
+		# if task_form.is_valid():
+		# 	for form in task_form:
+		# 		if form.is_valid():
+		# 			newForm=form.save(commit=False)
+		# 			newForm.tasks_proc_id=pid
+		# 			newForm.save()
+			if 'save_process' in request.POST:
+				return redirect('info_flow:if_show_proc', pid=pid)
+			elif 'add_tasks' in request.POST:
+				return redirect('info_flow:if_add_task', pid=pid)
 	else:
 		file_form=FileForm()
 		fi=files.objects.all().filter(files_proc_id = pid)
 		proc_form=ProcessForm(instance=proc)		
 		task_form=TaskFormPos(queryset=tasks.objects.none())
-		context={'proc':proc,'task':task, 'proc_form':proc_form, 'task_form':task_form, 'fi':fi, 'file_form':file_form}
+		context={'proc':proc,'task':task, 'proc_form':proc_form, 'fi':fi, 'file_form':file_form, 'task_form':task_form, }#
+		#context={'proc':proc,'task':task, 'proc_form':proc_form, 'fi':fi, 'file_form':file_form, 'task_form':task_form, }
 	return render(request, 'info_flow/if_edit_proc.html', context)
 
 
@@ -194,13 +207,13 @@ def if_edit_task(request, tid):
 				newFile.files_by_user_id=request.user.id
 				newFile.files_name=f
 				newFile.save()
-		if point_form.is_valid():
-			for form in point_form:
-				if form.is_valid():
-					newForm=form.save(commit=False)
-					newForm.tasks_proc_id=task.tasks_proc_id
-					newForm.tasks_tasks_id=tid
-					newForm.save()
+		# if point_form.is_valid():
+		# 	for form in point_form:
+		# 		if form.is_valid():
+		# 			newForm=form.save(commit=False)
+		# 			newForm.tasks_proc_id=task.tasks_proc_id
+		# 			newForm.tasks_tasks_id=tid
+		# 			newForm.save()
 		return redirect('info_flow:if_show_task', tid=tid)
 	else:
 		file_form=FileForm()
@@ -391,11 +404,15 @@ def if_delete_post_file(request, file_id):
 
 
 @login_required
-def user_profile(request):
-	priv_proc=process.objects.all().filter(proc_is_private=True, proc_author=request.user, proc_is_deleted=False)
-	user_proc=process.objects.all().filter(proc_assigned_id=request.user, proc_is_deleted=False, proc_is_private=False)
-	user_tasks=tasks.objects.all().filter(tasks_assigned_id=request.user, tasks_is_deleted=False)
-	context={'user_proc':user_proc, 'user_tasks':user_tasks, 'priv_proc':priv_proc}
+def user_profile(request, active):
+	if active=="active":
+		state=True
+	else:
+		state=False
+	priv_proc=process.objects.all().filter(proc_is_private=True, proc_author=request.user, proc_is_deleted=False, proc_is_active=state)
+	user_proc=process.objects.all().filter(proc_assigned_id=request.user, proc_is_deleted=False, proc_is_private=False, proc_is_active=state)
+	user_tasks=tasks.objects.all().filter(tasks_assigned_id=request.user, tasks_is_deleted=False, tasks_is_active=state)
+	context={'user_proc':user_proc, 'user_tasks':user_tasks, 'priv_proc':priv_proc, 'state':state}
 	return render(request, 'info_flow/user_profile.html', context)
 
 @login_required

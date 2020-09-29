@@ -8,52 +8,24 @@
 Lista postów
 {% endblock %}
 
-{% block scripts %}
-	{{block.super}}
-    <script src="{% static 'info_flow/js/if_js.js' %}"></script>
-{% endblock %}
-
-
 {% block content %}
-
+<h5><button type= button class="btn btn-cst float_r"><a href="{% url 'info_flow:if_new_post' %}">Dodaj nowy wpis</a></button></h5>
 <form method="get">
     {{ posts_f.form.as_table }}
     <button type="submit" class="btn btn-outline-secondary btn-sm btn-cst">Szukaj</button>
 </form>
-
-<button type= button class="btn btn-cst"><a href="{% url 'info_flow:if_new_post' %}">Dodaj nowy wpis+</a></button>
-
-		
-<table class="table table-hover table-dark table-sm">
-	<tr>
-		<th>Tytuł</th>
-		<th>Autor</th>
-		<th>Utworzono</th>
-		<th>Edytuj</th>
-		<th>Usun</th>
-
-
-	</tr>
-	{% for p in posts_f.qs %}
-	<tr class='clickable-row' id=url data-url="{% url 'info_flow:if_show_post' 123 %}" data-id={{p.id}}>
-		<td>{{p.posts_title}}</td></div>
-		<td>{{p.posts_author}}</td>
-		<td>{{p.posts_created}}</td>
-		<td>
-			{% if user.is_authenticated and user == p.posts_author %}
-			<a type="button" href="{% url 'info_flow:if_edit_post' p.id%}" class="btn btn-outline-secondary btn-sm btn-cst" >Edytuj</a>
-			{% endif %}
-		</td>
-		<td>
-			{% if user.is_authenticated and user == p.posts_author %}
-			<a type="button" href="{% url 'info_flow:if_delete_post' p.id%}" class="btn btn-outline-secondary btn-sm btn-cst" >Usuń</a>
-			
-			{% endif %}
-		</td>
-		
+<div class="cleaner h20"></div>
+		{% for p in posts_f.qs %}
+			<div class="post">
+                <h3><a href="{% url 'info_flow:if_show_post' p.id %}">{{p.posts_title}}</a></h3>
+                <div class="meta">
+                	<span class="admin">{{p.posts_author}}</span><span class="date">{{p.posts_created|date:"Y-m-d H:i"}}</span><span class="comment">{{p.messages_set.all|length}}</span>
+                	<div class="cleaner"></div>
+                </div>
+              <p>{{ p.posts_text|slice:":255" }}</p>
+                <a href="{% url 'info_flow:if_show_post' p.id %}" class="more float_r">Czytaj dalej</a>
+<!--                 <div class="cleaner"></div> -->
+            </div>
 	{% endfor %}
-	</tr>
-
-</table>
 
 {% endblock %}

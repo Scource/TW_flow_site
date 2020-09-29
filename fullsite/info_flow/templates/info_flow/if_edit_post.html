@@ -1,26 +1,41 @@
 {% extends "base.html" %}
 
+{% load static %}
+{% load widget_tweaks %}
+
 {% block title%}
-{{post.posts_title}}
+Edycja {{post.posts_title}}
 {% endblock %}
 
+
+{% block head %}
+<link href="{% static 'css/templatemo_style.css' %}" rel="stylesheet" type="text/css" />
+{% endblock %}
+
+
 {% block content %}
+<h3>{{post.posts_title}}</h3>
+		<div id="contact_form">
+		<form  method="POST" action="{% url 'info_flow:if_new_post' %}" enctype="multipart/form-data" autocomplete="off">
+		{% csrf_token %}
 
-<h1>{{post.id}}</h1>
+
+			<label for='{{post_form.posts_title}}'>Tutuł:</label><div class=""> {{post_form.posts_title}}</div>
+			<div class="cleaner h10"></div>
+
+			<label for='{{post_form.posts_text}}'>Opis:</label><div> {{post_form.posts_text}}</div>
+			<div class="cleaner h20"></div>
 
 
-<form  method="POST" action="{% url 'info_flow:if_edit_post' post.id %}" autocomplete="off" enctype="multipart/form-data">
-{% csrf_token %}
-{{post_form.as_p}}
-{{ file_form.files_document }}
+			<div> {{ file_form.files_document|add_class:"input_field"}}</div>
+			<div class="cleaner h10"></div>	
 
-{% for f in fi %}
-    {{f.files_name}}
-	<a type="button" href="{% url 'info_flow:if_delete_post_file' f.id%}" class="btn btn-outline-secondary btn-sm btn-cst" >Usuń plik</a><br>
-{% endfor %}
+			{% for f in fi %}
+				Usuń plik: <a type="button" href="{% url 'info_flow:if_delete_post_file' f.id%}" >{{f.files_name}}</a><br>
+			{% endfor %}
 
-<br>
-<br>
-<input type="submit" value="Zmień">
-</form>
+			<input type="submit" name='save_post' value="Zmień" class="submit_btn float_l">
+
+		</form>
+		</div>	
 {% endblock %}

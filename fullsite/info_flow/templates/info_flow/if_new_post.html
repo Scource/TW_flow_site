@@ -2,27 +2,39 @@
 {% load static %}
 <link rel="stylesheet" type="text/css" href="{% static 'info_flow/css/if_css.css' %}">
 
-
+{% load widget_tweaks %}
 {% block title%}
 Nowy post
 {% endblock %}
 
 
-{% block scripts %}
-	{{block.super}}
-    <script src="{% static 'info_flow/js/if_js.js' %}"></script>
+{% block head %}
+<link href="{% static 'css/templatemo_style.css' %}" rel="stylesheet" type="text/css" />
 {% endblock %}
 
 
 {% block content %}
+<h3>Dodaj nowy wątek</h3>
 
-<form  method="POST" action="{% url 'info_flow:if_new_post' %}" enctype="multipart/form-data">
-{% csrf_token %}
-{{ post_form.as_p }}
-{{ file_form.files_document }}
-<br>
-<br>
-<input type="submit" name='save_post' value="Dodaj">
-</form>
+		<div id="contact_form">
+		<form  method="POST" action="{% url 'info_flow:if_new_post' %}" enctype="multipart/form-data" autocomplete="off">
+		{% csrf_token %}
+
+
+			<label for='{{post_form.posts_title}}'>Tutuł:</label><div class=""> {{post_form.posts_title|add_class:"input_field"}}</div>
+			<div class="cleaner h10"></div>
+
+			<label for='{{post_form.posts_text}}'>Opis:</label><div> {{post_form.posts_text}}</div>
+			<div class="cleaner h20"></div>
+
+
+			<div> {{ file_form.files_document|add_class:"input_field"}}</div>
+			<div class="cleaner h10"></div>		
+
+			<input type="submit" name='save_post' value="Dodaj" class="submit_btn float_l">
+
+		</form>
+		</div>	
+
 
 {% endblock %}

@@ -2,82 +2,115 @@
 
 
 {% load static %}
-<link rel="stylesheet" type="text/css" href="{% static 'info_flow/css/if_css.css' %}">
 
-{% block scripts %}
-	{{block.super}}
-    <script src="{% static 'info_flow/js/if_js.js' %}"></script>
+{% block head %}
+<link href="{% static 'css/templatemo_style.css' %}" rel="stylesheet" type="text/css" />
 {% endblock %}
+
 
 
 {% block title%}
 {{post.posts_title}}
 {% endblock %}
 
-
 {% block content %}
 
-<h2>{{post.posts_title}}</h2>
-<p>{{post.posts_author}}, Utworzono: {{post.posts_created}}</p>
-<p>{{post.posts_text}}</p>
+<div id="content">
+        <div class="post">
+                
+                <h2>{{post.posts_title}}</h2>
+                    <div class="meta">
+                        <span class="admin">{{post.posts_author}}</span><span class="date">{{post.posts_created|date:"Y-m-d H:i"}}</span><span class="comment">{{mess|length }}</a></span>
+                        <div class="cleaner"></div>
+                    </div>         
+                        <p>{{post.posts_text}}</p>
+                            <div class="cleaner h10"></div>
 
-{% for f in fi %}
-        {{f.files_name}}
-        <a type= "button" href="{% url 'info_flow:download_file' f.id %}" download> Download File</a><br>
-    {% empty %}
-    {% endfor %}
-    <br>
+                                {% if post.posts_created != post.posts_modified %}
+                                    Zmodyfikowano <span class="date">{{post.posts_modified|date:"Y-m-d H:i"}}</span>
+                                {% endif%}
+
+                            {% for f in fi %}
+                                    <a href="{% url 'info_flow:download_file' f.id %}" download>{{f.files_name}}</a><br>
+                            {% empty %}
+                            {% endfor %}
 
 
-
-
-
-{% for m in mess %}
-            <li class="list-group-item">
-                <div class="row">
-                    <div class="col-xs-2 col-sm-1">
-                       <img src="" class="img-circle img-responsive" alt="" /></div>
-                    <div class="col-xs-10 col-sm-11">
-                        <div>
-                            <div class="mic-info">
-                            Przez: {{m.mess_author}}   dodano: {{m.mess_created}}
-                            </div>
+                    {% if user.is_authenticated and user == post.posts_author %}
+                        <div class="comment_text">
+                        <div class="reply"><a href="{% url 'info_flow:if_edit_post' post.id %}" >Edytuj</a></div>
+                        <div class="reply" ><a href="{% url 'info_flow:if_delete_post' post.id %}" >Usuń</a></div> 
                         </div>
-                        <div class="comment-text", style="padding: 20px">
+                    {% endif %}
 
-                             {{m.mess_text}}
-                        </div>
-                        <div class="action">
-                        	<a href="{% url 'info_flow:if_del_mess' m.id %}" type="button" class="btn btn-danger btn-sm" >Usuń</a>
-                        </div>
-                    </div>
+        </div>
+  
+
+            <div class="cleaner h20"></div>
+            <h3>Komentarze</h3>
+                        
+                <div id="comment_section">
+                <ol class="comments first_level">
+                        
+                        {% for m in mess%}
+                        <li>
+                            <div class="comment_box commentbox1">
+
+                                
+                                <div class="comment_text">
+                                    <div class="comment_author">{{m.mess_author}}<span class="date">{{m.mess_created|date:"Y-m-d H:i"}}</span></div>
+                                    <p>{{m.mess_text}}</p>
+                                    <div class="cleaner h10"></div>
+                                    {% if m.mess_created != m.mess_modified %}
+                                        Zmodyfikowano <span class="date">{{m.mess_modified|date:"Y-m-d H:i"}}</span>
+                                    {% endif%}
+
+                                        {% if user.is_authenticated and user == m.mess_author %}
+                                        <div class="reply"><a href="{% url 'info_flow:if_del_mess' m.id %}" type="button"  >Usuń</a></div>
+                                        {% endif %}
+                                </div>
+                                <div class="cleaner"></div>
+                            </div>                        
+                        </li>
+                        {% endfor %}
+                </ol>
+                <div class="cleaner h20"></div>    
                 </div>
-            </li>
-{% endfor %}
 
+                <div id="comment_form">
+                    <h3>Napisz komentarz</h3>
+                    <form  method="POST" action="" id="addMess" data-postid="{{post.id}}">
+                    {% csrf_token %}
+                    <div class="form_row">
+                            <label>{{user}}</label><br />
+                    </div>
 
-<div class="container">
-	<div class="row">
-
-	</div>
-    
-    <div class="row justify-content-md-center">
-    
-    <div class="col-md-6">
-    						<div class="widget-area no-padding blank" style="padding: 20px">
-								<div class="status-upload">
-									<form  method="POST" action="" id="addMess" data-postid="{{post.id}}">
-									{% csrf_token %}
-										<ul>
-										{{ mess_form.mess_text }}
-										</ul>
-									<button type="submit" class="btn btn-success green justify-content-md-center" ><i class="fa fa-share"></i>Dodaj</button>
-									</form>
-								</div><!-- Status Upload  -->
-							</div><!-- Widget Area -->
-						</div>
-        
+                    {{ mess_form.mess_text }}
+                    <div class="cleaner h20"></div>
+                    <button type="submit" class="submit_btn" >Dodaj</button>
+                    </form>
+                                  
+                </div>
+            <div class="cleaner"></div>
     </div>
-</div>
+    
+    <div id="sidebar">
+        <div class="cleaner h30"></div>
+
+        <h3>Najnowsze wątki</h3>
+                <ul class="recent_post">
+                    <li><a href="#">Vivamus imperdiet</a></li>
+                    <li><a href="#">Nunc ultrices iaculis</a></li>
+                    <li><a href="#">Duis ultricies nulla</a></li>
+                    <li><a href="#">Proin a elit nisl</a></li>
+                    <li><a href="#">Nunc ultrices iaculis</a></li>
+                </ul>
+    </div> <!-- end of sidebar -->
+    
+    <div class="cleaner"></div>
+    
+    </div> <!-- END of main -->
+    
+</div> <!-- END of wrapper -->
 
 {% endblock %}
