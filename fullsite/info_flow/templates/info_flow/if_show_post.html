@@ -66,7 +66,7 @@
                                     {% endif%}
 
                                         {% if user.is_authenticated and user == m.mess_author %}
-                                        <div class="reply"><a href="{% url 'info_flow:if_del_mess' m.id %}" type="button"  >Usuń</a></div>
+                                        <div class="reply"><a href="{% url 'info_flow:if_del_mess' m.id %}" type="button">Usuń</a></div>
                                         {% endif %}
                                 </div>
                                 <div class="cleaner"></div>

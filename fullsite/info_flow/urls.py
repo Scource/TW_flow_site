@@ -23,6 +23,7 @@ urlpatterns = [
 
 
     path('processes/delete/<int:proc_id>', views.if_delete_proc, name='if_delete_proc'),
+    path('processes/delete/<int:proc_id>/<int:com_id>', views.if_delete_com, name='if_delete_com'),
     path('processes/edit/delete/<int:task_id>', views.if_delete_task, name='if_delete_task'),
 
 

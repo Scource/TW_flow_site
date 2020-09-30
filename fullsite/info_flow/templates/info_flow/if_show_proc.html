@@ -1,110 +1,129 @@
 {% extends "base.html" %}
 
+{% load static %}
+{% load widget_tweaks %}
 
 {% block title%}
 {{proc.proc_process_name}}
 {% endblock %}
 
+{% block head %}
+<link href="{% static 'css/templatemo_style.css' %}" rel="stylesheet" type="text/css" />
+{% endblock %}
 
 
 {% block content %}
-	<p>Zadań w procesie {{tasks_data.task}}</p>
-	<p>Zadania aktywne {{tasks_data.tasks_number_active}}/{{tasks_data.tasks_number}}</p>
+<div id="templatemo_main">
+    	
+	<div id="content">
+	<div class="proc">
+	<h5>{{proc.proc_process_name}}</h5>
 
+	<div class="meta float_r">
+		<span class="admin">{{proc.proc_author}}</span><span class="date">{{proc.proc_created|date:"Y-m-d H:i"}}</span><span class="tag"><a href="{% url 'info_flow:if_processes' cat=proc.proc_category active='active' %}">{{proc.proc_category}}</a></span>
+		<div class="cleaner"></div>
+	</div>
+	<div class="cleaner"></div>
+	<p>{{proc.proc_description}}</p>
+	<div class="cleaner h10"></div>
+	<div class="meta">
+				<img src="{% static 'images/timetable.png' %}" alt="timetable" />
+					{% if proc.proc_start_date %}
+						{{proc.proc_start_date|date:"Y-m-d H:i"}} - 
+					{% else %}
+								Brak - 
+					{% endif %}
 
-	<div class="proc_main">
-	
-	<p><h4>{{proc.proc_process_name}}</h4></p>
-	<ul>
-		<p>Autor: {{proc.proc_author}}<p>
-		<p>Utworzono: {{proc.proc_created}}<p>
-		<p>Data pocztku: {{proc.proc_start_date|default_if_none:"Brak"}}<p>
-		<p>Data końca: {{proc.proc_end_date|default_if_none:"Brak"}}<p>
-		<p>Kategoria: {{proc.proc_category}}<p>
-		<p>Osoba oddelogowana: {{proc.proc_assigned|default_if_none:"Brak"}}<p>
-		<p>{{proc.proc_description}}<p>
-	</ul>
+					{% if proc.proc_end_date %}
+						{{proc.proc_end_date|date:"Y-m-d H:i"}}
+					{% else %}
+						Brak
+					{% endif %}
+		<img src="{% static 'images/assign.png' %}" alt="assign" />{{proc.proc_assigned|default_if_none:"  Brak"}}
+		<div class="cleaner h20"></div>
+		<div class="cleaner"></div>
+	</div>
 
-	<p><h5>Załaczniki:</h5></p>
+	{% if task|length > 0 %}
+		Postęp procesu {{tasks_data.tasks_number_active}}/{{tasks_data.tasks_number}}
+		<progress value={{tasks_data.tasks_number_active}} max={{tasks_data.tasks_number}} style="background-color:grey;" ></progress>
+		<div class="cleaner h20"></div>
+	{% else %}
+		<p>Brak przypiętych zadań</p>
+	{% endif %}
+
+	{% if fi %}
+	<div class="float_r">
+	<h5>Załaczniki</h5>
 	{% for f in fi %}
-		{{f.files_name}}
-		<a type= "button" href="{% url 'info_flow:download_file' f.id %}" download> Download File</a><br>
+		<a type= "button" href="{% url 'info_flow:download_file' f.id %}" download>{{f.files_name}}</a><br>
 	{% empty %}
     {% endfor %}
-    <br>
-
+    {% endif %}
+	<div class="cleaner h20"></div>
 	</div>
 
-	<div class="proc_tasks">
-		<h5>Przypisane zadania:</h5>
+	<div class="cleaner"></div>
+		<h5>Zadania</h5>
+		<div class="cleaner h10"></div>
+			<ul class="templatemo_list">
+				{% for t in task %}
+					
+						<div class="meta">
+						<li>
+						{%if t.tasks_is_active%}
+						<img src="{% static 'images/inactive.png' %}" alt="inactive" />
+						{%else%}
+						<img src="{% static 'images/active.png' %}" alt="active" />
+						{% endif %}
+						<a href="{% url 'info_flow:if_show_task' t.id %}">{{t.tasks_name}}</a>
+						<div class="float_r">
+						<img src="{% static 'images/assign.png' %}" alt="assign" />{{t.tasks_assigned|default_if_none:" Nieprzypisano"}}
+						</div>
+						<div class="cleaner h20"></div>
+						</li>
+						</div>
+					
+				{% endfor %}
+			</ul>
 
-	{% for t in task %}
-<div class="container-fluid p-3">
-	<div class="row ">
-		<div class="col-lg-12">
-		  <div class="row">
-		    <div class="col border border-dark col-md-auto">
-		      Nazwa zadania:
-		    </div>
-		    <div class="col border border-dark">
-		      {{t.tasks_name}} Aktywny: {{t.tasks_is_active}}
-		     <a type="button" href="{% url 'info_flow:if_show_task' t.id%}" class="btn btn-outline-secondary btn-sm btn-cst" >Przejdź</a><br>
-		    </div>
-		  </div>
+</div>
+</div>
 
-		  <div class="row border border-dark">
-		    <div class="col border border-dark">
-		      Data od:
-		    </div>
-		    <div class="col border border-dark">
-		      {{t.tasks_start_date|default_if_none:"Brak"}}
-		    </div>
-		    <div class="col border border-dark">
-		      Data do:
-		    </div>
-		    <div class="col border border-dark">
-		     {{t.tasks_end_date|default_if_none:"Brak"}}
-		    </div>
-		   	<div class="col border border-dark">
-		      Przypisano do:
-		    </div>
-		     <div class="col border border-dark">
-		     {{t.tasks_assigned|default_if_none:"Brak"}}
-		    </div>
-		  </div>
-		  <div class="row ">
-		    <div class="col border border-dark">
-		    {{t.tasks_description}}
-		    </div>
-		  </div>
-		</div>
-		{% endfor %}
-   
-    
-	
-	
-	<div class="col-lg-12 p-3">
-		<div class="row ">
-		      Komentarze:
-		 </div>
+<div id="sidebar">
+      	<div id="comment_section_proc">
+                <ol class="comments first_level">
+                        
+                        <li>	
+                        	{% for z in coms %}
+                                <div class="comment_text">
+                                    <div class="comment_author">{{z.com_author}}<span class="date">{{z.com_created|date:"Y-m-d H:i"}}</span></div>
+                                    <p>{{z.com_body}}</p>
+                                </div>
+                                <div class="cleaner"></div>
+                                {% if user.is_authenticated and user == z.com_author %}
+                                      <div class="comment_text"><div class="reply"><a href="{% url 'info_flow:if_delete_com' proc_id=proc.id com_id=z.id  %}" type="button">Usuń</a></div></div>
+                                {% endif %}
+                                <div class="cleaner h20"></div>
+                            {% endfor %}
+                        </li>
+                        
+                </ol>
+                <div class="cleaner h20"></div>    
+                    
+        </div>
+                <div id="comment_form">
+                    <h5>Skomentuj</h5>                    
+                    <form  method="POST" action="{% url 'info_flow:if_show_proc' proc.id %}">
+						{% csrf_token %}
+						{{com_form.as_p }}
+						<input type="submit" value="Dodaj" class="submit_btn">
+                    </form>    
+                   </div>    
+</div>     <!-- end of sidebar -->
 
-		 
-		{% for z in coms %}
-		<div class="row border border-dark p-3 m-3">
-				Autor:&nbsp; {{z.com_author}}&nbsp;&nbsp;&nbsp;&nbsp; Dodano:&nbsp; {{z.com_created}}<br>
 
-			    {{z.com_body}}
-		</div>
-		{% endfor %}
 
-		<form  method="POST" action="{% url 'info_flow:if_show_proc' proc.id %}">
-			{% csrf_token %}
-			{{ com_form.as_p }}
-			<input type="submit" value="Dodaj komentarz">
-		</form>
-		
-	</div>
-	 </div>
 </div>
 
 {% endblock %}

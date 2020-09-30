@@ -8,12 +8,11 @@ class ProcessFilter(django_filters.FilterSet):
 	def __init__(self, *args, **kwargs):
 		super(ProcessFilter, self).__init__(*args, **kwargs)
 		self.filters['proc_author'].label="Autor"
-		self.filters['proc_is_active'].label="Aktywne"
 		self.filters['proc_assigned'].label="Przypisane"
 	
 	class Meta:
 		model = process
-		fields = ['proc_author', 'proc_is_active', 'proc_assigned']
+		fields = ['proc_author', 'proc_assigned']
 
 
 class PostsFilter(django_filters.FilterSet):

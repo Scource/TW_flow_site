@@ -1,84 +1,124 @@
 {% extends "base.html" %}
 
+{% load static %}
+{% load widget_tweaks %}
 
 {% block title%}
 {{task.tasks_name}}
 {% endblock %}
 
 
+{% block head %}
+<link href="{% static 'css/templatemo_style.css' %}" rel="stylesheet" type="text/css" />
+{% endblock %}
 
 {% block content %}
-	<p>punkty aktywne {{points_data.points_number_active}}/{{points_data.points_number}}</p>
-	<a type= "button" href="{% url 'info_flow:accept_task' task.id %}" > Zmień aktywację</a><br>
-	<a type= "button" href="{% url 'info_flow:assign_task' task.id %}" > Przyjmnij</a><br>
 
+<div id="templatemo_main">
 
-	<div class="proc_main">
+	<div class="proc">
+	<h4>{{task.tasks_name}}</h4>
+			<div class="float_r">
+				{% if user.is_authenticated and user != task.tasks_assigned %}
+				<a type= "button" href="{% url 'info_flow:assign_task' task.id %}" >Przyjmnij zadanie</a><br>
+				{% endif %}
+				<div class="cleaner h10"></div>
+				<a type= "button" href="{% url 'info_flow:accept_task' task.id %}">{% if task.tasks_is_active %}Otwórz zadanie{% else %}Zamknij zadanie{% endif %}</a>				
+			</div>
+	<div class="meta float_l">
+		<span class="admin">{{task.tasks_proc.proc_author}}</span><span class="date">{{task.tasks_created|date:"Y-m-d H:i"}}</span>
+		<div class="cleaner"></div>
+	</div>
+	<div class="cleaner"></div>
+	<h6>{{task.tasks_description}}</h6>
+	<div class="cleaner h10"></div>
+	<div class="meta">
+				<img src="{% static 'images/timetable.png' %}" alt="timetable" />
+					{% if task.tasks_start_date %}
+						{{task.tasks_start_date|date:"Y-m-d H:i"}} - 
+					{% else %}
+								Brak - 
+					{% endif %}
 
-	
-	<p><h4>{{task.tasks_name}}</h4></p>
-	<ul>
-		<p>Data pocztku: {{task.tasks_start_date|default_if_none:"Brak"}}<p>
-		<p>Data końca: {{task.tasks_end_date|default_if_none:"Brak"}}<p>
-		<p>Osoba oddelogowana: {{task.tasks_assigned|default_if_none:"Brak"}}<p>
-		<p>{{task.tasks_description}}<p>
-	</ul>
-
-	<p><h5>Załaczniki:</h5></p>
-	{% for f in fi %}
-		{{f.files_name}}
-		<a type= "button" href="{% url 'info_flow:download_file' f.id %}" download> Download File</a><br>
-	{% empty %}
-    {% endfor %}
-    <br>
-
+					{% if task.tasks_end_date %}
+						{{task.tasks_end_date|date:"Y-m-d H:i"}}
+					{% else %}
+						Brak
+					{% endif %}
+		<img src="{% static 'images/assign.png' %}" alt="assign" />{{task.tasks_assigned|default_if_none:"  Nieprzypisano"}}
+		<div class="cleaner h20"></div>
 	</div>
 
-	<div class="proc_tasks">
-		<h5>Przypisane zadania:</h5>
+	{% if point|length > 0 %}
+		Postęp zadania {{points_data.points_number_active}}/{{points_data.points_number}}
+		<progress value={{points_data.points_number_active}} max={{points_data.points_number}} style="background-color:grey;"></progress>
+		<div class="cleaner h20"></div>
+	{% else %}
+		<p>Brak przypiętych punktów</p>
+	{% endif %}
 
-	{% for p in point %}
-<div class="container-fluid p-3">
-	<div class="row ">
-		<div class="col-lg-12">
-		  <div class="row">
-		    <div class="col border border-dark col-md-auto">
-		      Nazwa zadania:
-		    </div>
-		    <div class="col border border-dark">
-		      {{p.tasks_name}}
-		    </div>
-		  </div>
+	{% if fi %}
+	<div class="float_r">
+	<h5>Załaczniki</h5>
+		{% for f in fi %}
+			<a type= "button" href="{% url 'info_flow:download_file' f.id %}" download>{{f.files_name}}</a><br>
+		{% empty %}
+	    {% endfor %}
+    {% endif %}
+    </div>
+	<div class="cleaner h20"></div>
+		<div class="comments">			
+				<li>
+					{% for p in point %}
+                   <div class="comment_box commentbox1">
+                                    
+ 
+                                <div class="comment_text">
+                                    <div class="comment_author">{{p.tasks_name}}<span class="date">{{p.tasks_created|date:"Y-m-d H:i"}}</span></div>
+                                    <p>{{p.tasks_description}}</p>
+                                  	{% if user.is_authenticated and user != p.tasks_assigned %}
+									<div class="reply"><a href="{% url 'info_flow:assign_task' p.id %}">Przyjmnij</a></div>
+									{% endif %}  
 
-		  <div class="row border border-dark">
-		    <div class="col border border-dark">
-		      Data od:
-		    </div>
-		    <div class="col border border-dark">
-		      {{p.tasks_start_date|default_if_none:"Brak"}}
-		    </div>
-		    <div class="col border border-dark">
-		      Data do:
-		    </div>
-		    <div class="col border border-dark">
-		     {{p.tasks_end_date|default_if_none:"Brak"}}
-		    </div>
-		   	<div class="col border border-dark">
-		      Przypisano do:
-		    </div>
-		     <div class="col border border-dark">
-		     {{p.tasks_assigned|default_if_none:"Brak"}}
-		     <a type= "button" href="{% url 'info_flow:assign_task' p.id %}" > Przyjmnij</a><br>
-		    </div>
-		  </div>
-		  <div class="row ">
-		    <div class="col border border-dark">
-		    {{p.tasks_description}}
-		    </div>
-		  </div>
-		</div>
-		{% endfor %}
- </div>
+                                </div>
+                                <div class="cleaner h20"></div>
+                                <div class="meta">
+								<img src="{% static 'images/timetable.png' %}" alt="timetable" />
+								{% if p.tasks_start_date %}
+									{{p.tasks_start_date|date:"Y-m-d H:i"}} - 
+								{% else %}
+								     Brak - 
+								{% endif %}
+
+								{% if p.tasks_end_date %}
+									{{p.tasks_end_date|date:"Y-m-d H:i"}}
+								{% else %}
+								     Brak
+								{% endif %}
+
+								<img src="{% static 'images/assign.png' %}" alt="assign" /> {{p.tasks_assigned|default_if_none:"Brak"}}
+								</div>
+								<div class="float_r">
+								{%if p.tasks_is_active%}
+								<a type= "button" href="{% url 'info_flow:accept_task' p.id %}">Zakończ</a><img src="{% static 'images/active.png' %}" alt="active" />
+								{%else%}
+								<a type= "button" href="{% url 'info_flow:accept_task' p.id %}">Otwórz </a><img src="{% static 'images/inactive.png' %}" alt="inactive" />
+								{% endif %}
+								</div>
+                                <div class="cleaner"></div>
+                    </div>
+                    {% endfor %}
+                </li>
+				</div>
+
+
+
+
+
+
+
 </div>
+</div>
+
 
 {% endblock %}

@@ -16,7 +16,7 @@ def get_tasks_in_proc(pid):
 def get_points_in_task(tid):
 	task=tasks.objects.all().filter(tasks_tasks_id=tid, tasks_is_deleted=False)
 	points_number=task.filter(tasks_tasks_id__isnull=False).count()
-	points_number_active=task.filter(tasks_tasks_id__isnull=False, tasks_is_active=True).count()
+	points_number_active=task.filter(tasks_tasks_id__isnull=False, tasks_is_active=False).count()
 	Dict = {'points_number':points_number, 'points_number_active':points_number_active}
 	return Dict
 

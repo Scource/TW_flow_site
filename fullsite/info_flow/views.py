@@ -51,6 +51,7 @@ def if_new_proc(request):
 		file_form=FileForm(request.POST, request.FILES)
 		if process_form.is_valid() & file_form.is_valid():
 			newProcess=process_form.save(commit=False)
+			newProcess.proc_is_active=True
 			newProcess.proc_author_id=request.user.id
 			newProcess.save()
 			for f in request.FILES.getlist('files_document'):
@@ -84,6 +85,7 @@ def if_add_task(request, pid):
 		file_form=FileForm(request.POST, request.FILES)
 		if task_form.is_valid() & file_form.is_valid():
 			newTask=task_form.save(commit=False)
+			newTask.tasks_is_active=True
 			newTask.tasks_proc_id=pid
 			newTask.save()
 			for f in request.FILES.getlist('files_document'):
@@ -94,7 +96,7 @@ def if_add_task(request, pid):
 				newFile.files_name=f
 				newFile.save()
 			if 'save_process' in request.POST:
-				return redirect('info_flow:if_processes', cat=proc.proc_category)
+				return redirect('info_flow:if_processes', cat=proc.proc_category, active='active')
 			elif 'save_task' in request.POST:
 				return redirect('info_flow:if_add_task', pid=pid)
 			elif 'add_point' in request.POST:
@@ -132,7 +134,7 @@ def if_show_proc(request, pid):
 	else:
 		com_form=CommForm()
 		fi=files.objects.all().filter(files_proc_id = pid)
-		coms=comments.objects.all().filter(com_proc_id=pid)
+		coms=comments.objects.all().filter(com_proc_id=pid, com_is_deleted=False)
 		proc=process.objects.get(pk = pid)
 		task=tasks.objects.all().filter(tasks_proc_id=pid, tasks_is_deleted=False, tasks_tasks_id__isnull=True)
 		context={'proc':proc,'task':task, 'com_form':com_form, 'coms':coms, 'fi':fi, 'tasks_data':tasks_data}
@@ -168,12 +170,7 @@ def if_edit_proc(request, pid):
 				newFile.files_by_user_id=request.user.id
 				newFile.files_name=f
 				newFile.save()
-		# if task_form.is_valid():
-		# 	for form in task_form:
-		# 		if form.is_valid():
-		# 			newForm=form.save(commit=False)
-		# 			newForm.tasks_proc_id=pid
-		# 			newForm.save()
+
 			if 'save_process' in request.POST:
 				return redirect('info_flow:if_show_proc', pid=pid)
 			elif 'add_tasks' in request.POST:
@@ -183,8 +180,7 @@ def if_edit_proc(request, pid):
 		fi=files.objects.all().filter(files_proc_id = pid)
 		proc_form=ProcessForm(instance=proc)		
 		task_form=TaskFormPos(queryset=tasks.objects.none())
-		context={'proc':proc,'task':task, 'proc_form':proc_form, 'fi':fi, 'file_form':file_form, 'task_form':task_form, }#
-		#context={'proc':proc,'task':task, 'proc_form':proc_form, 'fi':fi, 'file_form':file_form, 'task_form':task_form, }
+		context={'proc':proc,'task':task, 'proc_form':proc_form, 'fi':fi, 'file_form':file_form, 'task_form':task_form, }
 	return render(request, 'info_flow/if_edit_proc.html', context)
 
 
@@ -207,13 +203,6 @@ def if_edit_task(request, tid):
 				newFile.files_by_user_id=request.user.id
 				newFile.files_name=f
 				newFile.save()
-		# if point_form.is_valid():
-		# 	for form in point_form:
-		# 		if form.is_valid():
-		# 			newForm=form.save(commit=False)
-		# 			newForm.tasks_proc_id=task.tasks_proc_id
-		# 			newForm.tasks_tasks_id=tid
-		# 			newForm.save()
 		return redirect('info_flow:if_show_task', tid=tid)
 	else:
 		file_form=FileForm()
@@ -334,6 +323,15 @@ def if_delete_post(request, post_id):
 
 
 @login_required
+#@permission_required('info_flow.delete_posts')
+def if_delete_com(request, proc_id, com_id):
+    delete_com=comments.objects.get(id=com_id)
+    delete_com.com_is_deleted = True
+    delete_com.save()
+    return redirect('info_flow:if_show_proc', pid=proc_id)
+
+
+@login_required
 @permission_required('info_flow.change_posts')
 def if_edit_post(request, pid):
 	post=posts.objects.get(pk = pid)
@@ -373,7 +371,7 @@ def download_file(request, fid):
 
 
 
-### ZAMIENIĆ TE 3 jakoś na 1############
+### ZAMIENIĆ TE 4 jakoś na 1############
 @login_required
 @permission_required('info_flow.delete_files')
 def if_delete_file(request, file_id):
@@ -403,6 +401,8 @@ def if_delete_post_file(request, file_id):
     return redirect('info_flow:if_edit_task', pid=task_id)
 
 
+
+
 @login_required
 def user_profile(request, active):
 	if active=="active":
@@ -418,8 +418,11 @@ def user_profile(request, active):
 @login_required
 def accept_task(request, task_id):
 	tasks.toggle_active(task_id)
-	return redirect('info_flow:if_show_task', tid=task_id)
-
+	task=tasks.objects.get(id=task_id)
+	if task.tasks_tasks_id == None:
+		return redirect('info_flow:if_show_task', tid=task_id)
+	else:
+		return redirect('info_flow:if_show_task', tid=task.tasks_tasks_id)
 
 @login_required
 def assign_task(request, task_id):

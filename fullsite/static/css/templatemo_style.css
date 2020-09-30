@@ -72,6 +72,13 @@ h6 { font-size: 12px; margin: 0 0 5px; padding: 0; }
 	background: url(../images/templatemo_list.png) no-repeat scroll 0 5px;  
 }
 
+.meta .templatemo_list li { 
+	color:#666; 
+	margin: 0 0 0px 0; 
+	padding: 0 0px 0 0px; 
+	background: url(../images/templatemo_list.png) no-repeat scroll 0 5px;  
+}
+
 .templatemo_list li a { 
 	color: #666; 
 	font-weight: normal; 
@@ -159,7 +166,8 @@ h6 { font-size: 12px; margin: 0 0 5px; padding: 0; }
 	height: 38px; 
 	color: #acacac; 
 	text-indent: -10000px; 
-	background: url(../images/templatemo_logo.png) no-repeat center left; 
+	background: url(../images/new_templatemo_logo.png) no-repeat center left;
+	
 }
 
 #templatemo_search { 
@@ -292,6 +300,12 @@ p.position { color: #f3a706; font-weight: bold; font-size: 12px; font-style: ita
 #comment_section {
 	clear: both;
 	margin-bottom: 60px;
+	width: 438px;
+}
+
+.comment_section_proc {
+	clear: both;
+	margin-bottom: 30px;
 	width: 538px;
 }
 
@@ -591,3 +605,112 @@ p.position { color: #f3a706; font-weight: bold; font-size: 12px; font-style: ita
 	border: 1px solid #181818; 
 	color: #fff;  
 }
+
+
+.proc .action_btn .btn a { 
+	display: block; 
+	clear: both; 
+	float: right; 
+	color: #fff; 
+	font-weight: 700; 
+} 
+
+.proc {
+	clear: both;
+	padding-bottom: 40px;
+	margin-bottom: 40px;
+	background: url(../images/templatemo_divider.png) repeat-x bottom 
+}
+
+.proc img { 
+	margin-bottom: -7px;
+}
+
+.proc h2.home { 
+	color: #ba8c00; 
+	font-size: 18px; 
+	margin-bottom: 0;  
+}
+
+.proc h2 { 
+	margin-bottom: 0;
+	line-height: 38px; 
+}
+
+
+.proc .meta { 
+	font-size: 12px; 
+	margin-bottom: 20px; 
+}
+
+.proc .meta span { 
+	float: left; 
+	display: block; 
+	margin-right: 20px; 
+	padding: 5px 0 5px 30px; 
+}
+
+.proc .meta span.admin { 
+	background: url(../images/agent.png) no-repeat; 
+}
+
+.proc .meta span.date { 
+	background: url(../images/calendar.png) no-repeat; 
+}
+
+.proc .meta span.tag { 
+	background: url(../images/tag.png) no-repeat; 
+}
+
+.proc .meta span.comment { 
+	background: url(../images/chat.png) no-repeat; 
+}
+
+.proc .meta span.timerange { 
+	background: url(../images/timetable.png) no-repeat; 
+}
+
+.proc .meta span.assign { 
+	background: url(../images/assign.png) no-repeat; 
+}
+
+.proc .meta span.active { 
+	background: url(../images/active.png) no-repeat; 
+}
+
+.proc .meta span.inactive { 
+	background: url(../images/inactive.png) no-repeat; 
+}
+
+.proc .meta a, .post .meta strong { 
+	color: #7b7b7b; 
+	font-weight: 700; 
+}
+
+progress {
+  border: none;
+  width: 500px;
+  height: 20px;
+  background: green;
+}
+
+progress {
+  color: green;
+}
+
+progress::-webkit-progress-value {
+  background: green;
+}
+
+progress::-moz-progress-bar {
+  background: green;
+}
+
+progress::-webkit-progress-value {
+  background: green;
+}
+
+progress::-webkit-progress-bar {
+  background: green;
+}
+
