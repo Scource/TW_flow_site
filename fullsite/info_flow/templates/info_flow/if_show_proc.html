@@ -45,8 +45,8 @@
 	</div>
 
 	{% if task|length > 0 %}
-		Postęp procesu {{tasks_data.tasks_number_active}}/{{tasks_data.tasks_number}}
-		<progress value={{tasks_data.tasks_number_active}} max={{tasks_data.tasks_number}} style="background-color:grey;" ></progress>
+		Postęp procesu {{tasks_data.tasks_number_inactive}}/{{tasks_data.tasks_number}}
+		<progress value={{tasks_data.tasks_number_inactive}} max={{tasks_data.tasks_number}} style="background-color:grey;" ></progress>
 		<div class="cleaner h20"></div>
 	{% else %}
 		<p>Brak przypiętych zadań</p>

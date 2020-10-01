@@ -238,7 +238,7 @@ def if_add_point(request, tid):
 				newPoint.tasks_tasks_id=tid
 				newPoint.save()
 			if 'save_process' in request.POST:
-				return redirect('info_flow:if_processes', cat=process.objects.get(id=task.tasks_proc_id).proc_category)
+				return redirect('info_flow:if_processes', cat=process.objects.get(id=task.tasks_proc_id).proc_category, active='active')
 			elif 'add_task' in request.POST:
 				return redirect('info_flow:if_add_task', pid=task.tasks_proc_id)
 	else:

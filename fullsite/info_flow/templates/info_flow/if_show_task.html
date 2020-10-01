@@ -50,8 +50,8 @@
 	</div>
 
 	{% if point|length > 0 %}
-		Postęp zadania {{points_data.points_number_active}}/{{points_data.points_number}}
-		<progress value={{points_data.points_number_active}} max={{points_data.points_number}} style="background-color:grey;"></progress>
+		Postęp zadania {{points_data.points_number_inactive}}/{{points_data.points_number}}
+		<progress value={{points_data.points_number_inactive}} max={{points_data.points_number}} style="background-color:grey;"></progress>
 		<div class="cleaner h20"></div>
 	{% else %}
 		<p>Brak przypiętych punktów</p>
