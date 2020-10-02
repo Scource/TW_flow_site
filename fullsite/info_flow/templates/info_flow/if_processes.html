@@ -28,10 +28,33 @@ Lista procesów
 
 <h3>Procesy w kategorii "{{cat}}"</h3>
 <div class="cleaner h10"></div>
-<form method="get">
-    {{ proc_f.form.as_table }}
-    <button type="submit" class="btn btn-outline-secondary btn-sm btn-cst">Szukaj</button>
-</form>
+<button id="toggle_filter">Zaawansowane filtry</button>
+<div class="cleaner h20"></div>
+<div id="filter_form">
+
+	<form method="get">
+				<label for="author">Autor</label>  {{ proc_f.form.proc_author }}  
+				<label for="author">Przypisano</label>  {{ proc_f.form.proc_assigned }}  
+				<label for="author">Tytuł</label>  {{ proc_f.form.proc_process_name }}  
+				<div class="cleaner h10"></div>
+			<div class="adv_filter hidden">
+				Data od:  			    
+			    <label for="">Rok</label>  {{ proc_f.form.proc_start_date_year }}
+			    <label for="">Miesiąc</label>  {{ proc_f.form.proc_start_date_month }}
+			    <label for="">Dzień</label>  {{ proc_f.form.proc_start_date_day }}
+			    <div class="cleaner"></div>
+			    Data do:  
+			    <label for="">Rok</label>   {{ proc_f.form.proc_end_date_year }}
+				<label for ="">Miesiąc</label>  {{ proc_f.form.proc_end_date_month }}
+			    <label for="">Dzień</label>  {{ proc_f.form.proc_end_date_day }}
+				<div class="cleaner"></div>
+			    <label for="author">Tekst</label>  {{ proc_f.form.proc_description }}
+			    <div class="cleaner"></div>
+		    </div>
+		
+	    <button type="submit" class="btn btn-outline-secondary btn-sm btn-cst">Szukaj</button>
+	</form>
+</div>
 <div class="cleaner h10"></div>
 <table class="table table-hover table-sm">
 	<tr>
@@ -57,7 +80,7 @@ Lista procesów
 		</td>
 		<td>
 			{% if user.is_authenticated and user == p.proc_author %}
-			<a href="{% url 'info_flow:if_delete_proc' p.id%}"  >Usuń</a>
+			<a href="{% url 'info_flow:if_delete_proc' proc_id=p.id cat=p.proc_category %}"  >Usuń</a>
 			{% endif %}
 		</td>
 

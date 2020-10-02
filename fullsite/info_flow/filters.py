@@ -3,8 +3,21 @@ from django import forms
 from .models import process, posts
 
 class ProcessFilter(django_filters.FilterSet):
-	proc_process_name=django_filters.CharFilter(lookup_expr='icontains', label='Tytuł')
+	proc_process_name=django_filters.CharFilter(field_name='proc_process_name', lookup_expr='icontains', label='Tytuł')
+
+	proc_description=django_filters.CharFilter(field_name='proc_description', lookup_expr='icontains', label='Tekst')
+
+	proc_start_date_year = django_filters.NumberFilter(field_name='proc_start_date', lookup_expr='year', label='Rok')
+	proc_start_date_month = django_filters.NumberFilter(field_name='proc_start_date', lookup_expr='month', label='Miesiąc')
+	proc_start_date_day = django_filters.NumberFilter(field_name='proc_start_date', lookup_expr='day', label='Dzień')
+
+	proc_end_date_year = django_filters.NumberFilter(field_name='proc_end_date', lookup_expr='year', label='Rok')
+	proc_end_date_month = django_filters.NumberFilter(field_name='proc_end_date', lookup_expr='month', label='Miesiąc')
+	proc_end_date_day = django_filters.NumberFilter(field_name='proc_end_date', lookup_expr='day', label='Dzień')
 	
+
+
+
 	def __init__(self, *args, **kwargs):
 		super(ProcessFilter, self).__init__(*args, **kwargs)
 		self.filters['proc_author'].label="Autor"
@@ -12,7 +25,9 @@ class ProcessFilter(django_filters.FilterSet):
 	
 	class Meta:
 		model = process
-		fields = ['proc_author', 'proc_assigned']
+		fields = [ 'proc_assigned','proc_author']
+
+
 
 
 class PostsFilter(django_filters.FilterSet):

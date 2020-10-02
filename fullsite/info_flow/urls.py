@@ -22,9 +22,9 @@ urlpatterns = [
     path('processes/assign/task_<int:task_id>/', views.assign_task, name='assign_task'),
 
 
-    path('processes/delete/<int:proc_id>', views.if_delete_proc, name='if_delete_proc'),
-    path('processes/delete/<int:proc_id>/<int:com_id>', views.if_delete_com, name='if_delete_com'),
-    path('processes/edit/delete/<int:task_id>', views.if_delete_task, name='if_delete_task'),
+    path('processes/delete/<str:cat>/<int:proc_id>/', views.if_delete_proc, name='if_delete_proc'),
+    path('processes/delete/<int:proc_id>/<int:com_id>/', views.if_delete_com, name='if_delete_com'),
+    path('processes/edit/delete/<int:task_id>/', views.if_delete_task, name='if_delete_task'),
 
 
     path('forum/', views.if_post_list, name='if_post_list'),

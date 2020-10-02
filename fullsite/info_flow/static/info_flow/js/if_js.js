@@ -11,6 +11,20 @@ jQuery(document).ready(function() {
     });
 
 
+    $(".clickable-row_task").click(function () {
+    	let url = $("#url").attr("data-url");
+    	let id = $(this).attr('data-id');
 
+       document.location.href = url.replace('123', id);
+    });
+
+
+    $(".clickable-row .td_btn").click(function () {
+    });
+
+
+    $("#toggle_filter").click(function(){
+    $(".adv_filter").toggle();
+    });
 
 });

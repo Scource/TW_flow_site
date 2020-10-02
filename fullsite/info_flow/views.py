@@ -33,7 +33,7 @@ def if_processes(request, cat, active):
 	cat_id=category.objects.get(cat_name=cat).id
 	proc_list = process.objects.all().filter(proc_is_deleted=False, proc_is_private=False, proc_category=cat_id, proc_is_active=state)
 	proc_f=ProcessFilter(request.GET, queryset=proc_list)
-	context={ 'proc_f':proc_f, 'cat':cat, 'state':state}#'proc_list':proc_list,
+	context={ 'proc_f':proc_f, 'cat':cat, 'state':state}
 	return render(request, 'info_flow/if_processes.html', context)
 
 
@@ -63,7 +63,7 @@ def if_new_proc(request):
 				newFile.save()
 
 			if 'save_process' in request.POST:
-				return redirect('info_flow:if_processes', cat=newProcess.proc_category)
+				return redirect('info_flow:if_processes', cat=newProcess.proc_category, active='active')
 			elif 'add_tasks' in request.POST:
 				return redirect('info_flow:if_add_task', pid=newProcess.id)
 	else:
@@ -215,14 +215,14 @@ def if_edit_task(request, tid):
 
 @login_required
 @permission_required('info_flow.delete_process')
-def if_delete_proc(request, proc_id):
+def if_delete_proc(request, proc_id, cat):
     delete_proc=process.objects.get(id=proc_id)
     delete_proc.proc_is_deleted = True
     delete_proc.save()
     del_conn_com=comments.objects.all().filter(com_proc_id=proc_id).update(com_is_deleted=True)
     del_conn_task=tasks.objects.all().filter(tasks_proc_id=proc_id).update(tasks_is_deleted=True)
     deleted_files=files.objects.all().filter(files_proc_id=proc_id).update(files_is_deleted=True)
-    return redirect('info_flow:if_processes', cat=delete_proc.proc_category)
+    return redirect('info_flow:if_processes', cat=cat, active='active')
 
 
 @login_required

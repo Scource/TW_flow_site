@@ -52,7 +52,7 @@ Lista procesów uzytkownika
 		</td>
 		<td>
 			{% if user.is_authenticated and user == p.proc_author %}
-			<a href="{% url 'info_flow:if_delete_proc' p.id%}"  >Usuń</a>
+			<a href="{% url 'info_flow:if_delete_proc' proc_id=p.id cat=p.proc_category %}"  >Usuń</a>
 			{% endif %}
 		</td>
 
@@ -88,7 +88,7 @@ Lista procesów uzytkownika
 		</td>
 		<td>
 			{% if user.is_authenticated and user == p.proc_author %}
-			<a href="{% url 'info_flow:if_delete_proc' p.id%}"  >Usuń</a>
+			<a href="{% url 'info_flow:if_delete_proc' proc_id=p.id cat=p.proc_category %}"  >Usuń</a>
 			{% endif %}
 		</td>
 
@@ -105,16 +105,16 @@ Lista procesów uzytkownika
 		<th>Typ</th>
 		<th>Poczatek</th>
 		<th>Koniec</th>
-		<th></th>
+
 
 	</tr>
 	{% for t in user_tasks %}
-	<tr class='clickable-row' id=url data-url="{% url 'info_flow:if_show_proc' 123 %}" data-id={{p.id}}>
+	<tr class='clickable-row' id=url data-url="{% url 'info_flow:if_show_task' 123 %}" data-id=task_{{t.id}}>
 		<td>{{t.tasks_name}}</td>
 		<td>{% if t.tasks_tasks_id is None %}Zadanie{%else%}Punkt{% endif%}</td>
 		<td>{{t.tasks_start_date|date:"Y-m-d H:i"}}</td>
 		<td>{{t.tasks_end_date|date:"Y-m-d H:i"}}</td>
-		<td><a href="{% url 'info_flow:if_show_task' t.id%}">Przejdź</a></td>
+
 
 
 	{% endfor %}

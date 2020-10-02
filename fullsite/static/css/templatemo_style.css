@@ -714,3 +714,12 @@ progress::-webkit-progress-bar {
   background: green;
 }
 
+
+#filter_form { 
+	padding: 0; 
+	width: 900px; 
+}
+
+.hidden { 
+	display:none; 
+}
