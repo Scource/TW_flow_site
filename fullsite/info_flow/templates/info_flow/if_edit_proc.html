@@ -22,7 +22,7 @@ Edytuj {{task.tasks_name}}
 <div id="templatemo_main">
         
         <div class="half float_l">
-        <h2>Edytuj proces</h2>
+        <h3>Edytuj proces</h3>
         <div id="contact_form">
         <form  method="POST" action="{% url 'info_flow:if_edit_proc' proc.id %}" enctype="multipart/form-data">
             {% csrf_token %}
@@ -37,7 +37,7 @@ Edytuj {{task.tasks_name}}
             <label for ='{{proc_form.proc_start_date}}'>Data pocztku:</label><div> {{proc_form.proc_start_date|add_class:"input_field"}}</div>
             <div class="cleaner h10"></div>
 
-            <label for ='{{proc_form.proc_end_date}}'>Data pocztku:</label><div> {{proc_form.proc_end_date|add_class:"input_field"}}</div>
+            <label for ='{{proc_form.proc_end_date}}'>Data końca:</label><div> {{proc_form.proc_end_date|add_class:"input_field"}}</div>
             <div class="cleaner h10"></div>
 
             <label for ='{{proc_form.proc_category}}'>Kategoria:</label><div> {{proc_form.proc_category|add_class:"input_field"}}</div>

@@ -18,12 +18,14 @@ urlpatterns = [
     path('processes/edit/<int:pid>/', views.if_edit_proc, name='if_edit_proc'),
     path('processes/edit/task_<int:tid>/', views.if_edit_task, name='if_edit_task'),
     path('processes/show/task_<int:tid>/', views.if_show_task, name='if_show_task'),
+    path('processes/show/task_<int:tid>/', views.if_show_task, name='if_show_point'),
     path('processes/change/task_<int:task_id>/', views.accept_task, name='accept_task'),
-    path('processes/assign/task_<int:task_id>/', views.assign_task, name='assign_task'),
+    path('processes/assign/<str:object_type>/task_<int:task_id>/', views.assign_task, name='assign_task'),
+    
 
 
     path('processes/delete/<str:cat>/<int:proc_id>/', views.if_delete_proc, name='if_delete_proc'),
-    path('processes/delete/<int:proc_id>/<int:com_id>/', views.if_delete_com, name='if_delete_com'),
+    path('processes/delete/<str:object_type>/<int:e_id>/<int:com_id>/', views.if_delete_com, name='if_delete_com'),
     path('processes/edit/delete/<int:task_id>/', views.if_delete_task, name='if_delete_task'),
 
 

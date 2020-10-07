@@ -17,16 +17,31 @@
 <div id="templatemo_main">
 
 	<div class="proc">
-	<h4>{{task.tasks_name}}</h4>
+		<div class="edit"><h4><a href="{% url 'info_flow:if_show_proc' task.tasks_proc_id %}" >{{task.tasks_proc.proc_process_name}}</a> > {{task.tasks_name}}
+			{% if user.is_authenticated and user == task.tasks_proc.proc_author %}
+			<a href="{% url 'info_flow:if_edit_task' task.id %}"><span class="edit">Edytuj</span></a>
+			{% endif %}</h4>
+		</div>
 			<div class="float_r">
-				{% if user.is_authenticated and user != task.tasks_assigned %}
-				<a type= "button" href="{% url 'info_flow:assign_task' task.id %}" >Przyjmnij zadanie</a><br>
+				{% if user.is_authenticated %}
+					{% if user in task.tasks_assigned.all %}
+						<a href="{% url 'info_flow:assign_task' object_type='task' task_id=task.id %}" >Odrzuć zadanie</a><br>
+					{% else %}
+						{% if not task.tasks_assigned.all|length %}
+							<a href="{% url 'info_flow:assign_task' object_type='task' task_id=task.id %}" >Przyjmnij zadanie</a><br>
+						{% endif %}	
+					{% endif %}
 				{% endif %}
+
 				<div class="cleaner h10"></div>
-				<a type= "button" href="{% url 'info_flow:accept_task' task.id %}">{% if task.tasks_is_active %}Otwórz zadanie{% else %}Zamknij zadanie{% endif %}</a>				
+				{% if user in task.tasks_assigned.all %}
+					<a type= "button" href="{% url 'info_flow:accept_task' task.id %}">
+					{% if task.tasks_is_active %}Zamknij zadanie{% else %}Otwórz zadanie{% endif %}</a>
+				{% endif %}	
 			</div>
 	<div class="meta float_l">
 		<span class="admin">{{task.tasks_proc.proc_author}}</span><span class="date">{{task.tasks_created|date:"Y-m-d H:i"}}</span>
+		<span class="comment">{{coms|length }}</a></span>
 		<div class="cleaner"></div>
 	</div>
 	<div class="cleaner"></div>
@@ -35,7 +50,7 @@
 	<div class="meta">
 				<img src="{% static 'images/timetable.png' %}" alt="timetable" />
 					{% if task.tasks_start_date %}
-						{{task.tasks_start_date|date:"Y-m-d H:i"}} - 
+						{{task.tasks_start_date|date:"Y-m-d H:i"}}  -  
 					{% else %}
 								Brak - 
 					{% endif %}
@@ -45,16 +60,24 @@
 					{% else %}
 						Brak
 					{% endif %}
-		<img src="{% static 'images/assign.png' %}" alt="assign" />{{task.tasks_assigned|default_if_none:"  Nieprzypisano"}}
+		<div class="cleaner h10"></div>
+		<img src="{% static 'images/assign.png' %}" alt="assign" />
+
+		{% for us in task.tasks_assigned.all %}
+			{{us}}
+		{% empty %}
+			Nieprzypisane
+		{% endfor %} 
+
 		<div class="cleaner h20"></div>
 	</div>
 
 	{% if point|length > 0 %}
-		Postęp zadania {{points_data.points_number_inactive}}/{{points_data.points_number}}
+		Postęp punktów {{points_data.points_number_inactive}}/{{points_data.points_number}}
 		<progress value={{points_data.points_number_inactive}} max={{points_data.points_number}} style="background-color:grey;"></progress>
 		<div class="cleaner h20"></div>
 	{% else %}
-		<p>Brak przypiętych punktów</p>
+		<p style="text-align: center;">Brak przypiętych punktów</p>
 	{% endif %}
 
 	{% if fi %}
@@ -74,35 +97,53 @@
                                     
  
                                 <div class="comment_text">
-                                    <div class="comment_author">{{p.tasks_name}}<span class="date">{{p.tasks_created|date:"Y-m-d H:i"}}</span></div>
-                                    <p>{{p.tasks_description}}</p>
-                                  	{% if user.is_authenticated and user != p.tasks_assigned %}
-									<div class="reply"><a href="{% url 'info_flow:assign_task' p.id %}">Przyjmnij</a></div>
-									{% endif %}  
+                                    <div class="comment_author">{{p.tasks_name}}<span class="date">{{p.tasks_created|date:"Y-m-d H:i"}}</span>
+                                    
 
+									<div class="reply">
+										{% if user.is_authenticated %}
+											{% if user in p.tasks_assigned.all %}
+												<a href="{% url 'info_flow:assign_task' object_type='task' task_id=p.id %}" >Odrzuć</a><br>
+											{% else %}
+												<a href="{% url 'info_flow:assign_task' object_type='task' task_id=p.id %}" >Przyjmnij</a><br>
+											{% endif %}
+										{% endif %}	
+									</div>
+									</div>
+
+								<p>{{p.tasks_description}}</p>
                                 </div>
                                 <div class="cleaner h20"></div>
                                 <div class="meta">
 								<img src="{% static 'images/timetable.png' %}" alt="timetable" />
-								{% if p.tasks_start_date %}
-									{{p.tasks_start_date|date:"Y-m-d H:i"}} - 
-								{% else %}
-								     Brak - 
-								{% endif %}
+									{% if p.tasks_start_date %}
+										{{p.tasks_start_date|date:"Y-m-d H:i"}} - 
+									{% else %}
+									     Brak - 
+									{% endif %}
 
-								{% if p.tasks_end_date %}
-									{{p.tasks_end_date|date:"Y-m-d H:i"}}
-								{% else %}
-								     Brak
-								{% endif %}
+									{% if p.tasks_end_date %}
+										{{p.tasks_end_date|date:"Y-m-d H:i"}}
+									{% else %}
+									     Brak
+									{% endif %}
 
-								<img src="{% static 'images/assign.png' %}" alt="assign" /> {{p.tasks_assigned|default_if_none:"Brak"}}
+								<div class="cleaner h10"></div>
+								<img src="{% static 'images/assign.png' %}" alt="assign" /> 
+									{% for us in p.tasks_assigned.all %}
+										{{us}}
+									{% empty %}
+										Nieprzypisane
+									{% endfor %}
+
 								</div>
+								<div class="cleaner h20"></div>
+								<a href="{% url 'info_flow:if_show_point' tid=p.id %}" class="more float_l">Przejdź</a>
 								<div class="float_r">
 								{%if p.tasks_is_active%}
-								<a type= "button" href="{% url 'info_flow:accept_task' p.id %}">Zakończ</a><img src="{% static 'images/active.png' %}" alt="active" />
+								&nbsp;&nbsp;<img src="{% static 'images/active.png' %}" alt="active" />&nbsp;&nbsp;Otwarty</a>
 								{%else%}
-								<a type= "button" href="{% url 'info_flow:accept_task' p.id %}">Otwórz </a><img src="{% static 'images/inactive.png' %}" alt="inactive" />
+								&nbsp;&nbsp;<img src="{% static 'images/inactive.png' %}" alt="inactive" />&nbsp;&nbsp;Zamknięty</a>
 								{% endif %}
 								</div>
                                 <div class="cleaner"></div>
@@ -111,9 +152,36 @@
                 </li>
 				</div>
 
+				<div id="comment_section point_com">
+							{% for z in coms %}
+                                <div class="comment_text">
+	                                <div class="comment_text">
+	                                    <div class="comment_author">{{z.com_author}}<span class="date">{{z.com_created|date:"Y-m-d H:i"}}</span></div>
+	                                    <p>{{z.com_body}}</p>
+	                                </div>
+                                    {% if user.is_authenticated and user == z.com_author %}
+                                      <div class="reply"><a href="{% url 'info_flow:if_delete_com' object_type='point' e_id=task.id com_id=z.id  %}" type="button">Usuń</a></div>
+                                	{% endif %}
 
-
-
+                                </div>
+                                <div class="cleaner"></div>
+                            {% endfor %}
+                <div class="cleaner h20"></div>    
+                </div>
+                
+                <div class="cleaner h20"></div>
+                
+                <div id="comment_form">
+                    <h3>Dodaj komentarz do zadania</h3>                    
+                    <form  method="POST" action="{% url 'info_flow:if_show_task' task.id %}">
+						{% csrf_token %}
+						{{com_form.as_p }}
+						<input type="submit" value="Dodaj" class="submit_btn">
+                    </form>    
+                
+            	</div>
+            <div class="cleaner"></div>
+    </div>
 
 
 

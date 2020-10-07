@@ -34,6 +34,16 @@ class process(models.Model):
 	def __str__(self):
 		return self.proc_process_name
 
+
+	# @property
+ #    def age(self):
+ #    	task=tasks.objects.all().filter(tasks_proc=proc.id, tasks_is_deleted=False, tasks_tasks_id__isnull=True)
+	# 	task_count=task.count()
+	# 	task_done=task.filter(tasks_is_active=False).count()
+	# 	proc.task_in = task_count
+	# 	proc.task_all = task_done
+ #        return timezone.now().year - self.dob.year
+
 	class Meta():
 		ordering=['-proc_modified', '-proc_created', '-proc_is_active']
 		permissions = (
@@ -47,7 +57,7 @@ class tasks(models.Model):
 	tasks_modified = models.DateTimeField(auto_now=True)	
 	tasks_start_date = models.DateTimeField(null=True, blank=True)
 	tasks_end_date = models.DateTimeField(null=True, blank=True)
-	tasks_assigned = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET('deleted'), null=True,  blank=True)
+	tasks_assigned = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True)
 	tasks_is_active=models.BooleanField(default=True)
 	tasks_is_deleted=models.BooleanField(default=False)
 	tasks_proc=models.ForeignKey(process, on_delete=models.CASCADE)
@@ -65,22 +75,33 @@ class tasks(models.Model):
 		task_status.save()
 
 
-	def set_assignation(task_id, user):
+
+	def set_assignation(task_id, user, ex, object_type):
 		task_status=tasks.objects.get(id=task_id)
-		task_status.tasks_assigned=user
-		task_status.save()
-		if task_status.tasks_tasks_id==None:
-			return task_id
+		if ex:
+			task_status.tasks_assigned.remove(user)
 		else:
-			return task_status.tasks_tasks_id
+			task_status.tasks_assigned.add(user)
+
+		if task_status.tasks_tasks_id == None:
+			return task_id
+		elif object_type=="task":
+		 	return task_status.tasks_tasks_id
+		elif object_type=="point":
+			return task_id
 
 class comments(models.Model):
 	com_author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET('deleted'))
 	com_body = models.TextField(null=True)
 	com_created = models.DateTimeField(auto_now_add=True)
 	com_modified = models.DateTimeField(auto_now=True)
-	com_proc=models.ForeignKey(process, on_delete=models.CASCADE)
+	com_proc=models.ForeignKey(process, on_delete=models.CASCADE, blank=True, null=True)
+	com_tasks=models.ForeignKey(tasks, on_delete=models.CASCADE, blank=True, null=True)
 	com_is_deleted=models.BooleanField(default=False)
+
+	class Meta():
+		ordering=['-com_created']
+
 
 class posts(models.Model):
 	posts_title=models.CharField(max_length=150)

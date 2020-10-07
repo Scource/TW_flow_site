@@ -17,14 +17,20 @@
     	
 	<div id="content">
 	<div class="proc">
-	<h5>{{proc.proc_process_name}}</h5>
+
+	<div class="edit"><h4>{{proc.proc_process_name}}
+		{% if user.is_authenticated and user == proc.proc_author %}
+		<a href="{% url 'info_flow:if_edit_proc' proc.id %}"><span class="edit">Edytuj</span></a>
+		{% endif %}
+	</h4>
+	</div>
 
 	<div class="meta float_r">
-		<span class="admin">{{proc.proc_author}}</span><span class="date">{{proc.proc_created|date:"Y-m-d H:i"}}</span><span class="tag"><a href="{% url 'info_flow:if_processes' cat=proc.proc_category active='active' %}">{{proc.proc_category}}</a></span>
+		<span class="admin">{{proc.proc_author}}</span><span class="date">{{proc.proc_created|date:"Y-m-d H:i"}}</span><span class="tag"><a href="{% url 'info_flow:if_processes' cat=proc.proc_category active='active' %}">{{proc.proc_category}}</span></a>
 		<div class="cleaner"></div>
 	</div>
 	<div class="cleaner"></div>
-	<p>{{proc.proc_description}}</p>
+	<h6>{{proc.proc_description}}</h6>
 	<div class="cleaner h10"></div>
 	<div class="meta">
 				<img src="{% static 'images/timetable.png' %}" alt="timetable" />
@@ -72,13 +78,18 @@
 						<div class="meta">
 						<li>
 						{%if t.tasks_is_active%}
-						<img src="{% static 'images/inactive.png' %}" alt="inactive" />
+						<img src="{% static 'images/active.png' %}" alt="inactive" />
 						{%else%}
-						<img src="{% static 'images/active.png' %}" alt="active" />
+						<img src="{% static 'images/inactive.png' %}" alt="active" />
 						{% endif %}
 						<a href="{% url 'info_flow:if_show_task' t.id %}">{{t.tasks_name}}</a>
 						<div class="float_r">
-						<img src="{% static 'images/assign.png' %}" alt="assign" />{{t.tasks_assigned|default_if_none:" Nieprzypisano"}}
+						<img src="{% static 'images/assign.png' %}" alt="assign" />
+							{% for us in t.tasks_assigned.all %}
+								{{us}}
+							{% empty %}
+								Nieprzypisane
+							{% endfor %} 
 						</div>
 						<div class="cleaner h20"></div>
 						</li>
@@ -102,7 +113,7 @@
                                 </div>
                                 <div class="cleaner"></div>
                                 {% if user.is_authenticated and user == z.com_author %}
-                                      <div class="comment_text"><div class="reply"><a href="{% url 'info_flow:if_delete_com' proc_id=proc.id com_id=z.id  %}" type="button">Usuń</a></div></div>
+                                      <div class="comment_text"><div class="reply"><a href="{% url 'info_flow:if_delete_com' object_type='proc' e_id=proc.id com_id=z.id  %}" type="button">Usuń</a></div></div>
                                 {% endif %}
                                 <div class="cleaner h20"></div>
                             {% endfor %}

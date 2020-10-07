@@ -21,7 +21,7 @@ Edytuj {{task.tasks_name}}
 <div id="templatemo_main">
       
         <div class="half float_l">
-        <h2>{{task.tasks_name}}</h2>
+            <h3>Edytuj</h3>
         <div id="contact_form">
         <form  method="POST" action="{% url 'info_flow:if_edit_task' task.id %}" enctype="multipart/form-data">
             {% csrf_token %}
@@ -36,7 +36,7 @@ Edytuj {{task.tasks_name}}
             <label for ='{{task_form.tasks_start_date}}'>Data pocztku:</label><div> {{task_form.tasks_start_date|add_class:"input_field"}}</div>
             <div class="cleaner h10"></div>
 
-            <label for ='{{task_form.tasks_end_date}}'>Data pocztku:</label><div> {{task_form.tasks_end_date|add_class:"input_field"}}</div>
+            <label for ='{{task_form.tasks_end_date}}'>Data końca:</label><div> {{task_form.tasks_end_date|add_class:"input_field"}}</div>
             <div class="cleaner h10"></div>
 
             <label for ='{{task_form.tasks_assigned}}'>Przypisz do:</label><div> {{task_form.tasks_assigned|add_class:"input_field"}}</div>
@@ -52,24 +52,28 @@ Edytuj {{task.tasks_name}}
             Usuń plik <a type="button" href="{% url 'info_flow:if_delete_file' f.id%}" >{{f.files_name}}</a><br>
             {% endfor %}
 
-            <input type="submit" value="Zapisz zmiany" class="submit_btn float_l">
+            <input type="submit" name='save_task' value="Zapisz zmiany" class="submit_btn float_r">
+            <input type="submit" name='add_point' value="Dodaj punkt" class="submit_btn float_l">
         </form>
         </div>
         </div>
 
-        <div class="half float_r">
-          <div id="sidebar">
-            <h3>Punkty w zadaniu:</h3>
-            <ul class="templatemo_list">
-                {% for z in point %}
-                    <li><a href="{% url 'info_flow:if_show_task' z.id%}" >{{z.tasks_name}}</a>
-                    <a  href="{% url 'info_flow:if_delete_task' z.id%}" class="float_r" >Usuń</a></li>
-                {% endfor %}
-            </ul>
 
-        </div> <!-- end of sidebar -->
-        </div>
+        {% if point|length %}
+            <div class="half float_r">
+              <div id="sidebar">
+                <h3>Punkty w zadaniu:</h3>
+                <ul class="templatemo_list">
+                    {% for z in point %}
+                        <li><a href="{% url 'info_flow:if_show_task' z.id%}" >{{z.tasks_name}}</a>
+                            <a href="{% url 'info_flow:if_edit_task' z.id%}" class="float_r">&nbsp;Edytuj&nbsp;</a>
+                            <a href="{% url 'info_flow:if_delete_task' z.id%}" class="float_r" >&nbsp;Usuń&nbsp;</a></li>
+                    {% endfor %}
+                </ul>
 
+            </div> <!-- end of sidebar -->
+            </div>
+        {% endif %}
         
 
       

@@ -48,6 +48,7 @@ h4 { font-size: 18px; margin: 0 0 15px; padding: 0; }
 h5 { font-size: 16px; margin: 0 0 10px; padding: 0; }
 h6 { font-size: 12px; margin: 0 0 5px; padding: 0; }
 
+
 .cleaner { clear: both }
 .h10 { height: 10px }
 .h20 { height: 20px }
@@ -302,6 +303,14 @@ p.position { color: #f3a706; font-weight: bold; font-size: 12px; font-style: ita
 	margin-bottom: 60px;
 	width: 438px;
 }
+
+
+#comment_section .point_com {
+	clear: both;
+	margin-bottom: 60px;
+	width: 800px;
+}
+
 
 .comment_section_proc {
 	clear: both;
@@ -646,7 +655,7 @@ p.position { color: #f3a706; font-weight: bold; font-size: 12px; font-style: ita
 .proc .meta span { 
 	float: left; 
 	display: block; 
-	margin-right: 20px; 
+	margin-right: 10px; 
 	padding: 5px 0 5px 30px; 
 }
 
@@ -686,6 +695,28 @@ p.position { color: #f3a706; font-weight: bold; font-size: 12px; font-style: ita
 	color: #7b7b7b; 
 	font-weight: 700; 
 }
+
+.edit span.edit { 
+	background: url(../images/edit.png) no-repeat; 
+}
+
+
+.edit a {
+	color: white;
+}
+
+.edit  {
+	color: white;
+	font-size: 12px;
+
+}
+
+.edit span { 
+	float: right; 
+	display: block; 
+	padding: 0px 0 0px 20px; 
+}
+
 
 progress {
   border: none;

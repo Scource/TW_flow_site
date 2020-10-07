@@ -1,17 +1,18 @@
 from django.shortcuts import render, get_object_or_404, get_list_or_404, redirect
 from django.http import HttpResponse, FileResponse
 from .models import tasks, process, comments, posts, messages, files, category
-from .filters import ProcessFilter, PostsFilter
+from .filters import ProcessFilter, PostsFilter, UserProcessFilter
 from .forms import TaskFormSet, ProcessForm, TaskForm, CommForm, TaskFormPos, PostsForm, FileForm, MessageForm, TaskFormPoint, TaskFormPointEdit
+from django.contrib.auth.models import User
 
 from django.views.decorators.csrf import csrf_protect, ensure_csrf_cookie
 from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
 
-from django.http import HttpResponseForbidden
+from django.http import HttpResponseForbidden, HttpResponseRedirect
 import mimetypes
 import os
 from django.conf import settings
-from .services import get_tasks_in_proc, get_points_in_task
+from .services import get_tasks_in_proc, get_points_in_task#, tasks_in_proc_list
 
 
 # Create your views here.
@@ -32,6 +33,7 @@ def if_processes(request, cat, active):
 		state=False
 	cat_id=category.objects.get(cat_name=cat).id
 	proc_list = process.objects.all().filter(proc_is_deleted=False, proc_is_private=False, proc_category=cat_id, proc_is_active=state)
+	# proc_list = tasks_in_proc_list(proc_lista)
 	proc_f=ProcessFilter(request.GET, queryset=proc_list)
 	context={ 'proc_f':proc_f, 'cat':cat, 'state':state}
 	return render(request, 'info_flow/if_processes.html', context)
@@ -115,7 +117,10 @@ def if_delete_task(request, task_id):
     proc_id=delete_tasks.tasks_proc_id
     delete_tasks.tasks_is_deleted = True
     delete_tasks.save()
-    return redirect('info_flow:if_edit_proc', pid=proc_id)
+    if delete_tasks.tasks_tasks_id == None:
+    	return redirect('info_flow:if_edit_proc', pid=proc_id)
+    else:
+    	return redirect('info_flow:if_edit_task', tid= delete_tasks.tasks_tasks_id)
 
 
 @login_required
@@ -128,7 +133,7 @@ def if_show_proc(request, pid):
 			newCom=com_form.save(commit=False)
 			newCom.com_author_id=request.user.id
 			newCom.com_proc_id=pid
-			com_form.save()
+			newCom.save()
 		return redirect('info_flow:if_show_proc', pid=pid)
 
 	else:
@@ -144,12 +149,29 @@ def if_show_proc(request, pid):
 @login_required
 @permission_required('info_flow.view_tasks')
 def if_show_task(request, tid):
-	points_data=get_points_in_task(tid)
-	fi=files.objects.all().filter(files_tasks_id = tid)
 	task=tasks.objects.get(pk = tid)
-	point=tasks.objects.all().filter(tasks_tasks_id=tid, tasks_is_deleted=False)
-	context={'point':point,'task':task, 'fi':fi, 'points_data':points_data}
-	return render(request, 'info_flow/if_show_task.html', context)
+	if request.method=='POST':
+		com_form=CommForm(request.POST)
+		if com_form.is_valid():
+			newCom=com_form.save(commit=False)
+			newCom.com_author_id=request.user.id
+			newCom.com_tasks_id=tid
+			newCom.save()
+			if task.tasks_tasks_id == None:
+				return redirect('info_flow:if_show_task', tid=tid)
+			else:
+				return redirect('info_flow:if_show_point', tid=tid)
+	else:
+		com_form=CommForm()
+		points_data=get_points_in_task(tid)
+		coms=comments.objects.all().filter(com_tasks_id=tid, com_is_deleted=False)
+		fi=files.objects.all().filter(files_tasks_id = tid)
+		point=tasks.objects.all().filter(tasks_tasks_id=tid, tasks_is_deleted=False)
+		context={'point':point,'task':task, 'fi':fi, 'points_data':points_data, 'com_form':com_form, 'coms':coms}
+		if task.tasks_tasks_id == None:
+			return render(request, 'info_flow/if_show_task.html', context)
+		else:
+			return render(request, 'info_flow/if_show_point.html', context)
 
 @login_required
 @permission_required('info_flow.change_process')
@@ -187,6 +209,7 @@ def if_edit_proc(request, pid):
 @login_required
 @permission_required('info_flow.change_tasks')
 def if_edit_task(request, tid):
+	userlist = User.objects.all()
 	task=tasks.objects.get(pk = tid)
 	# if not request.user.id==proc.proc_author.id:
 	# 	return HttpResponseForbidden("Nie ma takiego podgladania")
@@ -203,13 +226,17 @@ def if_edit_task(request, tid):
 				newFile.files_by_user_id=request.user.id
 				newFile.files_name=f
 				newFile.save()
-		return redirect('info_flow:if_show_task', tid=tid)
+			if 'save_task' in request.POST:
+				return redirect('info_flow:if_show_task', tid=tid)
+			elif 'add_point' in request.POST:
+				return redirect('info_flow:if_add_point', tid=tid)
+
 	else:
 		file_form=FileForm()
 		fi=files.objects.all().filter(files_tasks_id = tid)
 		task_form=TaskForm(instance=task)		
 		point_form=TaskFormPointEdit(queryset=tasks.objects.none())
-		context={'point':point, 'task':task, 'point_form':point_form, 'task_form':task_form, 'fi':fi, 'file_form':file_form}
+		context={'point':point, 'task':task, 'point_form':point_form, 'task_form':task_form, 'fi':fi, 'file_form':file_form, 'userlist':userlist}
 	return render(request, 'info_flow/if_edit_task.html', context)
 
 
@@ -226,7 +253,7 @@ def if_delete_proc(request, proc_id, cat):
 
 
 @login_required
-
+@permission_required('info_flow.add_tasks')
 def if_add_point(request, tid):
 	task=tasks.objects.get(pk = tid)
 	if request.method=='POST':
@@ -235,6 +262,7 @@ def if_add_point(request, tid):
 			for form in point_form:
 				newPoint=form.save(commit=False)
 				newPoint.tasks_proc_id=task.tasks_proc_id
+				newPoint.tasks_is_active=True
 				newPoint.tasks_tasks_id=tid
 				newPoint.save()
 			if 'save_process' in request.POST:
@@ -324,11 +352,16 @@ def if_delete_post(request, post_id):
 
 @login_required
 #@permission_required('info_flow.delete_posts')
-def if_delete_com(request, proc_id, com_id):
+def if_delete_com(request, object_type, e_id, com_id):
     delete_com=comments.objects.get(id=com_id)
     delete_com.com_is_deleted = True
     delete_com.save()
-    return redirect('info_flow:if_show_proc', pid=proc_id)
+    if object_type=="proc":
+    	return redirect('info_flow:if_show_proc', pid=e_id)
+    elif object_type=="task":
+    	return redirect('info_flow:if_show_task', tid=e_id)
+    else:
+    	return redirect('info_flow:if_show_point', tid=e_id)
 
 
 @login_required
@@ -409,10 +442,11 @@ def user_profile(request, active):
 		state=True
 	else:
 		state=False
-	priv_proc=process.objects.all().filter(proc_is_private=True, proc_author=request.user, proc_is_deleted=False, proc_is_active=state)
+	priv_proc=process.objects.all().filter(proc_author=request.user, proc_is_deleted=False, proc_is_active=state)
+	filter_priv_proc=UserProcessFilter(request.GET, queryset=priv_proc)
 	user_proc=process.objects.all().filter(proc_assigned_id=request.user, proc_is_deleted=False, proc_is_private=False, proc_is_active=state)
-	user_tasks=tasks.objects.all().filter(tasks_assigned_id=request.user, tasks_is_deleted=False, tasks_is_active=state)
-	context={'user_proc':user_proc, 'user_tasks':user_tasks, 'priv_proc':priv_proc, 'state':state}
+	user_tasks=tasks.objects.all().filter(tasks_assigned__pk=request.user.pk, tasks_is_deleted=False, tasks_is_active=state)
+	context={'user_proc':user_proc, 'user_tasks':user_tasks, 'priv_proc':priv_proc, 'state':state, 'filter_priv_proc':filter_priv_proc}
 	return render(request, 'info_flow/user_profile.html', context)
 
 @login_required
@@ -422,10 +456,18 @@ def accept_task(request, task_id):
 	if task.tasks_tasks_id == None:
 		return redirect('info_flow:if_show_task', tid=task_id)
 	else:
-		return redirect('info_flow:if_show_task', tid=task.tasks_tasks_id)
+		return redirect('info_flow:if_show_point', tid=task_id)
 
 @login_required
-def assign_task(request, task_id):
-	user=request.user
-	redirect_id=tasks.set_assignation(task_id, user)
-	return redirect('info_flow:if_show_task', tid=redirect_id)
+def assign_task(request, object_type, task_id):
+	us=request.user
+	if tasks.objects.filter(pk=task_id, tasks_assigned__pk=us.pk).exists():
+		ex = True
+	else:
+		ex = False
+	redirect_id=tasks.set_assignation(task_id, us, ex, object_type)
+	if object_type=="task":
+		return redirect('info_flow:if_show_task', tid=redirect_id)
+	elif object_type == "point":
+		return redirect('info_flow:if_show_point', tid=redirect_id)
+

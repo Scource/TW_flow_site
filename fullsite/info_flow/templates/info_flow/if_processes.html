@@ -67,7 +67,7 @@ Lista procesów
 		<th></th>
 	</tr>
 	{% for p in proc_f.qs %}
-	<tr class='clickable-row' id=url data-url="{% url 'info_flow:if_show_proc' 123 %}" data-id={{p.id}}>
+		<tr class='clickable-row' id=url data-url="{% url 'info_flow:if_show_proc' 123 %}" data-id={{p.id}}>
 		<td>{{p.proc_process_name}}</td>
 		<td>{{p.proc_assigned|default_if_none:"Brak"}}</td>
 		<td>{{p.proc_start_date|date:"Y-m-d H:i"}}</td>
