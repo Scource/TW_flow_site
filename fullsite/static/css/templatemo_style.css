@@ -717,7 +717,6 @@ p.position { color: #f3a706; font-weight: bold; font-size: 12px; font-style: ita
 	padding: 0px 0 0px 20px; 
 }
 
-
 progress {
   border: none;
   width: 500px;
@@ -725,23 +724,17 @@ progress {
   background: green;
 }
 
-progress {
-  color: green;
+progress[value] {
+  /* Reset the default appearance */
+  -webkit-appearance: none;
+   appearance: none;
 }
 
-progress::-webkit-progress-value {
-  background: green;
+::-webkit-progress-bar {
+  background-color: gray;
 }
 
 progress::-moz-progress-bar {
-  background: green;
-}
-
-progress::-webkit-progress-value {
-  background: green;
-}
-
-progress::-webkit-progress-bar {
   background: green;
 }
 

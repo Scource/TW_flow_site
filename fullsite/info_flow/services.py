@@ -26,7 +26,7 @@ def get_points_in_task(tid):
 
 
 def create_corrections_template(user, cor_data, cor):
-	cor_data_end=cor_data.replace(day=calendar.monthrange(cor_data.year, cor_data.month)[1])
+	cor_data_end=cor_data.replace(day=calendar.monthrange(cor_data.year, cor_data.month)[1], hour=23, minute=59)
 
 
 	tasks_names_list=['MB Odbiorcze  v1', 'MB Odbiorcze  v2', 'MB Wytwórcze  v1', 'MB Wytwórcze  v2', 'Weryfikacja Odbiorczego Oddania', 'Raport "KOREKTY_MB_MC"']
