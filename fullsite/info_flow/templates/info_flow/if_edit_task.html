@@ -25,8 +25,6 @@ Edytuj {{task.tasks_name}}
         <div id="contact_form">
         <form  method="POST" action="{% url 'info_flow:if_edit_task' task.id %}" enctype="multipart/form-data">
             {% csrf_token %}
-            <!-- {{ point_form.management_form }} -->
-
             <label for='{{task_form.tasks_name}}'>Tutuł:</label><div class=""> {{task_form.tasks_name|add_class:"input_field"}}</div>
             <div class="cleaner h10"></div>
 

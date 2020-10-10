@@ -1,14 +1,18 @@
 from django import forms
 from .models import tasks, process, comments, posts, files, messages
-from bootstrap_datepicker_plus import DateTimePickerInput
+from bootstrap_datepicker_plus import DateTimePickerInput, MonthPickerInput
 from django.forms import modelformset_factory, ClearableFileInput
+from django.contrib.auth.models import User
+
+
+
 
 class TaskForm(forms.ModelForm):
 
-	class Meta:
-		model = tasks
-		fields =['tasks_name', 'tasks_description', 'tasks_start_date', 'tasks_end_date', 'tasks_assigned' , 'tasks_is_active']
-		widgets = {
+    class Meta:
+        model = tasks
+        fields =['tasks_name', 'tasks_description', 'tasks_start_date', 'tasks_end_date', 'tasks_assigned' , 'tasks_is_active']
+        widgets = {
             'tasks_start_date': DateTimePickerInput(format=('%Y-%m-%d %H:%M'),options={
                     "showClose": True,
                     "showClear": True,
@@ -21,12 +25,13 @@ class TaskForm(forms.ModelForm):
                     "showTodayButton": True,
                     "sideBySide": True,
                 }),
+            'tasks_assigned': forms.SelectMultiple(attrs={'size': 6}),
             #'tasks_proc': forms.HiddenInput()
 
             }
-		labels = {
-			'tasks_name': 'Nazwa zadania', 'tasks_description': 'Opis', 'tasks_assigned': 'Przypisano', 'tasks_start_date': 'Data poczatku', 'tasks_end_date': 'Data końca', 
-		}
+        labels = {
+            'tasks_name': 'Nazwa zadania', 'tasks_description': 'Opis', 'tasks_assigned': 'Przypisano', 'tasks_start_date': 'Data poczatku', 'tasks_end_date': 'Data końca', 
+        }
 
 TaskFormSet=modelformset_factory(tasks, form=TaskForm, extra=1)
 TaskFormPos=modelformset_factory(tasks, form=TaskForm, extra=0)
@@ -93,3 +98,12 @@ class MessageForm(forms.ModelForm):
 		labels = {
             'mess_text': '',
         }
+
+class CorrectionsProcForm(forms.Form):
+    Korekty = [
+    ('M+2', 'Korekta M+2'),
+    ('M+4', 'Korekta M+4'),
+    ('M+15', 'Korekta M+15'),
+]
+    cor_chosen = forms.ChoiceField(choices=Korekty) 
+    month_picked = forms.DateTimeField(widget=MonthPickerInput())

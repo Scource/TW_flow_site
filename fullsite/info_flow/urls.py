@@ -21,6 +21,9 @@ urlpatterns = [
     path('processes/show/task_<int:tid>/', views.if_show_task, name='if_show_point'),
     path('processes/change/task_<int:task_id>/', views.accept_task, name='accept_task'),
     path('processes/assign/<str:object_type>/task_<int:task_id>/', views.assign_task, name='assign_task'),
+
+
+    path('processes/templates', views.if_proc_templates, name='if_proc_templates'),
     
 
 

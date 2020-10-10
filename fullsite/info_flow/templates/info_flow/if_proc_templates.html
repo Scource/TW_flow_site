@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% load widget_tweaks %}
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'info_flow/css/if_css.css' %}">
+
+{% block title%}
+Lista procesów 
+{% endblock %}
+
+
+{% block head %}
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" crossorigin="anonymous" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" rel="stylesheet"/>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous" integrity="sha384-xBuQ/xzmlsLoJpyjoggmTEz8OWUFM0/RC5BsqQBDX2v5cMvDHcMakNTNrHIW2I5f"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" crossorigin="anonymous" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" crossorigin="anonymous" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"></script>
+<link href="{% static 'css/templatemo_style.css' %}" rel="stylesheet" type="text/css" />
+
+<script src="{% static 'info_flow/js/if_js.js' %}"></script>
+{{ cor_form.media }}
+{% endblock %}
+
+{% block content %}
+
+<div id="templatemo_main">
+	<h4>Szablony procesów</h4>
+
+
+	Comiesięczne korekty na RB <button id="cor_template">Pokaż</button>
+		<div class='cor_template hidden'>
+	        <div id="contact_form">
+	        <form  method="POST" action="{% url 'info_flow:if_proc_templates' %}" enctype="multipart/form-data">
+	            {% csrf_token %}
+	            {{cor_form.cor_chosen|add_class:"input_field"}} 
+				{{cor_form.month_picked|add_class:"input_field"}}
+	            <input type="submit" name='cor_proc_form' value="Utwórz" class="submit_btn float_l">
+	        </form>
+	        </div>  
+        </div>
+    <div class="cleaner h20"></div>
+</div>
+{% endblock %}

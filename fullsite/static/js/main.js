@@ -13,9 +13,6 @@ $("ul.dropdown li").hover(function(){
     
     });
 
-});
-
-
  jQuery(function ($) {
     var datepickerDict = {};
     var isBootstrap4 = $.fn.collapse.Constructor.VERSION.split('.').shift() == "4";

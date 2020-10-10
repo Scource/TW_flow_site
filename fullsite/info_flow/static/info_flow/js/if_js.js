@@ -6,11 +6,6 @@ jQuery(document).ready(function() {
        document.location.href = url.replace('123', id);
     });
 
-
-    $(".clickable-row .td_btn").click(function () {
-    });
-
-
     $(".clickable-row_task").click(function () {
     	let url = $("#url").attr("data-url");
     	let id = $(this).attr('data-id');
@@ -19,12 +14,17 @@ jQuery(document).ready(function() {
     });
 
 
-    $(".clickable-row .td_btn").click(function () {
-    });
-
-
     $("#toggle_filter").click(function(){
     $(".adv_filter").toggle();
     });
 
+
+    $("#cor_template").click(function(){
+    $(".cor_template").toggle();
+    });
+
+
+    $("#cor_template_new").click(function(){
+    $(".cor_template_new").toggle();
+    });
 });

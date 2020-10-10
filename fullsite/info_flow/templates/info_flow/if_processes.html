@@ -26,6 +26,9 @@ Lista procesów
 <button type="button" ><a href="{% url 'info_flow:if_processes' cat=cat active='active' %}">Pokaż aktywne</a></button>
 {% endif%}
 
+
+<button type="button" class="float_r" ><a href="{% url 'info_flow:if_new_proc' %}">Nowy proces</a></button>
+
 <h3>Procesy w kategorii "{{cat}}"</h3>
 <div class="cleaner h10"></div>
 <button id="toggle_filter">Zaawansowane filtry</button>
@@ -63,7 +66,7 @@ Lista procesów
 		<th>Poczatek</th>
 		<th>Koniec</th>
 		<th>Autor</th>
-		<th></th>
+		<th>Stan</th>
 		<th></th>
 	</tr>
 	{% for p in proc_f.qs %}
@@ -73,11 +76,7 @@ Lista procesów
 		<td>{{p.proc_start_date|date:"Y-m-d H:i"}}</td>
 		<td>{{p.proc_end_date|date:"Y-m-d H:i"}}</td>
 		<td>{{p.proc_author}}</td>
-		<td>
-			{% if user.is_authenticated and user == p.proc_author %}
-			<a href="{% url 'info_flow:if_edit_proc' p.id%}">Edytuj</a>
-			{% endif %}
-		</td>
+		<td>{{p.task_count}}</td>
 		<td>
 			{% if user.is_authenticated and user == p.proc_author %}
 			<a href="{% url 'info_flow:if_delete_proc' proc_id=p.id cat=p.proc_category %}"  >Usuń</a>

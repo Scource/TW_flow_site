@@ -38,7 +38,8 @@ Dodaj zadanie
             <label for ='{{task_form.tasks_end_date}}'>Data końca:</label><div> {{task_form.tasks_end_date|add_class:"input_field"}}</div>
             <div class="cleaner h10"></div>
 
-            <label for ='{{task_form.tasks_assigned}}'>Przypisz do:</label><div> {{task_form.tasks_assigned|add_class:"input_field"}}</div>
+            <label for ='{{task_form.tasks_assigned}}'>Przypisz do:</label><div > {{task_form.tasks_assigned|add_class:"input_field"}}
+            <!-- {% render_field task_form.tasks_assigned type="text" %} --></div>
             <div class="cleaner h10"></div>
 
             <div> {{ file_form.files_document|add_class:"input_field"}}</div>

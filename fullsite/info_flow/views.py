@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, get_list_or_404, redirec
 from django.http import HttpResponse, FileResponse
 from .models import tasks, process, comments, posts, messages, files, category
 from .filters import ProcessFilter, PostsFilter, UserProcessFilter
-from .forms import TaskFormSet, ProcessForm, TaskForm, CommForm, TaskFormPos, PostsForm, FileForm, MessageForm, TaskFormPoint, TaskFormPointEdit
+from .forms import TaskFormSet, ProcessForm, TaskForm, CommForm, TaskFormPos, PostsForm, FileForm, MessageForm, TaskFormPoint, TaskFormPointEdit, CorrectionsProcForm
 from django.contrib.auth.models import User
 
 from django.views.decorators.csrf import csrf_protect, ensure_csrf_cookie
@@ -12,7 +12,7 @@ from django.http import HttpResponseForbidden, HttpResponseRedirect
 import mimetypes
 import os
 from django.conf import settings
-from .services import get_tasks_in_proc, get_points_in_task#, tasks_in_proc_list
+from .services import get_tasks_in_proc, get_points_in_task, create_corrections_template
 
 
 # Create your views here.
@@ -82,7 +82,6 @@ def if_add_task(request, pid):
 	if not request.user.id==proc.proc_author.id:
 		return HttpResponseForbidden("Nie ma takiego podgladania")
 	if request.method=='POST':
-
 		task_form=TaskForm(request.POST)
 		file_form=FileForm(request.POST, request.FILES)
 		if task_form.is_valid() & file_form.is_valid():
@@ -90,8 +89,8 @@ def if_add_task(request, pid):
 			newTask.tasks_is_active=True
 			newTask.tasks_proc_id=pid
 			newTask.save()
+			task_form.save_m2m()
 			for f in request.FILES.getlist('files_document'):
-				#newFile=f.save(commit=False)
 				newFile = files(files_document=f)
 				newFile.files_tasks_id=newTask.id
 				newFile.files_by_user_id=request.user.id
@@ -471,3 +470,18 @@ def assign_task(request, object_type, task_id):
 	elif object_type == "point":
 		return redirect('info_flow:if_show_point', tid=redirect_id)
 
+
+@login_required
+@permission_required('info_flow.view_process')
+def if_proc_templates(request):
+	if request.method=='POST':
+		cor_form=CorrectionsProcForm(request.POST)
+		if cor_form.is_valid():
+			month=cor_form.cleaned_data.get('month_picked')
+			cor=cor_form.cleaned_data.get('cor_chosen')
+			create_corrections_template(request.user, month, cor)
+			return redirect('info_flow:if_proc_templates')
+	else:
+		cor_form=CorrectionsProcForm()
+		context={'cor_form':cor_form}
+		return render(request, 'info_flow/if_proc_templates.html', context)

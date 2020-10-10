@@ -28,7 +28,7 @@
 
 			<div class="float_r">
 				{% if user.is_authenticated %}
-					{% if user in task.tasks_assigned.all %}
+					{% if user in task.tasks_assigned.all%}
 						<a href="{% url 'info_flow:assign_task' object_type='point' task_id=task.id %}" >Odrzuć punkt</a><br>
 					{% else %}
 						<a href="{% url 'info_flow:assign_task' object_type='point' task_id=task.id %}" >Przyjmnij punkt</a><br>
@@ -48,7 +48,7 @@
 	</div>
 	<div class="cleaner"></div>
 	<h6>{{task.tasks_description}}</h6>
-	<div class="cleaner h10"></div>
+	<div class="cleaner h40"></div>
 	<div class="meta">
 				<img src="{% static 'images/timetable.png' %}" alt="timetable" />
 					{% if task.tasks_start_date %}

@@ -35,20 +35,26 @@ class process(models.Model):
 		return self.proc_process_name
 
 
-	# @property
- #    def age(self):
- #    	task=tasks.objects.all().filter(tasks_proc=proc.id, tasks_is_deleted=False, tasks_tasks_id__isnull=True)
-	# 	task_count=task.count()
-	# 	task_done=task.filter(tasks_is_active=False).count()
-	# 	proc.task_in = task_count
-	# 	proc.task_all = task_done
- #        return timezone.now().year - self.dob.year
+	@property
+	def task_count(self):
+		task=tasks.objects.all().filter(tasks_proc=self.id, tasks_is_deleted=False, tasks_tasks_id__isnull=True)
+		task_count=task.count()
+		task_done=task.filter(tasks_is_active=False).count()
+		return str(task_done)+'/'+str(task_count)
+
+	@classmethod
+	def save_proc_template(cls, data):
+		#proc=process(**data)
+		proc_dict=process.objects.create(**data)
+		return proc_dict.id
 
 	class Meta():
 		ordering=['-proc_modified', '-proc_created', '-proc_is_active']
 		permissions = (
 		('check_proc', 'Check proc'),
 		)
+
+
 
 class tasks(models.Model):
 	tasks_name = models.CharField(max_length=150, blank=False)
@@ -66,6 +72,13 @@ class tasks(models.Model):
 	def __str__(self):
 		return self.tasks_name
 
+
+	@classmethod
+	def save_task_template(cls, data):
+		task=tasks.objects.create(**data)
+		return task.id
+
+
 	def toggle_active(task_id):
 		task_status=tasks.objects.get(id=task_id)
 		if task_status.tasks_is_active==True:
@@ -82,7 +95,6 @@ class tasks(models.Model):
 			task_status.tasks_assigned.remove(user)
 		else:
 			task_status.tasks_assigned.add(user)
-
 		if task_status.tasks_tasks_id == None:
 			return task_id
 		elif object_type=="task":

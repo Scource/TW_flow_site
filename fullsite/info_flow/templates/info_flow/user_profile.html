@@ -21,6 +21,8 @@ Lista procesów uzytkownika
 
 {% block content %}
 
+<a class="float_r" href="{% url 'password_change' %}">Zmień hasło</a>
+
 {% if state %}
 <button type="button" ><a href="{% url 'info_flow:user_profile' 'inactive' %}">Pokaż nieaktywne</a></button>
 {% else %}
@@ -60,7 +62,6 @@ Lista procesów uzytkownika
 		<th>Autor</th>
 		<th>Prywatny</th>
 		<th></th>
-		<th></th>
 	</tr>
 	{%for p in filter_priv_proc.qs%}
 	<tr class='clickable-row' id=url data-url="{% url 'info_flow:if_show_proc' 123 %}" data-id={{p.id}}>
@@ -70,11 +71,7 @@ Lista procesów uzytkownika
 		<td>{{p.proc_end_date|date:"Y-m-d H:i"}}</td>
 		<td>{{p.proc_author}}</td>
 		<td>{{p.proc_is_private|yesno:"Tak,Nie"}}</td>
-		<td>
-			{% if user.is_authenticated and user == p.proc_author %}
-			<a href="{% url 'info_flow:if_edit_proc' p.id%}">Edytuj</a>
-			{% endif %}
-		</td>
+
 		<td>
 			{% if user.is_authenticated and user == p.proc_author %}
 			<a href="{% url 'info_flow:if_delete_proc' proc_id=p.id cat=p.proc_category %}"  >Usuń</a>
@@ -97,7 +94,6 @@ Lista procesów uzytkownika
 		<th>Koniec</th>
 		<th>Autor</th>
 		<th></th>
-		<th></th>
 	</tr>
 	{%for p in user_proc%}
 	<tr class='clickable-row' id=url data-url="{% url 'info_flow:if_show_proc' 123 %}" data-id={{p.id}}>
@@ -106,11 +102,6 @@ Lista procesów uzytkownika
 		<td>{{p.proc_start_date|date:"Y-m-d H:i"}}</td>
 		<td>{{p.proc_end_date|date:"Y-m-d H:i"}}</td>
 		<td>{{p.proc_author}}</td>
-		<td>
-			{% if user.is_authenticated and user == p.proc_author %}
-			<a href="{% url 'info_flow:if_edit_proc' p.id%}">Edytuj</a>
-			{% endif %}
-		</td>
 		<td>
 			{% if user.is_authenticated and user == p.proc_author %}
 			<a href="{% url 'info_flow:if_delete_proc' proc_id=p.id cat=p.proc_category %}"  >Usuń</a>
