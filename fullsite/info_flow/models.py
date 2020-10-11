@@ -72,6 +72,13 @@ class tasks(models.Model):
 	def __str__(self):
 		return self.tasks_name
 
+	@property
+	def points_count(self):
+		point=tasks.objects.all().filter(tasks_tasks_id=self.id, tasks_is_deleted=False)
+		point_count=point.count()
+		point_done=point.filter(tasks_is_active=False).count()
+		return str(point_done)+'/'+str(point_count)
+
 
 	@classmethod
 	def save_task_template(cls, data):

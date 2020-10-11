@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, get_list_or_404, redirec
 from django.http import HttpResponse, FileResponse
 from .models import tasks, process, comments, posts, messages, files, category
 from .filters import ProcessFilter, PostsFilter, UserProcessFilter
-from .forms import TaskFormSet, ProcessForm, TaskForm, CommForm, TaskFormPos, PostsForm, FileForm, MessageForm, TaskFormPoint, TaskFormPointEdit, CorrectionsProcForm
+from .forms import TaskFormSet, ProcessForm, TaskForm, CommForm, TaskFormPos, PostsForm, FileForm, MessageForm, TaskFormPoint, TaskFormPointEdit, CorrectionsProcForm, OSDnTemplateForm
 from django.contrib.auth.models import User
 
 from django.views.decorators.csrf import csrf_protect, ensure_csrf_cookie
@@ -12,7 +12,7 @@ from django.http import HttpResponseForbidden, HttpResponseRedirect
 import mimetypes
 import os
 from django.conf import settings
-from .services import get_tasks_in_proc, get_points_in_task, create_corrections_template
+from .services import get_tasks_in_proc, get_points_in_task, create_corrections_template, create_OSDN_template
 
 
 # Create your views here.
@@ -144,13 +144,21 @@ def if_show_proc(request, pid):
 		context={'proc':proc,'task':task, 'com_form':com_form, 'coms':coms, 'fi':fi, 'tasks_data':tasks_data}
 	return render(request, 'info_flow/if_show_proc.html', context)
 
-
 @login_required
 @permission_required('info_flow.view_tasks')
 def if_show_task(request, tid):
 	task=tasks.objects.get(pk = tid)
 	if request.method=='POST':
+		file_form=FileForm(request.POST, request.FILES)
 		com_form=CommForm(request.POST)
+		if file_form.is_valid():
+			for f in request.FILES.getlist('files_document'):
+				newFile = files(files_document=f)
+				newFile.files_tasks_id=tid
+				newFile.files_by_user_id=request.user.id
+				newFile.files_name=f
+				newFile.save()
+				return redirect('info_flow:if_show_task', tid=tid)
 		if com_form.is_valid():
 			newCom=com_form.save(commit=False)
 			newCom.com_author_id=request.user.id
@@ -161,12 +169,13 @@ def if_show_task(request, tid):
 			else:
 				return redirect('info_flow:if_show_point', tid=tid)
 	else:
+		file_form=FileForm()
 		com_form=CommForm()
 		points_data=get_points_in_task(tid)
 		coms=comments.objects.all().filter(com_tasks_id=tid, com_is_deleted=False)
 		fi=files.objects.all().filter(files_tasks_id = tid)
 		point=tasks.objects.all().filter(tasks_tasks_id=tid, tasks_is_deleted=False)
-		context={'point':point,'task':task, 'fi':fi, 'points_data':points_data, 'com_form':com_form, 'coms':coms}
+		context={'point':point,'task':task, 'fi':fi, 'points_data':points_data, 'com_form':com_form, 'coms':coms, 'file_form':file_form}
 		if task.tasks_tasks_id == None:
 			return render(request, 'info_flow/if_show_task.html', context)
 		else:
@@ -433,8 +442,6 @@ def if_delete_post_file(request, file_id):
     return redirect('info_flow:if_edit_task', pid=task_id)
 
 
-
-
 @login_required
 def user_profile(request, active):
 	if active=="active":
@@ -453,9 +460,15 @@ def accept_task(request, task_id):
 	tasks.toggle_active(task_id)
 	task=tasks.objects.get(id=task_id)
 	if task.tasks_tasks_id == None:
-		return redirect('info_flow:if_show_task', tid=task_id)
-	else:
-		return redirect('info_flow:if_show_point', tid=task_id)
+		if task.tasks_is_active == False:
+			return redirect('info_flow:if_show_proc', pid=task.tasks_proc_id)
+		else:
+			return redirect('info_flow:if_show_task', tid=task.id)
+	elif task.tasks_tasks_id != None:
+		if task.tasks_is_active == False:
+			return redirect('info_flow:if_show_task', tid=task.tasks_tasks_id)
+		else:
+			return redirect('info_flow:if_show_point', tid=task.id)
 
 @login_required
 def assign_task(request, object_type, task_id):
@@ -475,13 +488,23 @@ def assign_task(request, object_type, task_id):
 @permission_required('info_flow.view_process')
 def if_proc_templates(request):
 	if request.method=='POST':
+		#somehow determine whitch submit form was clicked () and pass this form to unversal variable to perform later operations
+		#instead of multiple if construction
 		cor_form=CorrectionsProcForm(request.POST)
-		if cor_form.is_valid():
-			month=cor_form.cleaned_data.get('month_picked')
-			cor=cor_form.cleaned_data.get('cor_chosen')
-			create_corrections_template(request.user, month, cor)
-			return redirect('info_flow:if_proc_templates')
+		osdn_from=OSDnTemplateForm(request.POST)
+
+		if 'cor_template_form' in request.POST:
+			if cor_form.is_valid():
+				month=cor_form.cleaned_data.get('month_picked')
+				cor=cor_form.cleaned_data.get('cor_chosen')
+				new_proc=create_corrections_template(request.user, month, cor)
+		elif 'osdn_template_form' in request.POST:
+			if osdn_from.is_valid():
+				month=osdn_from.cleaned_data.get('month_picked')
+				new_proc=create_OSDN_template(request.user, month)
+		return redirect('info_flow:if_show_proc', pid=new_proc)
 	else:
 		cor_form=CorrectionsProcForm()
+		osdn_from=OSDnTemplateForm()
 		context={'cor_form':cor_form}
 		return render(request, 'info_flow/if_proc_templates.html', context)

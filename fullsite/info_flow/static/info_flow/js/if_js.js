@@ -24,7 +24,7 @@ jQuery(document).ready(function() {
     });
 
 
-    $("#cor_template_new").click(function(){
-    $(".cor_template_new").toggle();
+    $("#osdn_template").click(function(){
+    $(".osdn_template").toggle();
     });
 });

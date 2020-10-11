@@ -35,7 +35,7 @@
 
 				<div class="cleaner h10"></div>
 				{% if user in task.tasks_assigned.all %}
-					<a type= "button" href="{% url 'info_flow:accept_task' task.id %}">
+					<a type= "button" href="{% url 'info_flow:accept_task' task_id=task.id  %}">
 					{% if task.tasks_is_active %}Zamknij zadanie{% else %}Otwórz zadanie{% endif %}</a>
 				{% endif %}	
 			</div>
@@ -84,10 +84,24 @@
 	<div class="float_r">
 	<h5>Załaczniki</h5>
 		{% for f in fi %}
-			<a type= "button" href="{% url 'info_flow:download_file' f.id %}" download>{{f.files_name}}</a><br>
+			<a type= "button" href="{% url 'info_flow:download_file' f.id %}" download>{{f.files_name}}</a> by {{f.files_by_user}}<br>
 		{% empty %}
 	    {% endfor %}
     {% endif %}
+    <div class="cleaner h10"></div>
+
+    {% if user.is_authenticated %}
+    	{% if user == task.tasks_proc.proc_author or user in task.tasks_assigned.all %}
+        <form  method="POST" action="{% url 'info_flow:if_show_task' task.id %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{file_form.files_document}}
+            <div class="cleaner"></div>
+            <input type="submit" title="Dodaj plik" name='add_file' value="Dodaj plik">
+        </form>
+        {% endif %}
+	{% endif %}	
+
+
     </div>
 	<div class="cleaner h20"></div>
 		<div class="comments">			

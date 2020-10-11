@@ -29,14 +29,19 @@ def create_corrections_template(user, cor_data, cor):
 	cor_data_end=cor_data.replace(day=calendar.monthrange(cor_data.year, cor_data.month)[1], hour=23, minute=59)
 
 
-	tasks_names_list=['MB Odbiorcze  v1', 'MB Odbiorcze  v2', 'MB Wytwórcze  v1', 'MB Wytwórcze  v2', 'Weryfikacja Odbiorczego Oddania', 'Raport "KOREKTY_MB_MC"']
-	tasks_desc_list=['Zadania związane z przygotowaniem danych w celu wysłania na Rynek Bilansujący MB odbiorczych',
-	'Dodatkowa iteracja zadań związane z przygotowaniem danych w celu wysłania na Rynek Bilansujący MB odbiorczych',
-	'Zadania związane z przygotowaniem danych w celu wysłania na Rynek Bilansujący MB wytwórczych',
-	'Dodatkowa iteracja zadań związanych z przygotowaniem danych w celu wysłania na Rynek Bilansujący MB wytwórczych',
-	'Sprawdzenie konfiguracji technicznej i handlowej dla wszystkich MBo na kierunku oddanie dla prosumentów/mikroinstalacji',
-	'Po zakończeniu wcześniejszych prac związanych z weryfikacją danych MBo i MBw przeliczenie głównego raportu "KOREKTY_MB_MC" weryfikującego popranwość wykonanych działań.']
+	UDPS_task=['Podczyt UDPS', 'Zadania związane z zaimportowaniem danych zużyciowych z systemu bilingowego do systemu innOP']
+	UDPS_points=[('Zadanie 1','Opis zadanie 1'),
+	('Zadanie 2','Opis zadanie 2')
+	]
 
+	tasks_names_list=['MB Odbiorcze  v1', 'MB Odbiorcze  v2', 'MB Wytwórcze  v1', 'MB Wytwórcze  v2', 'Weryfikacja Odbiorczego Oddania', 'Raport "KOREKTY_MB_MC"', 'Prace do wykonania w aplikacji WIRE']
+	tasks_desc_list=['Zadania związane z przygotowaniem danych w celu wysłania na Rynek Bilansujący MB odbiorczych.',
+	'Dodatkowa iteracja zadań związane z przygotowaniem danych w celu wysłania na Rynek Bilansujący MB odbiorczych.',
+	'Zadania związane z przygotowaniem danych w celu wysłania na Rynek Bilansujący MB wytwórczych.',
+	'Dodatkowa iteracja zadań związanych z przygotowaniem danych w celu wysłania na Rynek Bilansujący MB wytwórczych.',
+	'Sprawdzenie konfiguracji technicznej i handlowej dla wszystkich MBo na kierunku oddanie dla prosumentów/mikroinstalacji.',
+	'Po zakończeniu wcześniejszych prac związanych z weryfikacją danych MBo i MBw przeliczenie głównego raportu "KOREKTY_MB_MC" weryfikującego popranwość wykonanych działań.',
+	'Zadania związane z przygotowaniem i wysłaniem dokumentów DGMB w WIRE']
 
 	first_point=[('Zatwierdzanie danych v1','Uruchomienie zatwierdzania formuł mocowych/obliczeniowych, a następnie zatwierdzenie wszystkie MBo'),
 	('Generacja kodów v1','Uruchomienie programu do wyszukiwania braków i prognoz, danych niepewnych oraz PPE z brakiem schematów taryfowych'),
@@ -63,19 +68,30 @@ def create_corrections_template(user, cor_data, cor):
 	('Ręczna korekta kodów OO (Klepanie)','Sprawdzamy poprawność konfiguracji handlowej i technicznej (czy daty początku danych w innop są tożsame z konfiguracją handlową)'),
 	('Ponowna Agregacja OO','Dla MB z korygowaną konfiguracją ponowne wykonanie agregatów (warto zapisywać sobie jaki SE był w zmienianym PPE tak aby nie agregować wszystkich OO danego MB)'),
 	('Raporty innZRY','Przeliczenie raportów innZRY OO, sprawdzenie zgodność sum PPE z agregatami poszczególnych MB i zapisanie innZRY plików w odpowiednich lokalizacjach')]
-
 	sixth_point=[]
+	seventh_point=[('Import danych do WIRE', 'Zaimportowanie danych z systemu innOP do bazy WIRE dla korygowanych MBo i MBw'),
+	('Generacja dokumentów DGMB','Utworzenie dokumentów DGMB dla korygowanych MB'),
+	('Generacja raportów Dobowo-Godzinnych','Utworzenie i wyeksportowanie raportów Dobowo-Godzinnych dla korygowanych MBo i MBw'),
+	('Ostateczna weryfikacja danych WIRE vs INNOP','Przy pomocy programiku sprawdzamy czy to co jest w WIRE jest równe temu co jest w bazie innOP. Sprawdzamy również czy nie ma żadnych pików itp'),
+	('Wystawienie dokumentów DGMB','Nastawiamy w WIRE dokumenty DGMB do wysłania na odpowiedni dzień i godzinę')]
 
-	points=[first_point, second_time, third_point, forth_point, fifth_point, sixth_point]
+	points=[first_point, second_time, third_point, forth_point, fifth_point, sixth_point, seventh_point]
 	p_count=0
-	proc_id=create_process_template(user, cor_data, cor, cor_data_end)
+	proc_id=corrections_process_template(user, cor_data, cor, cor_data_end)
+	if cor=='M+4':
+		m4_task_id=task_template(user, proc_id, cor_data, cor_data_end, UDPS_task[0], UDPS_task[1])
+		for el in UDPS_points:
+			point_template(user, proc_id, cor_data, cor_data_end, el[0], el[1], m4_task_id)
+
 	for name, desc in zip(tasks_names_list, tasks_desc_list):
-		task_id=create_task_template(user, proc_id, cor_data, cor_data_end, name, desc)
+		task_id=task_template(user, proc_id, cor_data, cor_data_end, name, desc)
 		for point in points[p_count]:
-			create_point_template(user, proc_id, cor_data, cor_data_end, point[0], point[1], task_id)
+			point_template(user, proc_id, cor_data, cor_data_end, point[0], point[1], task_id)
 		p_count += 1
 
-def create_process_template(user, cor_data, cor, cor_data_end):
+	return proc_id
+
+def corrections_process_template(user, cor_data, cor, cor_data_end):
 	data_dict={
 		'proc_author':user,
 		'proc_process_name': 'Przygotowanie korekta ' + cor + ' (' + cor_data.strftime("%Y-%m")+ ')',
@@ -90,36 +106,7 @@ def create_process_template(user, cor_data, cor, cor_data_end):
 	new_proc_id=process.save_proc_template(data_dict)
 	return new_proc_id
 
-
-def create_task_template(user, proc_id, cor_data, cor_data_end, name, desc):
-
-	first_point=[('Zatwierdzanie danych v1','Uruchamiamy zatwierdzanie formuł mocowych/obliczeniowych a następnie zatwierdzamy wszystkie MBo'),
-	('Generacja kodów v1','Uruchamiamy program do wyszukiwania braków i prognoz, danych niepewnych oraz PPE z brakiem schematów taryfowych'),
-	('Obliczanie innZR v1','Uruchamiamy zadanie złożone obliczające innZRY odbiorcze dla wszystkich MB'),
-	('Klepanie kodów v1','Weryfikujemy kompletność danych na podstawie wcześniej wygenerowanej listy kodów PPE dla klepania V1'),
-	('Kopiowanie przeliczonych innZR','Kopiujemy wcześniej przeliczone innZRY do odpowiednich lokalizacji na ST2')]
-
-	second_time=[('Agregacja MB i MDD','Wyłaczenie R&R i agregacja wpierw wszystkich MB, a następnie wszystkich MDD'),
-	('Generacja kodów v2','Uruchamiamy program do wyszukiwania problematycznych kodów'),
-	('Obliczanie innZR v2','Uruchamiamy zadanie złożone liczące innZRY odbiorcze dla wszystkich MB'),
-	('Klepanie kodów v2','Ostateczna weryfikacja kompletności danych na podstawie wygenerowanejlisty kodów PPE'),
-	('Raport MB vs MDD','Przeliczenie raportu weryfikującego popraność czy suma agregatów MDD jest równa agregatowi MB'),
-	('Weryfikacja innZR','Sprawdzenie przeliczonych wcześniej raportów innZR dla MBo czy suma PPE jest równa agregatowi MB i skopiowanie ich w odpowienie lokalizacjie na ST2')	]
-
-	third_point=[('Zatwierdzenie danych v1','Uruchamiamy zatwierdzanie formuł mocowych/obliczeniowych a następnie zatwierdzaniem wszystkich MBw'),
-	('Agregacja v1','Uruchamiamy agregaty dla wszystkich MBw'),
-	('Raporty innZR','Uruchamiamy raporty innZRY dla wszystkich MBw, sprawdzamy kompletność danych i zapisujemy je do odpowiednich lokalizacji (kompletność danych będzie można sprawdzić również wykorzystując program analogicznie jak przy OO)')]
-
-	forth_point=[('Zatwierdzenie danych v2','Uruchamiamy zatwierdzanie formuł mocowych/obliczeniowych a następnie zatwierdzaniem wszystkich MBw'),
-	('Agregacja v2','Uruchamiamy agregaty dla wszystkich MBw'),
-	('Raporty innZR','Uruchamiamy raporty innZRY dla wszystkich MBw, ostatecznie sprawdzamy kompletność danych i zapisujemy je do odpowiednich lokalizacji (kompletność danych będzie można sprawdzić również wykorzystując program analogicznie jak przy OO)')]
-
-	fifth_point=[('Generacja kodów OO','Uruchamiamy program do wyselekcjonowania listy kodów PPE do weryfikacji'),
-	('Klepanie kodów OO','Sprawdzamy poprawność konfiguracji handlowej i technicznej (czy daty początku danych w innop są tożsame z konfiguracją handlową)'),
-	('Ponowna Agregacja OO','Dla MB dla których musieliśmy poprawić konfigurację ponownie wykonujemy agregaty (warto zapisywać sobie jaki SE był w zmienianym PPE tak aby nie agregować wszystkich OO danego MB)'),
-	('Raporty innZRY','Przeliczamy innZRY OO, sprawdzamy zgodność sum PPE z agregatem MB i zapisujemy innZRY do odpowiednich lokalizacji')]
-
-
+def task_template(user, proc_id, cor_data, cor_data_end, name, desc):
 	data_dict={
 		'tasks_name':name,
 		'tasks_description':desc,
@@ -129,12 +116,9 @@ def create_task_template(user, proc_id, cor_data, cor_data_end, name, desc):
 		'tasks_is_deleted':False,
 		'tasks_proc':process.objects.get(pk=proc_id)}
 	new_task_id=tasks.save_task_template(data_dict)
-
 	return new_task_id
 
-
-
-def create_point_template(user, proc_id, cor_data, cor_data_end, name, desc, task_id):
+def point_template(user, proc_id, cor_data, cor_data_end, name, desc, task_id):
 	data_dict={
 		'tasks_name':name,
 		'tasks_description':desc,
@@ -145,3 +129,54 @@ def create_point_template(user, proc_id, cor_data, cor_data_end, name, desc, tas
 		'tasks_proc':process.objects.get(pk=proc_id),
 		'tasks_tasks':tasks.objects.get(pk=task_id)}
 	new_point_id=tasks.save_task_template(data_dict)
+
+
+def create_OSDN_template(user, cor_data):
+	cor_data_end=cor_data.replace(day=calendar.monthrange(cor_data.year, cor_data.month)[1], hour=23, minute=59)
+
+	osdn_task=[('Import danych z serwerów sFTP/FTP','Zaimportowanie do systemu InnOP plików wystawianych na serwery FTP/sFTP przez poszczególne OSDn'),
+	('Zatwierdzanie i sprawdzenie danych','Zatwierdzenie danych dla wszystkich trybów korekt iich weryfikacja'),
+	('D-ENERGIA (ZACHEM)','Uzgodnienie danych z OSDn'),
+	('Green Lights GLDS','Uzgodnienie danych z OSDn'),
+	('Grupa Energia GEGE','Uzgodnienie danych z OSDn'),
+	('Grupa Energia Obrót GEOG','Uzgodnienie danych z OSDn'),
+	('POLENERGIA DYSTRYBUCJA','Uzgodnienie danych z OSDn'),
+	('POWER21','Uzgodnienie danych z OSDn'),
+	('TERAWAT DYSTRYBUCJA','Uzgodnienie danych z OSDn'),
+	('ZMPSIŚ','Uzgodnienie danych z OSDn'),
+	('EC BYDGOSZCZ','Uzgodnienie danych z OSDn'),
+	('HCP','Uzgodnienie danych z OSDn')]
+
+	point1=[]
+	point2=[('Zatwierdzanie danych','Wykonanie zatwierdzania formuł obliczeniowych i profili mocowych dla wszystkich korekt'),
+	('Sprawdzenie danych','Sprawdzenie czy suma wszystkich formuł mocowych jest równa SUMIE TPA')]
+	point3=[('Raport','Przeliczenie raportu odbiorców przypisanych do OSDn'),
+	('Przesłanie informacji do OSDn','Kontakt z OSDn w celu sprawdzenia i akceptacji poprawności danych w systemie InnOP'),
+	('Potwierdzenie od OSDn', 'Uzyskanie informacji o zgodności danych')]
+
+	points=[point1, point2, point3, point3, point3, point3, point3, point3, point3, point3, point3, point3]
+
+	proc_id=OSDN_process_template(user, cor_data, cor_data_end)
+	p_count=0
+	for task in osdn_task:
+		task_id=task_template(user, proc_id, cor_data, cor_data_end, task[0], task[1])
+		for point in points[p_count]:
+			point_template(user, proc_id, cor_data, cor_data_end, point[0], point[1], task_id)
+		p_count += 1
+	return proc_id
+
+def OSDN_process_template(user, cor_data, cor_data_end):
+	data_dict={
+		'proc_author':user,
+		'proc_process_name': 'Uzgadnianie obszarów OSDn',
+		'proc_description' : 'Prace związane z przygotowaniem i uzgodnieniem poprawnych danych pochodzących z obszarów OSDn',
+		'proc_start_date' : cor_data,
+		'proc_end_date' : cor_data_end,
+		'proc_category' : category.objects.get(cat_name='Korekty'),
+		'proc_is_active':True,
+		'proc_is_private':False,
+		'proc_is_deleted':False,
+		'proc_assigned' : user}
+	new_proc_id=process.save_proc_template(data_dict)
+	return new_proc_id
+

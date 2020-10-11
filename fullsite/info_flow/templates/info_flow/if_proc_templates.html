@@ -33,7 +33,18 @@ Lista procesów
 	            {% csrf_token %}
 	            {{cor_form.cor_chosen|add_class:"input_field"}} 
 				{{cor_form.month_picked|add_class:"input_field"}}
-	            <input type="submit" name='cor_proc_form' value="Utwórz" class="submit_btn float_l">
+	            <input type="submit" name='cor_template_form' value="Utwórz" class="submit_btn float_l">
+	        </form>
+	        </div>  
+        </div>
+    <div class="cleaner h20"></div>
+    Kontrola obszarów OSDn <button id="osdn_template">Pokaż</button>
+		<div class='osdn_template hidden'>
+	        <div id="contact_form">
+	        <form  method="POST" action="{% url 'info_flow:if_proc_templates' %}" enctype="multipart/form-data">
+	            {% csrf_token %}
+				{{cor_form.month_picked|add_class:"input_field"}}
+	            <input type="submit" name='osdn_template_form' value="Utwórz" class="submit_btn float_l">
 	        </form>
 	        </div>  
         </div>

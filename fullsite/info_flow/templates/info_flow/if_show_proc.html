@@ -82,7 +82,7 @@
 						{%else%}
 						<img src="{% static 'images/inactive.png' %}" alt="active" />
 						{% endif %}
-						<a href="{% url 'info_flow:if_show_task' t.id %}">{{t.tasks_name}}</a>
+						<a href="{% url 'info_flow:if_show_task' t.id %}">{{t.tasks_name}}&nbsp;({{t.points_count}})</a>
 						<div class="float_r">
 						<img src="{% static 'images/assign.png' %}" alt="assign" />
 							{% for us in t.tasks_assigned.all %}
@@ -90,6 +90,7 @@
 							{% empty %}
 								Nieprzypisane
 							{% endfor %} 
+
 						</div>
 						<div class="cleaner h20"></div>
 						</li>

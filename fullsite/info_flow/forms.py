@@ -107,3 +107,6 @@ class CorrectionsProcForm(forms.Form):
 ]
     cor_chosen = forms.ChoiceField(choices=Korekty) 
     month_picked = forms.DateTimeField(widget=MonthPickerInput())
+
+class OSDnTemplateForm(forms.Form):
+    month_picked = forms.DateTimeField(widget=MonthPickerInput())
