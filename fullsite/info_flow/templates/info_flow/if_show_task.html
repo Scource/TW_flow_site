@@ -25,7 +25,9 @@
 			<div class="float_r">
 				{% if user.is_authenticated %}
 					{% if user in task.tasks_assigned.all %}
-						<a href="{% url 'info_flow:assign_task' object_type='task' task_id=task.id %}" >Odrzuć zadanie</a><br>
+						{% if task.tasks_is_active %}
+							<a href="{% url 'info_flow:assign_task' object_type='task' task_id=task.id %}" >Odrzuć zadanie</a><br>
+						{% endif %}
 					{% else %}
 						{% if not task.tasks_assigned.all|length %}
 							<a href="{% url 'info_flow:assign_task' object_type='task' task_id=task.id %}" >Przyjmnij zadanie</a><br>
@@ -34,10 +36,16 @@
 				{% endif %}
 
 				<div class="cleaner h10"></div>
-				{% if user in task.tasks_assigned.all %}
-					<a type= "button" href="{% url 'info_flow:accept_task' task_id=task.id  %}">
-					{% if task.tasks_is_active %}Zamknij zadanie{% else %}Otwórz zadanie{% endif %}</a>
-				{% endif %}	
+				{% if points_data.points_number_inactive == points_data.points_number %}
+					{% if user in task.tasks_assigned.all %}
+						<a type= "button" href="{% url 'info_flow:accept_task' task_id=task.id  %}">
+						{% if task.tasks_is_active %}
+							<a type= "button" href="{% url 'info_flow:accept_task' task_id=task.id  %}">Zamknij zadanie</a>
+						{% else %}
+							<a type= "button" href="{% url 'info_flow:accept_task' task_id=task.id  %}">Otwórz zadanie</a>
+						{% endif %}
+					{% endif %}	
+				{% endif %}
 			</div>
 	<div class="meta float_l">
 		<span class="admin">{{task.tasks_proc.proc_author}}</span><span class="date">{{task.tasks_created|date:"Y-m-d H:i"}}</span>
@@ -111,7 +119,7 @@
                                     
  
                                 <div class="comment_text">
-                                    <div class="comment_author">{{p.tasks_name}}<span class="date">{{p.tasks_created|date:"Y-m-d H:i"}}</span>
+                                    <div class="comment_author">{{p.tasks_name}}<span class="date">{{p.tasks_created|date:"Y-m-d H:i"}} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; kom: {{p.com_count}}</span>
                                     
 
 									<div class="reply">

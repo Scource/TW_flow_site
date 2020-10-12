@@ -28,12 +28,14 @@ def get_points_in_task(tid):
 def create_corrections_template(user, cor_data, cor):
 	cor_data_end=cor_data.replace(day=calendar.monthrange(cor_data.year, cor_data.month)[1], hour=23, minute=59)
 
+	#proc name/desc data
+	standard_cor=[('Przygotowanie korekty ' + cor + ' (' + cor_data.strftime("%Y-%m")+ ')'),
+	('Prace związane z przygotowaniem danych w celu wysłania ich na Rynek Bilansujący w korekcie '  + cor + ', dotyczy miesiąca ' + cor_data.strftime("%Y-%m"))]
 
+	#UDPS data
 	UDPS_task=['Podczyt UDPS', 'Zadania związane z zaimportowaniem danych zużyciowych z systemu bilingowego do systemu innOP']
-	UDPS_points=[('Zadanie 1','Opis zadanie 1'),
-	('Zadanie 2','Opis zadanie 2')
-	]
 
+	#standard coorrections tasks
 	tasks_names_list=['MB Odbiorcze  v1', 'MB Odbiorcze  v2', 'MB Wytwórcze  v1', 'MB Wytwórcze  v2', 'Weryfikacja Odbiorczego Oddania', 'Raport "KOREKTY_MB_MC"', 'Prace do wykonania w aplikacji WIRE']
 	tasks_desc_list=['Zadania związane z przygotowaniem danych w celu wysłania na Rynek Bilansujący MB odbiorczych.',
 	'Dodatkowa iteracja zadań związane z przygotowaniem danych w celu wysłania na Rynek Bilansujący MB odbiorczych.',
@@ -43,6 +45,7 @@ def create_corrections_template(user, cor_data, cor):
 	'Po zakończeniu wcześniejszych prac związanych z weryfikacją danych MBo i MBw przeliczenie głównego raportu "KOREKTY_MB_MC" weryfikującego popranwość wykonanych działań.',
 	'Zadania związane z przygotowaniem i wysłaniem dokumentów DGMB w WIRE']
 
+	#standard coorrections points
 	first_point=[('Zatwierdzanie danych v1','Uruchomienie zatwierdzania formuł mocowych/obliczeniowych, a następnie zatwierdzenie wszystkie MBo'),
 	('Generacja kodów v1','Uruchomienie programu do wyszukiwania braków i prognoz, danych niepewnych oraz PPE z brakiem schematów taryfowych'),
 	('Obliczanie innZR v1','Uruchomienie zadania złożonego obliczającego innZRY odbiorcze dla wszystkich MB'),
@@ -76,26 +79,43 @@ def create_corrections_template(user, cor_data, cor):
 	('Wystawienie dokumentów DGMB','Nastawiamy w WIRE dokumenty DGMB do wysłania na odpowiedni dzień i godzinę')]
 
 	points=[first_point, second_time, third_point, forth_point, fifth_point, sixth_point, seventh_point]
-	p_count=0
-	proc_id=corrections_process_template(user, cor_data, cor, cor_data_end)
-	if cor=='M+4':
-		m4_task_id=task_template(user, proc_id, cor_data, cor_data_end, UDPS_task[0], UDPS_task[1])
-		for el in UDPS_points:
-			point_template(user, proc_id, cor_data, cor_data_end, el[0], el[1], m4_task_id)
 
-	for name, desc in zip(tasks_names_list, tasks_desc_list):
-		task_id=task_template(user, proc_id, cor_data, cor_data_end, name, desc)
-		for point in points[p_count]:
-			point_template(user, proc_id, cor_data, cor_data_end, point[0], point[1], task_id)
-		p_count += 1
+	#proc data used in m14 correction temple
+	m14_proc=['Przygotowanie korekty ' + cor + ' (' + cor_data.strftime("%Y-%m")+ ')','Prace związane z przygotowaniem danych do wysłania na Rynek Bilansujący w korekcie M+15, która odbędzie się w następnym miesiącu']
+
+	#task data used in m14 correction temple
+	m14_task=['MB Odbiorcze', 'Zadania związane z przygotowaniem danych w celu wysłania na Rynek Bilansujący dla MB odbiorczych']	
+
+	#points data used in m14 correction temple
+	m15_points=[('Zatwierdzanie danych', 'Zatwierdzenie formuł mocowych/obliczeniowych oraz następnie zatwierdzenie wszystkich MBo'),
+	('Generacja kodów', 'Stworzenie listy braków i prognoz, danych niepewnych oraz PPE z brakiem schematów taryfowych z wykorzystaniem programu'),
+	('Obliczanie innZR','Obliczenie innZR dla wszystkich MB odbiorczych z wykorzystaniem zadania złożonego'),
+	('Ręczna korekta kodów (Klepanie)','Weryfikacja kompletności danych na podstawie wcześniej wygenerowanej listy kodów PPE do weryfikacji'),
+	('Kopiowanie przeliczonych raportów innZRY','Kopiowanie wcześniej przeliczonych plików innZRY do odpowiednich lokalizacji na ST2')]
+		
+	p_count=0
+	if cor=='M+14':
+		proc_id=process_template(user, cor_data, cor, cor_data_end, m14_proc)
+		task_id=task_template(user, proc_id, cor_data, cor_data_end, m14_task[0], m14_task[1])
+		for point in m15_points:
+				point_template(user, proc_id, cor_data, cor_data_end, point[0], point[1], task_id)
+	else:
+		proc_id=process_template(user, cor_data, cor, cor_data_end, standard_cor)
+		if cor=='M+4':
+			m4_task_id=task_template(user, proc_id, cor_data, cor_data_end, UDPS_task[0], UDPS_task[1])
+		for name, desc in zip(tasks_names_list, tasks_desc_list):
+			task_id=task_template(user, proc_id, cor_data, cor_data_end, name, desc)
+			for point in points[p_count]:
+				point_template(user, proc_id, cor_data, cor_data_end, point[0], point[1], task_id)
+			p_count += 1
 
 	return proc_id
 
-def corrections_process_template(user, cor_data, cor, cor_data_end):
+def process_template(user, cor_data, cor, cor_data_end, proc_data):
 	data_dict={
 		'proc_author':user,
-		'proc_process_name': 'Przygotowanie korekta ' + cor + ' (' + cor_data.strftime("%Y-%m")+ ')',
-		'proc_description' : 'Prace związane z przygotowaniem danych w celu wysłania ich na Rynek Bilansujący w korekcie '  + cor + ', dotyczy miesiąca ' + cor_data.strftime("%Y-%m"),
+		'proc_process_name': proc_data[0],
+		'proc_description' : proc_data[1],
 		'proc_start_date' : cor_data,
 		'proc_end_date' : cor_data_end,
 		'proc_category' : category.objects.get(cat_name='Korekty'),
@@ -134,8 +154,11 @@ def point_template(user, proc_id, cor_data, cor_data_end, name, desc, task_id):
 def create_OSDN_template(user, cor_data):
 	cor_data_end=cor_data.replace(day=calendar.monthrange(cor_data.year, cor_data.month)[1], hour=23, minute=59)
 
+	#osdn_proc=['Uzgadnianie obszarów OSDn','Prace związane z przygotowaniem i uzgodnieniem poprawnych danych pochodzących z obszarów OSDn']
+
+	#osdn task data
 	osdn_task=[('Import danych z serwerów sFTP/FTP','Zaimportowanie do systemu InnOP plików wystawianych na serwery FTP/sFTP przez poszczególne OSDn'),
-	('Zatwierdzanie i sprawdzenie danych','Zatwierdzenie danych dla wszystkich trybów korekt iich weryfikacja'),
+	('Zatwierdzanie i sprawdzenie danych','Zatwierdzenie danych dla wszystkich trybów korekt i ich weryfikacja'),
 	('D-ENERGIA (ZACHEM)','Uzgodnienie danych z OSDn'),
 	('Green Lights GLDS','Uzgodnienie danych z OSDn'),
 	('Grupa Energia GEGE','Uzgodnienie danych z OSDn'),
@@ -147,6 +170,7 @@ def create_OSDN_template(user, cor_data):
 	('EC BYDGOSZCZ','Uzgodnienie danych z OSDn'),
 	('HCP','Uzgodnienie danych z OSDn')]
 
+	#osdn points data
 	point1=[]
 	point2=[('Zatwierdzanie danych','Wykonanie zatwierdzania formuł obliczeniowych i profili mocowych dla wszystkich korekt'),
 	('Sprawdzenie danych','Sprawdzenie czy suma wszystkich formuł mocowych jest równa SUMIE TPA')]

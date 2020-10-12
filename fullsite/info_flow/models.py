@@ -79,6 +79,12 @@ class tasks(models.Model):
 		point_done=point.filter(tasks_is_active=False).count()
 		return str(point_done)+'/'+str(point_count)
 
+	@property
+	def com_count(self):
+		task=tasks.objects.get(pk=self.id)
+		com_sum=task.comments_set.count()
+		return str(com_sum)
+
 
 	@classmethod
 	def save_task_template(cls, data):

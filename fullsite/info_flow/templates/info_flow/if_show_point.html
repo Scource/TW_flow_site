@@ -29,10 +29,13 @@
 			<div class="float_r">
 				{% if user.is_authenticated %}
 					{% if user in task.tasks_assigned.all%}
-						<a href="{% url 'info_flow:assign_task' object_type='point' task_id=task.id %}" >Odrzuć punkt</a><br>
+						{% if task.tasks_is_active %}
+							<a href="{% url 'info_flow:assign_task' object_type='point' task_id=task.id %}" >Odrzuć punkt</a><br>
+						{% endif %}
 					{% else %}
-						<a href="{% url 'info_flow:assign_task' object_type='point' task_id=task.id %}" >Przyjmnij punkt</a><br>
-					
+						{% if task.tasks_is_active %}
+							<a href="{% url 'info_flow:assign_task' object_type='point' task_id=task.id %}" >Przyjmnij punkt</a><br>
+						{% endif %}
 					{% endif %}
 				{% endif %}
 

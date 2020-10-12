@@ -103,6 +103,7 @@ class CorrectionsProcForm(forms.Form):
     Korekty = [
     ('M+2', 'Korekta M+2'),
     ('M+4', 'Korekta M+4'),
+    ('M+14', 'Korekta M+14'),
     ('M+15', 'Korekta M+15'),
 ]
     cor_chosen = forms.ChoiceField(choices=Korekty) 
