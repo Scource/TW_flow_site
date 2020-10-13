@@ -56,9 +56,9 @@ class UserProcessFilter(django_filters.FilterSet):
 
 	def __init__(self, *args, **kwargs):
 		super(UserProcessFilter, self).__init__(*args, **kwargs)
-		self.filters['proc_category'].label="Autor"
+		self.filters['proc_category'].label="Kategoria"
 
 	
 	class Meta:
 		model = process
-		fields = ['proc_category']
+		fields = ['proc_author', 'proc_assigned' ,'proc_category']

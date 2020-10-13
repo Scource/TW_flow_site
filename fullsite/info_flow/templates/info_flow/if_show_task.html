@@ -18,9 +18,13 @@
 
 	<div class="proc">
 		<div class="edit"><h4><a href="{% url 'info_flow:if_show_proc' task.tasks_proc_id %}" >{{task.tasks_proc.proc_process_name}}</a> > {{task.tasks_name}}
-			{% if user.is_authenticated and user == task.tasks_proc.proc_author %}
-			<a href="{% url 'info_flow:if_edit_task' task.id %}"><span class="edit">Edytuj</span></a>
-			{% endif %}</h4>
+
+			{% if user.is_authenticated%}
+				{% if user == task.tasks_proc.proc_author or user in task.tasks_assigned.all %}
+					<a href="{% url 'info_flow:if_edit_task' task.id %}"><span class="edit">Edytuj</span></a>
+				{% endif %}
+			{% endif %}
+		</h4>
 		</div>
 			<div class="float_r">
 				{% if user.is_authenticated %}
@@ -124,10 +128,12 @@
 
 									<div class="reply">
 										{% if user.is_authenticated %}
-											{% if user in p.tasks_assigned.all %}
-												<a href="{% url 'info_flow:assign_task' object_type='task' task_id=p.id %}" >Odrzuć</a><br>
-											{% else %}
-												<a href="{% url 'info_flow:assign_task' object_type='task' task_id=p.id %}" >Przyjmnij</a><br>
+											{% if p.tasks_is_active and task.tasks_assigned.all|length %}
+												{% if user in p.tasks_assigned.all%}
+													<a href="{% url 'info_flow:assign_task' object_type='task' task_id=p.id %}" >Odrzuć</a><br>
+												{% else %}
+													<a href="{% url 'info_flow:assign_task' object_type='task' task_id=p.id %}" >Przyjmnij</a><br>
+												{% endif %}
 											{% endif %}
 										{% endif %}	
 									</div>

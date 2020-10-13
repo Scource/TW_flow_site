@@ -140,8 +140,8 @@ class posts(models.Model):
 	def __str__(self):
 		return self.posts_title
 
-	class Meta():
-		ordering=['-post_level', '-posts_created']
+	# class Meta():
+	# 	ordering=['-post_level', '-messages__id', '-posts_created']
 
 class messages(models.Model):
 	mess_author=models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET('deleted'))

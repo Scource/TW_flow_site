@@ -32,8 +32,10 @@ Lista procesów uzytkownika
 <h4>Procesy użytkownika</h4> 
 <button id="toggle_filter">Zaawansowane filtry</button>
 	<form method="get">
+				<label for="author">Autor</label>  {{ filter_priv_proc.form.proc_author }}
+				<label for="assigned">Przypisano</label>  {{ filter_priv_proc.form.proc_assigned }}
 				<label for="category">Kategoria</label>  {{ filter_priv_proc.form.proc_category }}  
-				<label for="author">Tytuł</label>  {{ filter_priv_proc.form.proc_process_name }}  
+				<label for="title">Tytuł</label>  {{ filter_priv_proc.form.proc_process_name }}  
 				<div class="cleaner h10"></div>
 			<div class="adv_filter hidden">
 				Data od:  			    
@@ -61,16 +63,18 @@ Lista procesów uzytkownika
 		<th>Koniec</th>
 		<th>Autor</th>
 		<th>Prywatny</th>
+		<th>Przypisano</th>
 		<th></th>
 	</tr>
 	{%for p in filter_priv_proc.qs%}
 	<tr class='clickable-row' id=url data-url="{% url 'info_flow:if_show_proc' 123 %}" data-id={{p.id}}>
 		<td>{{p.proc_process_name}}</td>
 		<td>{{p.proc_category}}</td>
-		<td>{{p.proc_start_date|date:"Y-m-d H:i"}}</td>
-		<td>{{p.proc_end_date|date:"Y-m-d H:i"}}</td>
+		<td>{{p.proc_start_date|date:"Y-m-d"}}</td>
+		<td>{{p.proc_end_date|date:"Y-m-d"}}</td>
 		<td>{{p.proc_author}}</td>
 		<td>{{p.proc_is_private|yesno:"Tak,Nie"}}</td>
+		<td>{{p.proc_assigned|default:"Brak"}}</td>
 
 		<td>
 			{% if user.is_authenticated and user == p.proc_author %}
@@ -83,34 +87,6 @@ Lista procesów uzytkownika
 	<div class="cleaner"></div>
 </table>
 
-
-<div class="cleaner h30"></div>
-<h4>Procesy przypisane</h4>
-<table class="table table-hover table-sm">
-	<tr>
-		<th>Tytuł</th>
-		<th>Kategoria</th>
-		<th>Poczatek</th>
-		<th>Koniec</th>
-		<th>Autor</th>
-		<th></th>
-	</tr>
-	{%for p in user_proc%}
-	<tr class='clickable-row' id=url data-url="{% url 'info_flow:if_show_proc' 123 %}" data-id={{p.id}}>
-		<td>{{p.proc_process_name}}</td>
-		<td>{{p.proc_category}}</td>
-		<td>{{p.proc_start_date|date:"Y-m-d H:i"}}</td>
-		<td>{{p.proc_end_date|date:"Y-m-d H:i"}}</td>
-		<td>{{p.proc_author}}</td>
-		<td>
-			{% if user.is_authenticated and user == p.proc_author %}
-			<a href="{% url 'info_flow:if_delete_proc' proc_id=p.id cat=p.proc_category %}"  >Usuń</a>
-			{% endif %}
-		</td>
-
-	{% endfor %}
-	</tr>
-</table>
 
 <div class="cleaner h30"></div>
 <h4>Przypisane zadania i punkty</h4>

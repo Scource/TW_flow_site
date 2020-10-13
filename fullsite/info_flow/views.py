@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404, get_list_or_404, redirect
 from django.http import HttpResponse, FileResponse
+from django.db.models import Max, Q
 from .models import tasks, process, comments, posts, messages, files, category
 from .filters import ProcessFilter, PostsFilter, UserProcessFilter
 from .forms import TaskFormSet, ProcessForm, TaskForm, CommForm, TaskFormPos, PostsForm, FileForm, MessageForm, TaskFormPoint, TaskFormPointEdit, CorrectionsProcForm, OSDnTemplateForm
@@ -32,7 +33,7 @@ def if_processes(request, cat, active):
 	else:
 		state=False
 	cat_id=category.objects.get(cat_name=cat).id
-	proc_list = process.objects.all().filter(proc_is_deleted=False, proc_is_private=False, proc_category=cat_id, proc_is_active=state)
+	proc_list = process.objects.filter(proc_is_deleted=False, proc_is_private=False, proc_category=cat_id, proc_is_active=state)
 	# proc_list = tasks_in_proc_list(proc_lista)
 	proc_f=ProcessFilter(request.GET, queryset=proc_list)
 	context={ 'proc_f':proc_f, 'cat':cat, 'state':state}
@@ -137,10 +138,10 @@ def if_show_proc(request, pid):
 
 	else:
 		com_form=CommForm()
-		fi=files.objects.all().filter(files_proc_id = pid)
-		coms=comments.objects.all().filter(com_proc_id=pid, com_is_deleted=False)
+		fi=files.objects.filter(files_proc_id = pid)
+		coms=comments.objects.filter(com_proc_id=pid, com_is_deleted=False)
 		proc=process.objects.get(pk = pid)
-		task=tasks.objects.all().filter(tasks_proc_id=pid, tasks_is_deleted=False, tasks_tasks_id__isnull=True)
+		task=tasks.objects.filter(tasks_proc_id=pid, tasks_is_deleted=False, tasks_tasks_id__isnull=True)
 		context={'proc':proc,'task':task, 'com_form':com_form, 'coms':coms, 'fi':fi, 'tasks_data':tasks_data}
 	return render(request, 'info_flow/if_show_proc.html', context)
 
@@ -172,9 +173,9 @@ def if_show_task(request, tid):
 		file_form=FileForm()
 		com_form=CommForm()
 		points_data=get_points_in_task(tid)
-		coms=comments.objects.all().filter(com_tasks_id=tid, com_is_deleted=False)
+		coms=comments.objects.filter(com_tasks_id=tid, com_is_deleted=False)
 		fi=files.objects.all().filter(files_tasks_id = tid)
-		point=tasks.objects.all().filter(tasks_tasks_id=tid, tasks_is_deleted=False)
+		point=tasks.objects.filter(tasks_tasks_id=tid, tasks_is_deleted=False)
 		context={'point':point,'task':task, 'fi':fi, 'points_data':points_data, 'com_form':com_form, 'coms':coms, 'file_form':file_form}
 		if task.tasks_tasks_id == None:
 			return render(request, 'info_flow/if_show_task.html', context)
@@ -185,8 +186,8 @@ def if_show_task(request, tid):
 @permission_required('info_flow.change_process')
 def if_edit_proc(request, pid):
 	proc=process.objects.get(pk = pid)
-	if not request.user.id==proc.proc_author.id:
-		return HttpResponseForbidden("Nie ma takiego podgladania")
+	# if request.user.id!=proc.proc_author.id or request.user.id != proc.proc_assigned.id:
+	# 	return HttpResponseForbidden("Nie ma takiego podgladania")
 	task=tasks.objects.all().filter(tasks_proc_id=pid, tasks_is_deleted=False, tasks_tasks_id__isnull=True)
 	if request.method=='POST':
 		file_form=FileForm(request.POST, request.FILES)
@@ -254,9 +255,9 @@ def if_delete_proc(request, proc_id, cat):
     delete_proc=process.objects.get(id=proc_id)
     delete_proc.proc_is_deleted = True
     delete_proc.save()
-    del_conn_com=comments.objects.all().filter(com_proc_id=proc_id).update(com_is_deleted=True)
-    del_conn_task=tasks.objects.all().filter(tasks_proc_id=proc_id).update(tasks_is_deleted=True)
-    deleted_files=files.objects.all().filter(files_proc_id=proc_id).update(files_is_deleted=True)
+    del_conn_com=comments.objects.filter(com_proc_id=proc_id).update(com_is_deleted=True)
+    del_conn_task=tasks.objects.filter(tasks_proc_id=proc_id).update(tasks_is_deleted=True)
+    deleted_files=files.objects.filter(files_proc_id=proc_id).update(files_is_deleted=True)
     return redirect('info_flow:if_processes', cat=cat, active='active')
 
 
@@ -286,7 +287,7 @@ def if_add_point(request, tid):
 @login_required
 @permission_required('info_flow.view_posts')
 def if_post_list(request):
-	post_list=posts.objects.all().filter(posts_is_deleted=False)
+	post_list=posts.objects.filter(posts_is_deleted=False).annotate(mess_temp=Max("messages")).order_by('-post_level', '-mess_temp', '-posts_created')
 	posts_f=PostsFilter(request.GET, queryset=post_list)
 	context={'posts_f':posts_f}
 	return render(request, 'info_flow/if_post_list.html' ,context)
@@ -448,11 +449,11 @@ def user_profile(request, active):
 		state=True
 	else:
 		state=False
-	priv_proc=process.objects.all().filter(proc_author=request.user, proc_is_deleted=False, proc_is_active=state)
+	priv_proc=process.objects.all().filter((Q(proc_author=request.user) | Q(proc_assigned_id=request.user)), proc_is_deleted=False, proc_is_active=state)
 	filter_priv_proc=UserProcessFilter(request.GET, queryset=priv_proc)
-	user_proc=process.objects.all().filter(proc_assigned_id=request.user, proc_is_deleted=False, proc_is_private=False, proc_is_active=state)
+	#user_proc=process.objects.all().filter(proc_assigned_id=request.user, proc_is_deleted=False, proc_is_private=False, proc_is_active=state)
 	user_tasks=tasks.objects.all().filter(tasks_assigned__pk=request.user.pk, tasks_is_deleted=False, tasks_is_active=state)
-	context={'user_proc':user_proc, 'user_tasks':user_tasks, 'priv_proc':priv_proc, 'state':state, 'filter_priv_proc':filter_priv_proc}
+	context={'user_tasks':user_tasks, 'priv_proc':priv_proc, 'state':state, 'filter_priv_proc':filter_priv_proc}
 	return render(request, 'info_flow/user_profile.html', context)
 
 @login_required
