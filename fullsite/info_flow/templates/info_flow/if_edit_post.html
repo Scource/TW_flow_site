@@ -16,11 +16,11 @@ Edycja {{post.posts_title}}
 {% block content %}
 <h3>{{post.posts_title}}</h3>
 		<div id="contact_form">
-		<form  method="POST" action="{% url 'info_flow:if_new_post' %}" enctype="multipart/form-data" autocomplete="off">
+		<form  method="POST" action="{% url 'info_flow:if_edit_post' post.id %}" enctype="multipart/form-data" autocomplete="off">
 		{% csrf_token %}
 
 
-			<label for='{{post_form.posts_title}}'>Tutuł:</label><div class=""> {{post_form.posts_title}}</div>
+			<label for='{{post_form.posts_title}}'>Tutuł:</label><div class=""> {{post_form.posts_title|add_class:"input_field"}}</div>
 			<div class="cleaner h10"></div>
 
 			<label for='{{post_form.posts_text}}'>Opis:</label><div> {{post_form.posts_text}}</div>

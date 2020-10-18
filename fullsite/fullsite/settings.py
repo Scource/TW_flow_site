@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     'bootstrap_datepicker_plus',
     'bootstrap4',
     'widget_tweaks',
-    # 'guardian'
+    'guardian',
 ]
 
 MIDDLEWARE = [
@@ -154,3 +154,9 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 CSRF_COOKIE_HTTPONLY = True
 
 
+AUTH_USER_MODEL = 'info_flow.User'
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend', # this is default
+    'guardian.backends.ObjectPermissionBackend',
+)

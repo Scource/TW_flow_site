@@ -106,7 +106,8 @@
     	{% if user == task.tasks_proc.proc_author or user in task.tasks_assigned.all %}
         <form  method="POST" action="{% url 'info_flow:if_show_task' task.id %}" enctype="multipart/form-data">
             {% csrf_token %}
-            {{file_form.files_document}}
+            <div> {{ file_form.files_document|add_class:"input_field"}}</div>
+            
             <div class="cleaner"></div>
             <input type="submit" title="Dodaj plik" name='add_file' value="Dodaj plik">
         </form>

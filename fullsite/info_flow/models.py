@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, AbstractUser
 from django.conf import settings
 import os
 
@@ -8,7 +8,6 @@ import os
 def user_directory_path(instance, filename):
 	return 'user_files/{0}/{1}'.format(instance.files_by_user.username, filename)
 
-	
 
 class category(models.Model):
 	cat_name =  models.CharField(max_length=20)
@@ -18,7 +17,7 @@ class category(models.Model):
 		return self.cat_name
 
 class process(models.Model):
-	proc_author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET('deleted'), related_name='proc_user')
+	proc_author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET('1'), related_name='proc_user')
 	proc_process_name = models.CharField(max_length=150)
 	proc_description = models.TextField(null=True)
 	proc_created = models.DateTimeField(auto_now_add=True)
@@ -29,7 +28,7 @@ class process(models.Model):
 	proc_is_active=models.BooleanField(default=True)
 	proc_is_private=models.BooleanField(default=False)
 	proc_is_deleted=models.BooleanField(default=False)
-	proc_assigned = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET('deleted'), null=True, blank=True, related_name='assigned_user')
+	proc_assigned = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET('1'), null=True, blank=True, related_name='assigned_user')
 
 	def __str__(self):
 		return self.proc_process_name
@@ -51,10 +50,8 @@ class process(models.Model):
 	class Meta():
 		ordering=['-proc_modified', '-proc_created', '-proc_is_active']
 		permissions = (
-		('check_proc', 'Check proc'),
+		('connect_proc', 'Connect process'),
 		)
-
-
 
 class tasks(models.Model):
 	tasks_name = models.CharField(max_length=150, blank=False)
@@ -115,6 +112,13 @@ class tasks(models.Model):
 		elif object_type=="point":
 			return task_id
 
+
+	class Meta():
+		permissions = (
+		('connect_task', 'Connect task'),
+		('connect_point', 'Connect point'),
+		)
+
 class comments(models.Model):
 	com_author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET('deleted'))
 	com_body = models.TextField(null=True)
@@ -163,11 +167,10 @@ class archive_posts(models.Model):
 class user_status(models.Model):
 	us_name=models.CharField(max_length=20)
 
-class user_profile(models.Model):
-	user = models.OneToOneField(User, on_delete=models.CASCADE)
-	user_department = models.CharField(max_length=100)
-	user_profile_info = models.TextField()
-	user_status = models.ForeignKey(user_status, on_delete=models.SET('deleted'))
+class User(AbstractUser):
+	user_is_balancing_unit = models.BooleanField(default=False)
+	user_is_b_mesuring_unit = models.BooleanField(default=False)
+	user_is_constracts_unit = models.BooleanField(default=False)
 
 
 class files(models.Model):

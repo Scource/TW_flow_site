@@ -6,7 +6,7 @@
 {% block title%}
 Lista procesów 
 {% endblock %}
-
+{% load guardian_tags %}
 
 {% block head %}
 <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" crossorigin="anonymous" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" rel="stylesheet"/>
@@ -70,6 +70,8 @@ Lista procesów
 		<th></th>
 	</tr>
 	{% for p in proc_f.qs %}
+
+	
 		<tr class='clickable-row' id=url data-url="{% url 'info_flow:if_show_proc' 123 %}" data-id={{p.id}}>
 		<td>{{p.proc_process_name}}</td>
 		<td>{{p.proc_assigned|default_if_none:"Brak"}}</td>

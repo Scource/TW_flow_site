@@ -23,11 +23,12 @@
                         <span class="admin">{{post.posts_author}}</span><span class="date">{{post.posts_created|date:"Y-m-d H:i"}}</span><span class="comment">{{mess|length }}</a></span>
                         <div class="cleaner"></div>
                     </div>         
-                        <p>{{post.posts_text}}</p>
+                        <h6>{{post.posts_text}}</h6>
                             <div class="cleaner h10"></div>
 
                                 {% if post.posts_created != post.posts_modified %}
                                     Zmodyfikowano <span class="date">{{post.posts_modified|date:"Y-m-d H:i"}}</span>
+                                    <div class="cleaner h20"></div>
                                 {% endif%}
 
                             {% for f in fi %}

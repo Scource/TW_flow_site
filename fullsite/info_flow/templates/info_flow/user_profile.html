@@ -90,25 +90,46 @@ Lista procesów uzytkownika
 
 <div class="cleaner h30"></div>
 <h4>Przypisane zadania i punkty</h4>
-
+<button id="toggle_filter_tasks">Zaawansowane filtry</button>
+	<form method="get">
+				<label for="title">Procesu</label>  {{ filter_tasks.form.task_proc }} 
+				<label for="title">Tytuł</label>  {{ filter_tasks.form.tasks_name }} 
+				<div class="cleaner h10"></div>
+			<div class="adv_filter_tasks hidden">
+				Data od:  			    
+			    <label for="">Rok</label>  {{ filter_tasks.form.task_start_date_year }}
+			    <label for="">Miesiąc</label>  {{ filter_tasks.form.task_start_date_month }}
+			    <label for="">Dzień</label>  {{ filter_tasks.form.task_start_date_day }}
+			    <div class="cleaner"></div>
+			    Data do:  
+			    <label for="">Rok</label>   {{ filter_tasks.form.task_end_date_year }}
+				<label for ="">Miesiąc</label>  {{ filter_tasks.form.task_end_date_month }}
+			    <label for="">Dzień</label>  {{ filter_tasks.form.task_end_date_day }}
+				<div class="cleaner"></div>
+			    <label for="author">Tekst</label>  {{ filter_tasks.form.task_description }}
+			    <div class="cleaner"></div>
+		    </div>
+		
+	    <button type="submit" class="btn btn-outline-secondary btn-sm btn-cst">Szukaj</button>
+	</form>
 <table class="table table-hover table-sm">
 	<tr>
-		<th>Tytuł</th>
+		<th>Proces</th>
 		<th>Typ</th>
+		<th>Tytuł</th>
 		<th>Poczatek</th>
 		<th>Koniec</th>
 
 
 	</tr>
-	{% for t in user_tasks %}
-	<tr class='clickable-row' id=url data-url="{% url 'info_flow:if_show_task' 123 %}" data-id=task_{{t.id}}>
-		<td>{{t.tasks_name}}</td>
+	{% for t in filter_tasks.qs %}
+	<tr class='clickable-row_task' id=url-task data-url="{% url 'info_flow:if_show_task' 123 %}" data-id={{t.id}}>
+		<td>{{t.tasks_proc.proc_process_name}}</td>
 		<td>{% if t.tasks_tasks_id is None %}Zadanie{%else%}Punkt{% endif%}</td>
+		<td>{{t.tasks_name}}</td>
 		<td>{{t.tasks_start_date|date:"Y-m-d H:i"}}</td>
 		<td>{{t.tasks_end_date|date:"Y-m-d H:i"}}</td>
-
-
-
+	
 	{% endfor %}
 	</tr>
 </table>

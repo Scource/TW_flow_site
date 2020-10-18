@@ -24,7 +24,7 @@ urlpatterns = [
 
 
     path('processes/templates', views.if_proc_templates, name='if_proc_templates'),
-    
+    path('processes/toggle_permissions/<int:user>/<int:object_id>/<str:object_type>', views.if_toggle_object_permission, name='if_toggle_object_permission'),
 
 
     path('processes/delete/<str:cat>/<int:proc_id>/', views.if_delete_proc, name='if_delete_proc'),
@@ -45,4 +45,5 @@ urlpatterns = [
     path('<int:fid>', views.download_file, name='download_file'),
     path('processes/delete/file/<int:file_id>', views.if_delete_file, name='if_delete_file'),
     path('forum/delete/file/<int:file_id>', views.if_delete_post_file, name='if_delete_post_file'),
+    path('processes/task/delete/file/<int:file_id>', views.if_delete_task_file, name='if_delete_task_file'),
 ]

@@ -3,8 +3,10 @@
 {% block title%}
 Edytuj {{task.tasks_name}}
 {% endblock %}
-
+{% load guardian_tags %}
 {% load widget_tweaks %}
+
+
 {% load static %}
 
 {% block head %}
@@ -47,7 +49,7 @@ Edytuj {{task.tasks_name}}
             <div class="cleaner h10"></div>
  
             {% for f in fi %}                
-            Usuń plik <a type="button" href="{% url 'info_flow:if_delete_file' f.id%}" >{{f.files_name}}</a><br>
+            Usuń plik <a type="button" href="{% url 'info_flow:if_delete_task_file' f.id%}" >{{f.files_name}}</a><br>
             {% endfor %}
 
             <input type="submit" name='save_task' value="Zapisz zmiany" class="submit_btn float_r">
@@ -56,22 +58,76 @@ Edytuj {{task.tasks_name}}
         </div>
         </div>
 
+        <div class="half float_r">
+            {% if point|length %}
+            
 
-        {% if point|length %}
-            <div class="half float_r">
-              <div id="sidebar">
                 <h3>Punkty w zadaniu:</h3>
                 <ul class="templatemo_list">
                     {% for z in point %}
-                        <li><a href="{% url 'info_flow:if_show_task' z.id%}" >{{z.tasks_name}}</a>
-                            <a href="{% url 'info_flow:if_edit_task' z.id%}" class="float_r">&nbsp;Edytuj&nbsp;</a>
-                            <a href="{% url 'info_flow:if_delete_task' z.id%}" class="float_r" >&nbsp;Usuń&nbsp;</a></li>
+                        {% get_obj_perms request.user for z as "object_parms" %}
+                        {% if "connect_task" in object_parms %}
+                            <li><a href="{% url 'info_flow:if_show_task' z.id%}" >{{z.tasks_name}}</a>
+                                <a href="{% url 'info_flow:if_edit_task' z.id%}" class="float_r">&nbsp;Edytuj&nbsp;</a>
+                                <a href="{% url 'info_flow:if_delete_task' z.id%}" class="float_r" >&nbsp;Usuń&nbsp;</a></li>
+                        {% endif %}
                     {% endfor %}
                 </ul>
+            {% endif %}
 
-            </div> <!-- end of sidebar -->
-            </div>
-        {% endif %}
+
+        <div class="cleaner h50"></div>
+    {% if user == task.tasks_proc.proc_author %}
+        <h3>Zarządaj dostępem</h3>
+        <div class="cleaner h20"></div>
+        <h6>Znajdź i dodaj użytkownika</h6>
+        <form method="get">
+                <label for="">Imię</label>  {{ user_f.form.user_first_name }}  
+                <label for="">Nazwisko</label>  {{ user_f.form.user_last_name }}  
+        
+        <button type="submit" class="btn btn-outline-secondary btn-sm btn-cst">Szukaj</button>
+    </form>
+    <table class="table table-sm">
+        <tr>
+            <th>Konto</th>
+            <th>Imię</th>
+            <th>Nazwisko</th>
+            <th></th>
+        </tr>
+        {% for u in user_f.qs %}
+            <tr >
+            <td>{{u.username}}</td>
+            <td>{{u.first_name}}</td>
+            <td>{{u.last_name}}</td>
+            <td><a href="{% url 'info_flow:if_toggle_object_permission' user=u.id object_id=task.id object_type='task' %}">Dodaj</a></td>
+        {% endfor %}
+        </tr>
+    </table>
+
+    <div class="cleaner h20"></div>
+    <h6>Użytkownicy z dostępem do procesu</h6>
+    <table class="table table-sm">
+        <tr>
+            <th>Konto</th>
+            <th>Imię</th>
+            <th>Nazwisko</th>
+            <th></th>
+
+        </tr>
+        {% for u in users_with_perms %}
+            <tr >
+            <td>{{u.username}}</td>
+            <td>{{u.first_name}}</td>
+            <td>{{u.last_name}}</td>
+            <td><a href="{% url 'info_flow:if_toggle_object_permission' user=u.id object_id=task.id object_type='task' %}">Usuń</a></td>
+        {% endfor %}
+        </tr>
+    </table>
+    {% endif %}
+
+
+</div>
+        
         
 
       

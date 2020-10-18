@@ -4,6 +4,7 @@
 Edytuj {{task.tasks_name}}
 {% endblock %}
 
+{% load guardian_tags %}
 {% load widget_tweaks %}
 {% load static %}
 
@@ -71,16 +72,67 @@ Edytuj {{task.tasks_name}}
             <h3>Zadania w procesie</h3>
             <ul class="templatemo_list">
                 {% for z in task %}
-                    <li><a href="{% url 'info_flow:if_show_task' z.id%}" >{{z.tasks_name}}</a>
-                    <a href="{% url 'info_flow:if_edit_task' z.id%}" class="float_r">&nbsp;Edytuj&nbsp;</a>
-                    <a href="{% url 'info_flow:if_delete_task' z.id%}" class="float_r">&nbsp;Usuń&nbsp;</a></li>
+                    {% get_obj_perms request.user for z as "object_parms" %}
+                    {% if "connect_task" in object_parms %}
+                    
+                        <li><a href="{% url 'info_flow:if_show_task' z.id%}" >{{z.tasks_name}}</a>
+                        <a href="{% url 'info_flow:if_edit_task' z.id%}" class="float_r">&nbsp;Edytuj&nbsp;</a>
+                        <a href="{% url 'info_flow:if_delete_task' z.id%}" class="float_r">&nbsp;Usuń&nbsp;</a></li>
+                    {% endif %}
                 {% endfor %}
 
             </ul>
+        <div class="cleaner h50"></div>
 
-           
+        {% if user == proc.proc_author %}
+        <h3>Zarządaj dostępem</h3>
+        <div class="cleaner h20"></div>
+        <h6>Znajdź i dodaj użytkownika</h6>
+        <form method="get">
+                <label for="">Imię</label>  {{ user_f.form.user_first_name }}  
+                <label for="">Nazwisko</label>  {{ user_f.form.user_last_name }}  
+        
+        <button type="submit" class="btn btn-outline-secondary btn-sm btn-cst">Szukaj</button>
+    </form>
+    <table class="table table-sm">
+        <tr>
+            <th>Konto</th>
+            <th>Imię</th>
+            <th>Nazwisko</th>
+            <th></th>
+        </tr>
+        {% for u in user_f.qs %}
+            <tr >
+            <td>{{u.username}}</td>
+            <td>{{u.first_name}}</td>
+            <td>{{u.last_name}}</td>
+            <td><a href="{% url 'info_flow:if_toggle_object_permission' user=u.id object_id=proc.id object_type='proc' %}">Dodaj</a></td>
+        {% endfor %}
+        </tr>
+    </table>
 
-        </div>
+    <div class="cleaner h20"></div>
+    <h6>Użytkownicy z dostępem do procesu</h6>
+    <table class="table table-sm">
+        <tr>
+            <th>Konto</th>
+            <th>Imię</th>
+            <th>Nazwisko</th>
+            <th></th>
+
+        </tr>
+        {% for u in users_with_perms %}
+            <tr >
+            <td>{{u.username}}</td>
+            <td>{{u.first_name}}</td>
+            <td>{{u.last_name}}</td>
+            <td><a href="{% url 'info_flow:if_toggle_object_permission' user=u.id object_id=proc.id object_type='proc' %}">Usuń</a></td>
+        {% endfor %}
+        </tr>
+    </table>
+    {% endif %}
+
+    </div>
 
         
 

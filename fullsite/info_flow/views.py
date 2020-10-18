@@ -1,8 +1,9 @@
 from django.shortcuts import render, get_object_or_404, get_list_or_404, redirect
 from django.http import HttpResponse, FileResponse
+from django.core.exceptions import PermissionDenied
 from django.db.models import Max, Q
 from .models import tasks, process, comments, posts, messages, files, category
-from .filters import ProcessFilter, PostsFilter, UserProcessFilter
+from .filters import ProcessFilter, PostsFilter, UserProcessFilter, UsersFilter, UserTasksFilter
 from .forms import TaskFormSet, ProcessForm, TaskForm, CommForm, TaskFormPos, PostsForm, FileForm, MessageForm, TaskFormPoint, TaskFormPointEdit, CorrectionsProcForm, OSDnTemplateForm
 from django.contrib.auth.models import User
 
@@ -14,27 +15,32 @@ import mimetypes
 import os
 from django.conf import settings
 from .services import get_tasks_in_proc, get_points_in_task, create_corrections_template, create_OSDN_template
-
-
+from .permissions import add_perms_to_new_object, toggle_perm_on_object
+from django.contrib.auth import get_user_model
+from guardian.shortcuts import assign_perm, get_objects_for_user, get_users_with_perms, get_perms
 # Create your views here.
-
+User = get_user_model()
 
 def index(request):
-	return render(request, 'info_flow/if_index.html')
+	newest_proc=get_objects_for_user(request.user, 'info_flow.connect_proc', process.objects.filter(proc_is_deleted=False, proc_is_private=False).order_by('-proc_created'))
+	newest_proc_list=newest_proc[:4]
+	newest_posts=posts.objects.filter(posts_is_deleted=False).order_by('-posts_created')
+	newest_post_list=newest_posts[:4]
+	context={'newest_proc_list':newest_proc_list, 'newest_post_list':newest_post_list}
+	return render(request, 'info_flow/if_index.html', context)
 
 #@userpasstest decorator check!
 @login_required
 @permission_required('info_flow.view_process')
 def if_processes(request, cat, active):
 	# if not request.user.groups.filter(name=cat).exists():
-	# 	return HttpResponseForbidden("Nie ma takiego podgladania")
+	# 	raise PermissionDenied
 	if active=="active":
 		state=True
 	else:
 		state=False
 	cat_id=category.objects.get(cat_name=cat).id
-	proc_list = process.objects.filter(proc_is_deleted=False, proc_is_private=False, proc_category=cat_id, proc_is_active=state)
-	# proc_list = tasks_in_proc_list(proc_lista)
+	proc_list=get_objects_for_user(request.user, 'info_flow.connect_proc', process.objects.filter(proc_is_deleted=False, proc_is_private=False, proc_category=cat_id, proc_is_active=state), accept_global_perms=False)
 	proc_f=ProcessFilter(request.GET, queryset=proc_list)
 	context={ 'proc_f':proc_f, 'cat':cat, 'state':state}
 	return render(request, 'info_flow/if_processes.html', context)
@@ -57,6 +63,7 @@ def if_new_proc(request):
 			newProcess.proc_is_active=True
 			newProcess.proc_author_id=request.user.id
 			newProcess.save()
+			add_perms_to_new_object(request.user, newProcess, 'proc')
 			for f in request.FILES.getlist('files_document'):
 				#newFile=f.save(commit=False)
 				newFile = files(files_document=f)
@@ -81,7 +88,7 @@ def if_new_proc(request):
 def if_add_task(request, pid):
 	proc=process.objects.get(pk = pid)
 	if not request.user.id==proc.proc_author.id:
-		return HttpResponseForbidden("Nie ma takiego podgladania")
+		return PermissionDenied
 	if request.method=='POST':
 		task_form=TaskForm(request.POST)
 		file_form=FileForm(request.POST, request.FILES)
@@ -91,6 +98,7 @@ def if_add_task(request, pid):
 			newTask.tasks_proc_id=pid
 			newTask.save()
 			task_form.save_m2m()
+			add_perms_to_new_object(request.user, newTask, 'task')
 			for f in request.FILES.getlist('files_document'):
 				newFile = files(files_document=f)
 				newFile.files_tasks_id=newTask.id
@@ -113,19 +121,24 @@ def if_add_task(request, pid):
 @login_required
 @permission_required('info_flow.delete_tasks')
 def if_delete_task(request, task_id):
-    delete_tasks=tasks.objects.get(id=task_id)
-    proc_id=delete_tasks.tasks_proc_id
-    delete_tasks.tasks_is_deleted = True
-    delete_tasks.save()
-    if delete_tasks.tasks_tasks_id == None:
-    	return redirect('info_flow:if_edit_proc', pid=proc_id)
-    else:
-    	return redirect('info_flow:if_edit_task', tid= delete_tasks.tasks_tasks_id)
+	delete_tasks=tasks.objects.get(id=task_id)
+	if request.user.id != delete_tasks.tasks_proc.proc_author.id or request.user.id != delete_tasks.tasks_proc.proc_assigned.id:
+		raise PermissionDenied
+	proc_id=delete_tasks.tasks_proc_id
+	delete_tasks.tasks_is_deleted = True
+	delete_tasks.save()
+	if delete_tasks.tasks_tasks_id == None:
+		return redirect('info_flow:if_edit_proc', pid=proc_id)
+	else:
+		return redirect('info_flow:if_edit_task', tid= delete_tasks.tasks_tasks_id)
 
 
 @login_required
 @permission_required('info_flow.view_process')
 def if_show_proc(request, pid):
+	proc=process.objects.get(pk = pid)
+	if not 'connect_proc' in get_perms(request.user, proc):
+		raise PermissionDenied	
 	tasks_data = get_tasks_in_proc(pid)
 	if request.method=='POST':
 		com_form=CommForm(request.POST)
@@ -140,8 +153,7 @@ def if_show_proc(request, pid):
 		com_form=CommForm()
 		fi=files.objects.filter(files_proc_id = pid)
 		coms=comments.objects.filter(com_proc_id=pid, com_is_deleted=False)
-		proc=process.objects.get(pk = pid)
-		task=tasks.objects.filter(tasks_proc_id=pid, tasks_is_deleted=False, tasks_tasks_id__isnull=True)
+		task=get_objects_for_user(request.user, 'info_flow.connect_task', tasks.objects.filter(tasks_proc_id=pid, tasks_is_deleted=False, tasks_tasks_id__isnull=True), accept_global_perms=False)
 		context={'proc':proc,'task':task, 'com_form':com_form, 'coms':coms, 'fi':fi, 'tasks_data':tasks_data}
 	return render(request, 'info_flow/if_show_proc.html', context)
 
@@ -149,6 +161,8 @@ def if_show_proc(request, pid):
 @permission_required('info_flow.view_tasks')
 def if_show_task(request, tid):
 	task=tasks.objects.get(pk = tid)
+	if not 'connect_task' in get_perms(request.user, task):
+		raise PermissionDenied
 	if request.method=='POST':
 		file_form=FileForm(request.POST, request.FILES)
 		com_form=CommForm(request.POST)
@@ -175,7 +189,8 @@ def if_show_task(request, tid):
 		points_data=get_points_in_task(tid)
 		coms=comments.objects.filter(com_tasks_id=tid, com_is_deleted=False)
 		fi=files.objects.all().filter(files_tasks_id = tid)
-		point=tasks.objects.filter(tasks_tasks_id=tid, tasks_is_deleted=False)
+		#point=tasks.objects.filter(tasks_tasks_id=tid, tasks_is_deleted=False)
+		point=get_objects_for_user(request.user, 'info_flow.connect_task', tasks.objects.filter(tasks_tasks_id=tid, tasks_is_deleted=False), accept_global_perms=False)
 		context={'point':point,'task':task, 'fi':fi, 'points_data':points_data, 'com_form':com_form, 'coms':coms, 'file_form':file_form}
 		if task.tasks_tasks_id == None:
 			return render(request, 'info_flow/if_show_task.html', context)
@@ -186,8 +201,12 @@ def if_show_task(request, tid):
 @permission_required('info_flow.change_process')
 def if_edit_proc(request, pid):
 	proc=process.objects.get(pk = pid)
-	# if request.user.id!=proc.proc_author.id or request.user.id != proc.proc_assigned.id:
-	# 	return HttpResponseForbidden("Nie ma takiego podgladania")
+	if request.user.id!=proc.proc_author.id:
+		try:
+			if request.user.id != proc.proc_assigned.id:
+				raise PermissionDenied
+		except AttributeError:
+			raise PermissionDenied
 	task=tasks.objects.all().filter(tasks_proc_id=pid, tasks_is_deleted=False, tasks_tasks_id__isnull=True)
 	if request.method=='POST':
 		file_form=FileForm(request.POST, request.FILES)
@@ -211,17 +230,26 @@ def if_edit_proc(request, pid):
 		fi=files.objects.all().filter(files_proc_id = pid)
 		proc_form=ProcessForm(instance=proc)		
 		task_form=TaskFormPos(queryset=tasks.objects.none())
-		context={'proc':proc,'task':task, 'proc_form':proc_form, 'fi':fi, 'file_form':file_form, 'task_form':task_form, }
-	return render(request, 'info_flow/if_edit_proc.html', context)
+		users_with_perms=get_users_with_perms(proc).exclude(pk=proc.proc_author.id)
+		users_list=User.objects.exclude(Q(pk__in=users_with_perms) | Q(pk=proc.proc_author.id))
+		user_f=UsersFilter(request.GET, queryset=users_list)
+		context={'proc':proc,'task':task, 'proc_form':proc_form, 'fi':fi, 'file_form':file_form, 'task_form':task_form, 'user_f':user_f, 'users_with_perms':users_with_perms}
+		return render(request, 'info_flow/if_edit_proc.html', context)
 
 
 @login_required
 @permission_required('info_flow.change_tasks')
 def if_edit_task(request, tid):
-	userlist = User.objects.all()
 	task=tasks.objects.get(pk = tid)
-	# if not request.user.id==proc.proc_author.id:
-	# 	return HttpResponseForbidden("Nie ma takiego podgladania")
+	if request.user.id!=task.tasks_proc.proc_author.id:
+		try:
+			if not request.user in task.tasks_assigned.all():
+				#raise PermissionDenied
+				return HttpResponseForbidden('Brak uprawnień')
+		except AttributeError:
+			#raise PermissionDenied
+			return HttpResponseForbidden('AttributeError')
+
 	point=tasks.objects.all().filter(tasks_tasks_id=tid, tasks_is_deleted=False)
 	if request.method=='POST':
 		file_form=FileForm(request.POST, request.FILES)
@@ -245,26 +273,37 @@ def if_edit_task(request, tid):
 		fi=files.objects.all().filter(files_tasks_id = tid)
 		task_form=TaskForm(instance=task)		
 		point_form=TaskFormPointEdit(queryset=tasks.objects.none())
-		context={'point':point, 'task':task, 'point_form':point_form, 'task_form':task_form, 'fi':fi, 'file_form':file_form, 'userlist':userlist}
+		users_with_perms=get_users_with_perms(task).exclude(pk=task.tasks_proc.proc_author.id)
+		users_list=User.objects.exclude(Q(pk__in=users_with_perms) | Q(pk=task.tasks_proc.proc_author.id))
+		user_f=UsersFilter(request.GET, queryset=users_list)
+		context={'point':point, 'task':task, 'point_form':point_form, 'task_form':task_form, 'fi':fi, 'file_form':file_form, 'user_f':user_f, 'users_with_perms':users_with_perms}
 	return render(request, 'info_flow/if_edit_task.html', context)
 
 
 @login_required
 @permission_required('info_flow.delete_process')
 def if_delete_proc(request, proc_id, cat):
-    delete_proc=process.objects.get(id=proc_id)
-    delete_proc.proc_is_deleted = True
-    delete_proc.save()
-    del_conn_com=comments.objects.filter(com_proc_id=proc_id).update(com_is_deleted=True)
-    del_conn_task=tasks.objects.filter(tasks_proc_id=proc_id).update(tasks_is_deleted=True)
-    deleted_files=files.objects.filter(files_proc_id=proc_id).update(files_is_deleted=True)
-    return redirect('info_flow:if_processes', cat=cat, active='active')
+	delete_proc=process.objects.get(id=proc_id)
+	if request.user.id != delete_proc.proc_author.id:
+		raise PermissionDenied
+	delete_proc.proc_is_deleted = True
+	delete_proc.save()
+	del_conn_com=comments.objects.filter(com_proc_id=proc_id).update(com_is_deleted=True)
+	del_conn_task=tasks.objects.filter(tasks_proc_id=proc_id).update(tasks_is_deleted=True)
+	deleted_files=files.objects.filter(files_proc_id=proc_id).update(files_is_deleted=True)
+	return redirect('info_flow:if_processes', cat=cat, active='active')
 
 
 @login_required
 @permission_required('info_flow.add_tasks')
 def if_add_point(request, tid):
 	task=tasks.objects.get(pk = tid)
+	if request.user.id!=task.tasks_proc.proc_author.id:
+		try:
+			if not request.user in task.tasks_assigned.all():
+				raise PermissionDenied
+		except AttributeError:
+			raise PermissionDenied
 	if request.method=='POST':
 		point_form=TaskFormPoint(request.POST)
 		if point_form.is_valid():
@@ -274,6 +313,7 @@ def if_add_point(request, tid):
 				newPoint.tasks_is_active=True
 				newPoint.tasks_tasks_id=tid
 				newPoint.save()
+				add_perms_to_new_object(request.user, newPoint, 'task')
 			if 'save_process' in request.POST:
 				return redirect('info_flow:if_processes', cat=process.objects.get(id=task.tasks_proc_id).proc_category, active='active')
 			elif 'add_task' in request.POST:
@@ -342,35 +382,41 @@ def if_show_post(request, pid):
 @login_required
 @permission_required('info_flow.delete_messages')
 def if_del_mess(request, mess_id):
-    delete_mess=messages.objects.get(id=mess_id)
-    postid=delete_mess.mess_posts_id
-    delete_mess.mess_is_deleted = True
-    delete_mess.save()
-    return redirect('info_flow:if_show_post', pid=postid)
+	delete_mess=messages.objects.get(id=mess_id)
+	if not request.user.id==delete_mess.mess_author.id:
+		raise PermissionDenied
+	postid=delete_mess.mess_posts_id
+	delete_mess.mess_is_deleted = True
+	delete_mess.save()
+	return redirect('info_flow:if_show_post', pid=postid)
 
 @login_required
 @permission_required('info_flow.delete_posts')
 def if_delete_post(request, post_id):
-    delete_post=posts.objects.get(id=post_id)
-    delete_post.posts_is_deleted = True
-    delete_post.save()
-    del_conn_mess=messages.objects.all().filter(mess_posts_id=post_id).update(mess_is_deleted=True)
-    deleted_files=files.objects.all().filter(files_posts_id=post_id).update(files_is_deleted=True)
-    return redirect('info_flow:if_post_list')
+	delete_post=posts.objects.get(id=post_id)
+	if not request.user.id==delete_post.posts_author.id:
+		raise PermissionDenied
+	delete_post.posts_is_deleted = True
+	delete_post.save()
+	del_conn_mess=messages.objects.all().filter(mess_posts_id=post_id).update(mess_is_deleted=True)
+	deleted_files=files.objects.all().filter(files_posts_id=post_id).update(files_is_deleted=True)
+	return redirect('info_flow:if_post_list')
 
 
 @login_required
 #@permission_required('info_flow.delete_posts')
 def if_delete_com(request, object_type, e_id, com_id):
-    delete_com=comments.objects.get(id=com_id)
-    delete_com.com_is_deleted = True
-    delete_com.save()
-    if object_type=="proc":
-    	return redirect('info_flow:if_show_proc', pid=e_id)
-    elif object_type=="task":
-    	return redirect('info_flow:if_show_task', tid=e_id)
-    else:
-    	return redirect('info_flow:if_show_point', tid=e_id)
+	delete_com=comments.objects.get(id=com_id)
+	if not request.user.id==delete_com.com_author.id:
+		raise PermissionDenied
+	delete_com.com_is_deleted = True
+	delete_com.save()
+	if object_type=="proc":
+		return redirect('info_flow:if_show_proc', pid=e_id)
+	elif object_type=="task":
+		return redirect('info_flow:if_show_task', tid=e_id)
+	else:
+		return redirect('info_flow:if_show_point', tid=e_id)
 
 
 @login_required
@@ -378,7 +424,7 @@ def if_delete_com(request, object_type, e_id, com_id):
 def if_edit_post(request, pid):
 	post=posts.objects.get(pk = pid)
 	if not request.user.id==post.posts_author.id:
-		return HttpResponseForbidden("Nie ma takiego podgaldania")
+		raise PermissionDenied
 	if request.method=='POST':
 		post_form=PostsForm(request.POST, instance=post)
 		file_form=FileForm(request.POST, request.FILES)	
@@ -403,7 +449,7 @@ def if_edit_post(request, pid):
 @login_required
 @permission_required('info_flow.view_files')
 def download_file(request, fid):
-    # fill these variables with real values
+#############################################################################################
     obj = files.objects.get(pk=fid)
     filename = settings.BASE_DIR+obj.files_document.url
     name = obj.files_name
@@ -413,34 +459,48 @@ def download_file(request, fid):
 
 
 
-### ZAMIENIĆ TE 4 jakoś na 1############
+### ZAMIENIĆ TE 3 jakoś na 1############
 @login_required
 @permission_required('info_flow.delete_files')
 def if_delete_file(request, file_id):
-    delete_file=files.objects.get(id=file_id)
-    proc_id=delete_file.files_proc_id
-    delete_file.delete()
-    delete_file.delete_file()
-    return redirect('info_flow:if_edit_proc', pid=proc_id)
+	delete_file=files.objects.get(id=file_id)
+	if request.user.id!=delete_file.files_proc.proc_author.id:
+		try:
+			if request.user.id != delete_file.files_proc.proc_assigned.id:
+				raise PermissionDenied
+		except AttributeError:
+			raise PermissionDenied
+	proc_id=delete_file.files_proc_id
+	delete_file.delete()
+	delete_file.delete_file()
+	return redirect('info_flow:if_edit_proc', pid=proc_id)
 
 @login_required
 @permission_required('info_flow.delete_files')
 def if_delete_post_file(request, file_id):
-    delete_file=files.objects.get(id=file_id)
-    post_id=delete_file.files_posts_id
-    delete_file.delete()
-    delete_file.delete_file()
-    return redirect('info_flow:if_edit_post', pid=post_id)
+	delete_file=files.objects.get(id=file_id)
+	if not request.user.id==delete_file.files_posts.posts_author.id:
+		raise PermissionDenied
+	post_id=delete_file.files_posts_id
+	delete_file.delete()
+	delete_file.delete_file()
+	return redirect('info_flow:if_edit_post', pid=post_id)
 
 
 @login_required
 @permission_required('info_flow.delete_files')
-def if_delete_post_file(request, file_id):
-    delete_file=files.objects.get(id=file_id)
-    task_id=delete_file.files_tasks_id
-    delete_file.delete()
-    delete_file.delete_file()
-    return redirect('info_flow:if_edit_task', pid=task_id)
+def if_delete_task_file(request, file_id):
+	delete_file=files.objects.get(id=file_id)
+	if request.user.id!=delete_file.files_tasks.tasks_proc.proc_author.id:
+		try:
+			if not request.user in delete_file.files_tasks.tasks_assigned.all():
+				raise PermissionDenied
+		except AttributeError:
+			raise PermissionDenied
+	task_id=delete_file.files_tasks_id
+	delete_file.delete()
+	delete_file.delete_file()
+	return redirect('info_flow:if_edit_task', tid=task_id)
 
 
 @login_required
@@ -449,14 +509,16 @@ def user_profile(request, active):
 		state=True
 	else:
 		state=False
-	priv_proc=process.objects.all().filter((Q(proc_author=request.user) | Q(proc_assigned_id=request.user)), proc_is_deleted=False, proc_is_active=state)
+	priv_proc=get_objects_for_user(request.user, 'info_flow.connect_proc', process.objects.all().filter((Q(proc_author=request.user) | Q(proc_assigned_id=request.user)), proc_is_deleted=False, proc_is_active=state))
 	filter_priv_proc=UserProcessFilter(request.GET, queryset=priv_proc)
-	#user_proc=process.objects.all().filter(proc_assigned_id=request.user, proc_is_deleted=False, proc_is_private=False, proc_is_active=state)
-	user_tasks=tasks.objects.all().filter(tasks_assigned__pk=request.user.pk, tasks_is_deleted=False, tasks_is_active=state)
-	context={'user_tasks':user_tasks, 'priv_proc':priv_proc, 'state':state, 'filter_priv_proc':filter_priv_proc}
+	user_tasks=get_objects_for_user(request.user, 'info_flow.connect_task', tasks.objects.all().filter(tasks_assigned__pk=request.user.pk, tasks_is_deleted=False, tasks_is_active=state))
+	#user_tasks=tasks.objects.all().filter(tasks_assigned__pk=request.user.pk, tasks_is_deleted=False, tasks_is_active=state)
+	filter_tasks=UserTasksFilter(request.GET, queryset=user_tasks)
+	context={'user_tasks':user_tasks, 'priv_proc':priv_proc, 'state':state, 'filter_priv_proc':filter_priv_proc, 'filter_tasks':filter_tasks}
 	return render(request, 'info_flow/user_profile.html', context)
 
 @login_required
+@permission_required('info_flow.change_tasks')
 def accept_task(request, task_id):
 	tasks.toggle_active(task_id)
 	task=tasks.objects.get(id=task_id)
@@ -472,6 +534,7 @@ def accept_task(request, task_id):
 			return redirect('info_flow:if_show_point', tid=task.id)
 
 @login_required
+@permission_required('info_flow.change_tasks')
 def assign_task(request, object_type, task_id):
 	us=request.user
 	if tasks.objects.filter(pk=task_id, tasks_assigned__pk=us.pk).exists():
@@ -486,7 +549,7 @@ def assign_task(request, object_type, task_id):
 
 
 @login_required
-@permission_required('info_flow.view_process')
+@permission_required(['info_flow.view_process', 'info_flow.add_process'])
 def if_proc_templates(request):
 	if request.method=='POST':
 		#somehow determine whitch submit form was clicked () and pass this form to unversal variable to perform later operations
@@ -509,3 +572,22 @@ def if_proc_templates(request):
 		osdn_from=OSDnTemplateForm()
 		context={'cor_form':cor_form}
 		return render(request, 'info_flow/if_proc_templates.html', context)
+
+
+@login_required
+@permission_required('info_flow.change_process')
+def if_toggle_object_permission(request, user, object_id, object_type):
+	user=User.objects.get(pk=user)
+	if object_type=='proc':
+		perm_object=process.objects.get(pk=object_id)
+		if not 'connect_proc' in get_perms(request.user, perm_object):
+			raise PermissionDenied
+	else:
+		perm_object=tasks.objects.get(pk=object_id)
+		if not 'connect_task' in get_perms(request.user, perm_object):
+			raise PermissionDenied
+	toggle_perm_on_object(user, perm_object, object_type)
+	if object_type =='proc':
+		return redirect('info_flow:if_edit_proc', pid=object_id)
+	elif object_type =='task':
+		return redirect('info_flow:if_edit_task', tid=object_id)

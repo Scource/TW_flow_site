@@ -4,14 +4,19 @@ from bootstrap_datepicker_plus import DateTimePickerInput, MonthPickerInput
 from django.forms import modelformset_factory, ClearableFileInput
 from django.contrib.auth.models import User
 
-
+from django.conf import settings  #settings.AUTH_USER_MODEL   to zmaiast user bo mam AbstractUsera
 
 
 class TaskForm(forms.ModelForm):
 
+    # def __init__(self, user, *args,**kwargs):  trzeba dodać request.user w viewsie tworzcym forma zeby przekazał usera 
+    #     # self.user = user
+    #     super (TaskForm,self ).__init__(*args,**kwargs) # populates the post
+    #     self.fields['tasks_assigned'].queryset = User.objects.filter(username=user.username)
+        
     class Meta:
         model = tasks
-        fields =['tasks_name', 'tasks_description', 'tasks_start_date', 'tasks_end_date', 'tasks_assigned' , 'tasks_is_active']
+        fields =['tasks_name', 'tasks_description', 'tasks_start_date', 'tasks_end_date', 'tasks_assigned', 'tasks_is_active']
         widgets = {
             'tasks_start_date': DateTimePickerInput(format=('%Y-%m-%d %H:%M'),options={
                     "showClose": True,
