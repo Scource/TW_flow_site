@@ -99,23 +99,23 @@ def create_corrections_template(user, cor_data, cor):
 		proc_id=process_template(user, cor_data, cor, cor_data_end, m14_proc)
 
 		task_id=task_template(user, proc_id, cor_data, cor_data_end, m14_task[0], m14_task[1])
-		add_perms_to_new_object(user, task_id, 'task')
+		add_perms_to_new_object(user, tasks.objects.get(pk=task_id), 'task')
 		for point in m15_points:
 			point_id=point_template(user, proc_id, cor_data, cor_data_end, point[0], point[1], task_id)
-			add_perms_to_new_object(user, point_id, 'task')
+			add_perms_to_new_object(user, tasks.objects.get(pk=point_id), 'task')
 	else:
 		proc_id=process_template(user, cor_data, cor, cor_data_end, standard_cor)
 		if cor=='M+4':
 			m4_task_id=task_template(user, proc_id, cor_data, cor_data_end, UDPS_task[0], UDPS_task[1])
-			add_perms_to_new_object(user, m4_task_id, 'task')
+			add_perms_to_new_object(user, tasks.objects.get(pk=m4_task_id), 'task')
 		for name, desc in zip(tasks_names_list, tasks_desc_list):
 			task_id=task_template(user, proc_id, cor_data, cor_data_end, name, desc)
-			add_perms_to_new_object(user, task_id, 'task')
+			add_perms_to_new_object(user, tasks.objects.get(pk=task_id), 'task')
 			for point in points[p_count]:
 				point_id=point_template(user, proc_id, cor_data, cor_data_end, point[0], point[1], task_id)
-				add_perms_to_new_object(user, point_id, 'task')
+				add_perms_to_new_object(user, tasks.objects.get(pk=point_id), 'task')
 			p_count += 1
-	add_perms_to_new_object(user, proc_id, 'proc')
+	add_perms_to_new_object(user, process.objects.get(pk=proc_id), 'proc')
 	return proc_id
 
 def process_template(user, cor_data, cor, cor_data_end, proc_data):
@@ -190,14 +190,14 @@ def create_OSDN_template(user, cor_data):
 	points=[point1, point2, point3, point3, point3, point3, point3, point3, point3, point3, point3, point3, point3, point3]
 
 	proc_id=OSDN_process_template(user, cor_data, cor_data_end)
-	add_perms_to_new_object(user, proc_id, 'proc')
+	add_perms_to_new_object(user, process.objects.get(pk=proc_id), 'proc')
 	p_count=0
 	for task in osdn_task:
 		task_id=task_template(user, proc_id, cor_data, cor_data_end, task[0], task[1])
-		add_perms_to_new_object(user, task_id, 'task')
+		add_perms_to_new_object(user, tasks.objects.get(pk=task_id), 'task')
 		for point in points[p_count]:
 			point_id=point_template(user, proc_id, cor_data, cor_data_end, point[0], point[1], task_id)
-			add_perms_to_new_object(user, point_id, 'task')
+			add_perms_to_new_object(user, tasks.objects.get(pk=point_id), 'task')
 		p_count += 1
 	return proc_id
 
