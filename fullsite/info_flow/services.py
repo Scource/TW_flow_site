@@ -168,7 +168,9 @@ def create_OSDN_template(user, cor_data):
 	('TERAWAT DYSTRYBUCJA','Uzgodnienie danych z OSDn'),
 	('ZMPSIŚ','Uzgodnienie danych z OSDn'),
 	('EC BYDGOSZCZ','Uzgodnienie danych z OSDn'),
-	('HCP','Uzgodnienie danych z OSDn')]
+	('HCP','Uzgodnienie danych z OSDn'),
+	('Potestia (POTS)','Uzgodnienie danych z OSDn'),
+	('PKP','Uzgodnienie danych z OSDn')]
 
 	#osdn points data
 	point1=[]
@@ -178,7 +180,7 @@ def create_OSDN_template(user, cor_data):
 	('Przesłanie informacji do OSDn','Kontakt z OSDn w celu sprawdzenia i akceptacji poprawności danych w systemie InnOP'),
 	('Potwierdzenie od OSDn', 'Uzyskanie informacji o zgodności danych')]
 
-	points=[point1, point2, point3, point3, point3, point3, point3, point3, point3, point3, point3, point3]
+	points=[point1, point2, point3, point3, point3, point3, point3, point3, point3, point3, point3, point3, point3, point3]
 
 	proc_id=OSDN_process_template(user, cor_data, cor_data_end)
 	p_count=0
