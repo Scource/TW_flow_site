@@ -156,7 +156,7 @@ def point_template(user, proc_id, cor_data, cor_data_end, name, desc, task_id):
 		'tasks_proc':process.objects.get(pk=proc_id),
 		'tasks_tasks':tasks.objects.get(pk=task_id)}
 	new_point_id=tasks.save_task_template(data_dict)
-
+	return new_point_id
 
 def create_OSDN_template(user, cor_data):
 	cor_data_end=cor_data.replace(day=calendar.monthrange(cor_data.year, cor_data.month)[1], hour=23, minute=59)
