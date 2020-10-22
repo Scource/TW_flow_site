@@ -14,7 +14,7 @@ Edycja {{post.posts_title}}
 
 
 {% block content %}
-<h3>{{post.posts_title}}</h3>
+<h3>{{post.posts_title}}<a href="{% url 'info_flow:if_show_post' post.id %}"><span class="edit float_r">Cofnij</span></a></h3>
 		<div id="contact_form">
 		<form  method="POST" action="{% url 'info_flow:if_edit_post' post.id %}" enctype="multipart/form-data" autocomplete="off">
 		{% csrf_token %}

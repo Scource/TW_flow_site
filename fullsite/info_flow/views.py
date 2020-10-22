@@ -33,8 +33,6 @@ def index(request):
 @login_required
 @permission_required('info_flow.view_process')
 def if_processes(request, cat, active):
-	# if not request.user.groups.filter(name=cat).exists():
-	# 	raise PermissionDenied
 	if active=="active":
 		state=True
 	else:
@@ -87,8 +85,8 @@ def if_new_proc(request):
 @permission_required('info_flow.add_tasks')
 def if_add_task(request, pid):
 	proc=process.objects.get(pk = pid)
-	if not request.user.id==proc.proc_author.id:
-		return PermissionDenied
+	if not (request.user.id==proc.proc_author.id or request.user.id==proc.proc_assigned.id):
+		raise PermissionDenied
 	if request.method=='POST':
 		task_form=TaskForm(request.POST)
 		file_form=FileForm(request.POST, request.FILES)
@@ -96,6 +94,7 @@ def if_add_task(request, pid):
 			newTask=task_form.save(commit=False)
 			newTask.tasks_is_active=True
 			newTask.tasks_proc_id=pid
+			newTask.tasks_author_id=request.user.id
 			newTask.save()
 			task_form.save_m2m()
 			add_perms_to_new_object(request.user, newTask, 'task')
@@ -111,6 +110,7 @@ def if_add_task(request, pid):
 				return redirect('info_flow:if_add_task', pid=pid)
 			elif 'add_point' in request.POST:
 				return redirect('info_flow:if_add_point', tid=newTask.id)
+
 	else:
 		file_form=FileForm()
 		task_form=TaskForm()
@@ -122,8 +122,12 @@ def if_add_task(request, pid):
 @permission_required('info_flow.delete_tasks')
 def if_delete_task(request, task_id):
 	delete_tasks=tasks.objects.get(id=task_id)
-	if request.user.id != delete_tasks.tasks_proc.proc_author.id or request.user.id != delete_tasks.tasks_proc.proc_assigned.id:
-		raise PermissionDenied
+	if not (request.user.id==delete_tasks.tasks_proc.proc_author.id or request.user.id==delete_tasks.tasks_author.id):
+		try:
+			if not request.user in delete_tasks.tasks_assigned.all():
+				raise PermissionDenied
+		except AttributeError:
+			raise PermissionDenied
 	proc_id=delete_tasks.tasks_proc_id
 	delete_tasks.tasks_is_deleted = True
 	delete_tasks.save()
@@ -173,12 +177,14 @@ def if_show_task(request, tid):
 				newFile.files_by_user_id=request.user.id
 				newFile.files_name=f
 				newFile.save()
-				return redirect('info_flow:if_show_task', tid=tid)
+		else:
+			return redirect('info_flow:if_show_task', tid=tid)
 		if com_form.is_valid():
 			newCom=com_form.save(commit=False)
 			newCom.com_author_id=request.user.id
 			newCom.com_tasks_id=tid
 			newCom.save()
+		else:
 			if task.tasks_tasks_id == None:
 				return redirect('info_flow:if_show_task', tid=tid)
 			else:
@@ -241,14 +247,13 @@ def if_edit_proc(request, pid):
 @permission_required('info_flow.change_tasks')
 def if_edit_task(request, tid):
 	task=tasks.objects.get(pk = tid)
-	if request.user.id!=task.tasks_proc.proc_author.id:
-		try:
-			if not request.user in task.tasks_assigned.all():
-				#raise PermissionDenied
-				return HttpResponseForbidden('Brak uprawnień')
-		except AttributeError:
-			#raise PermissionDenied
-			return HttpResponseForbidden('AttributeError')
+	if not (request.user.id==task.tasks_proc.proc_author.id or request.user.id==task.tasks_author.id):
+		if not (task.tasks_tasks_id != None and request.user.id==task.tasks_tasks.tasks_author.id):
+			try:
+				if not request.user in task.tasks_assigned.all():
+					raise PermissionDenied
+			except AttributeError:
+				raise PermissionDenied
 
 	point=tasks.objects.all().filter(tasks_tasks_id=tid, tasks_is_deleted=False)
 	if request.method=='POST':
@@ -273,8 +278,8 @@ def if_edit_task(request, tid):
 		fi=files.objects.all().filter(files_tasks_id = tid)
 		task_form=TaskForm(instance=task)		
 		point_form=TaskFormPointEdit(queryset=tasks.objects.none())
-		users_with_perms=get_users_with_perms(task).exclude(pk=task.tasks_proc.proc_author.id)
-		users_list=User.objects.exclude(Q(pk__in=users_with_perms) | Q(pk=task.tasks_proc.proc_author.id))
+		users_with_perms=get_users_with_perms(task).exclude(pk=task.tasks_author.id)
+		users_list=User.objects.exclude(Q(pk__in=users_with_perms) | Q(pk=task.tasks_author.id))
 		user_f=UsersFilter(request.GET, queryset=users_list)
 		context={'point':point, 'task':task, 'point_form':point_form, 'task_form':task_form, 'fi':fi, 'file_form':file_form, 'user_f':user_f, 'users_with_perms':users_with_perms}
 	return render(request, 'info_flow/if_edit_task.html', context)
@@ -298,7 +303,7 @@ def if_delete_proc(request, proc_id, cat):
 @permission_required('info_flow.add_tasks')
 def if_add_point(request, tid):
 	task=tasks.objects.get(pk = tid)
-	if request.user.id!=task.tasks_proc.proc_author.id:
+	if not (request.user.id==task.tasks_proc.proc_author.id or request.user.id==task.tasks_author.id):
 		try:
 			if not request.user in task.tasks_assigned.all():
 				raise PermissionDenied
@@ -312,12 +317,15 @@ def if_add_point(request, tid):
 				newPoint.tasks_proc_id=task.tasks_proc_id
 				newPoint.tasks_is_active=True
 				newPoint.tasks_tasks_id=tid
+				newPoint.tasks_author_id=request.user.id
 				newPoint.save()
 				add_perms_to_new_object(request.user, newPoint, 'task')
 			if 'save_process' in request.POST:
 				return redirect('info_flow:if_processes', cat=process.objects.get(id=task.tasks_proc_id).proc_category, active='active')
 			elif 'add_task' in request.POST:
 				return redirect('info_flow:if_add_task', pid=task.tasks_proc_id)
+		else:
+			return redirect('info_flow:if_add_point', tid=tid)
 	else:
 		point_form=TaskFormPoint(queryset=tasks.objects.none())
 		context={'point_form':point_form, 'task':task}
@@ -491,7 +499,7 @@ def if_delete_post_file(request, file_id):
 @permission_required('info_flow.delete_files')
 def if_delete_task_file(request, file_id):
 	delete_file=files.objects.get(id=file_id)
-	if request.user.id!=delete_file.files_tasks.tasks_proc.proc_author.id:
+	if not (request.user.id==delete_file.files_tasks.tasks_proc.proc_author.id or request.user.id==delete_file.files_tasks.tasks_author.id):
 		try:
 			if not request.user in delete_file.files_tasks.tasks_assigned.all():
 				raise PermissionDenied

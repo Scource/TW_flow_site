@@ -19,8 +19,10 @@
 	<div class="proc">
 		<div class="edit"><h4><a href="{% url 'info_flow:if_show_proc' task.tasks_proc_id %}" >{{task.tasks_proc.proc_process_name}}</a> > 
 			<a href="{% url 'info_flow:if_show_task' task.tasks_tasks_id %}" >{{task.tasks_tasks.tasks_name}}</a> > {{task.tasks_name}}		
-			{% if user.is_authenticated and user == task.tasks_proc.proc_author %}
-			<a href="{% url 'info_flow:if_edit_task' task.id %}"><span class="edit">Edytuj</span></a>
+			{% if user == task.tasks_proc.proc_author %}
+				{% if user in task.tasks_tasks.tasks_assigned.all %}
+					<a href="{% url 'info_flow:if_edit_task' task.id %}"><span class="edit">Edytuj</span></a>
+				{% endif %}
 			{% endif %}</h4>
 		</div>
 
@@ -47,7 +49,7 @@
 				{% endif %}			
 			</div>
 	<div class="meta float_l">
-		<span class="admin">{{task.tasks_proc.proc_author}}</span><span class="date">{{task.tasks_created|date:"Y-m-d H:i"}}</span>
+		<span class="admin">{{task.tasks_author}}</span><span class="date">{{task.tasks_created|date:"Y-m-d H:i"}}</span>
 		<span class="comment">{{coms|length }}</a></span>
 		<div class="cleaner"></div>
 	</div>

@@ -23,7 +23,7 @@ Edytuj {{task.tasks_name}}
 <div id="templatemo_main">
         
         <div class="half float_l">
-        <h3>Edytuj proces</h3>
+        <h3>Edytuj proces <a href="{% url 'info_flow:if_show_proc' proc.id %}"><span class="edit float_r">Cofnij</span></a></h3>
         <div id="contact_form">
         <form  method="POST" action="{% url 'info_flow:if_edit_proc' proc.id %}" enctype="multipart/form-data">
             {% csrf_token %}
@@ -74,7 +74,7 @@ Edytuj {{task.tasks_name}}
                 {% for z in task %}
                     {% get_obj_perms request.user for z as "object_parms" %}
                     {% if "connect_task" in object_parms %}
-                    
+
                         <li><a href="{% url 'info_flow:if_show_task' z.id%}" >{{z.tasks_name}}</a>
                         <a href="{% url 'info_flow:if_edit_task' z.id%}" class="float_r">&nbsp;Edytuj&nbsp;</a>
                         <a href="{% url 'info_flow:if_delete_task' z.id%}" class="float_r">&nbsp;Usuń&nbsp;</a></li>

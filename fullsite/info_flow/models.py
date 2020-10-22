@@ -17,7 +17,7 @@ class category(models.Model):
 		return self.cat_name
 
 class process(models.Model):
-	proc_author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET('1'), related_name='proc_user')
+	proc_author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET('2'), related_name='proc_user')
 	proc_process_name = models.CharField(max_length=150)
 	proc_description = models.TextField(null=True)
 	proc_created = models.DateTimeField(auto_now_add=True)
@@ -28,7 +28,7 @@ class process(models.Model):
 	proc_is_active=models.BooleanField(default=True)
 	proc_is_private=models.BooleanField(default=False)
 	proc_is_deleted=models.BooleanField(default=False)
-	proc_assigned = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET('1'), null=True, blank=True, related_name='assigned_user')
+	proc_assigned = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET('2'), null=True, blank=True, related_name='assigned_user')
 
 	def __str__(self):
 		return self.proc_process_name
@@ -55,6 +55,7 @@ class process(models.Model):
 
 class tasks(models.Model):
 	tasks_name = models.CharField(max_length=150, blank=False)
+	tasks_author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET('2'), related_name='tasks_user')
 	tasks_description = models.TextField(null=True)
 	tasks_created = models.DateTimeField(auto_now_add=True)
 	tasks_modified = models.DateTimeField(auto_now=True)	
@@ -120,7 +121,7 @@ class tasks(models.Model):
 		)
 
 class comments(models.Model):
-	com_author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET('deleted'))
+	com_author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET('2'))
 	com_body = models.TextField(null=True)
 	com_created = models.DateTimeField(auto_now_add=True)
 	com_modified = models.DateTimeField(auto_now=True)
@@ -134,7 +135,7 @@ class comments(models.Model):
 
 class posts(models.Model):
 	posts_title=models.CharField(max_length=150)
-	posts_author=models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET('deleted'))
+	posts_author=models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET('2'))
 	posts_created = models.DateTimeField(auto_now_add=True)
 	posts_modified = models.DateTimeField(auto_now=True)
 	posts_text=models.TextField()
@@ -148,7 +149,7 @@ class posts(models.Model):
 	# 	ordering=['-post_level', '-messages__id', '-posts_created']
 
 class messages(models.Model):
-	mess_author=models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET('deleted'))
+	mess_author=models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET('2'))
 	mess_created = models.DateTimeField(auto_now_add=True)
 	mess_modified = models.DateTimeField(auto_now=True)
 	mess_text=models.TextField()
@@ -157,7 +158,7 @@ class messages(models.Model):
 	
 class archive_posts(models.Model):
 	arch_posts_title=models.CharField(max_length=150)
-	arch_posts_author=models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET('deleted'))
+	arch_posts_author=models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET('2'))
 	arch_posts_created = models.DateTimeField(auto_now_add=True)
 	arch_posts_modified = models.DateTimeField(auto_now=True)
 	arch_posts_text=models.TextField()

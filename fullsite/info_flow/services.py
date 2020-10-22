@@ -136,6 +136,7 @@ def process_template(user, cor_data, cor, cor_data_end, proc_data):
 def task_template(user, proc_id, cor_data, cor_data_end, name, desc):
 	data_dict={
 		'tasks_name':name,
+		'tasks_author':user,
 		'tasks_description':desc,
 		'tasks_start_date':cor_data,
 		'tasks_end_date':cor_data_end,
@@ -148,6 +149,7 @@ def task_template(user, proc_id, cor_data, cor_data_end, name, desc):
 def point_template(user, proc_id, cor_data, cor_data_end, name, desc, task_id):
 	data_dict={
 		'tasks_name':name,
+		'tasks_author':user,
 		'tasks_description':desc,
 		'tasks_start_date':cor_data,
 		'tasks_end_date':cor_data_end,
