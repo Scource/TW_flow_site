@@ -49,7 +49,7 @@ Edytuj {{task.tasks_name}}
             <div class="cleaner h10"></div>
  
             {% for f in fi %}                
-            Usuń plik <a type="button" href="{% url 'info_flow:if_delete_task_file' f.id%}" >{{f.files_name}}</a><br>
+            Usuń plik <a class="del" type="button" href="{% url 'info_flow:if_delete_task_file' f.id%}" >{{f.files_name}}</a><br>
             {% endfor %}
 
             <input type="submit" name='save_task' value="Zapisz zmiany" class="submit_btn float_r">
@@ -69,7 +69,7 @@ Edytuj {{task.tasks_name}}
                         {% if "connect_task" in object_parms %}
                             <li><a href="{% url 'info_flow:if_show_task' z.id%}" >{{z.tasks_name}}</a>
                                 <a href="{% url 'info_flow:if_edit_task' z.id%}" class="float_r">&nbsp;Edytuj&nbsp;</a>
-                                <a href="{% url 'info_flow:if_delete_task' z.id%}" class="float_r" >&nbsp;Usuń&nbsp;</a></li>
+                                <a href="{% url 'info_flow:if_delete_task' z.id%}" class="float_r del" >&nbsp;Usuń&nbsp;</a></li>
                         {% endif %}
                     {% endfor %}
                 </ul>
@@ -119,7 +119,7 @@ Edytuj {{task.tasks_name}}
             <td>{{u.username}}</td>
             <td>{{u.first_name}}</td>
             <td>{{u.last_name}}</td>
-            <td><a href="{% url 'info_flow:if_toggle_object_permission' user=u.id object_id=task.id object_type='task' %}">Usuń</a></td>
+            <td><a class="del" href="{% url 'info_flow:if_toggle_object_permission' user=u.id object_id=task.id object_type='task' %}">Usuń</a></td>
         {% endfor %}
         </tr>
     </table>

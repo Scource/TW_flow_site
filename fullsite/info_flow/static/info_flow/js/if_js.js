@@ -30,4 +30,6 @@ jQuery(document).ready(function() {
     $("#osdn_template").click(function(){
     $(".osdn_template").toggle();
     });
+
+
 });

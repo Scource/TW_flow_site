@@ -31,7 +31,7 @@ Edycja {{post.posts_title}}
 			<div class="cleaner h10"></div>	
 
 			{% for f in fi %}
-				Usuń plik: <a type="button" href="{% url 'info_flow:if_delete_post_file' f.id%}" >{{f.files_name}}</a><br>
+				Usuń plik: <a class="del" type="button" href="{% url 'info_flow:if_delete_post_file' f.id%}" >{{f.files_name}}</a><br>
 			{% endfor %}
 
 			<input type="submit" name='save_post' value="Zmień" class="submit_btn float_l">

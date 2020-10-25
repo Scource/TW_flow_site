@@ -41,12 +41,13 @@ ddsmoothmenu.init({
   //customtheme: ["#1c5a80", "#18374a"],
   contentsource: "markup" //"markup" or ["container_id", "path_to_menu_file"]
 })
-
 </script>
+
 
 <link rel="stylesheet" type="text/css" href="{% static 'css/style1.css' %}" />
 
 
+<script language="javascript" type="text/javascript" src="{% static 'js/main.js' %}"></script>
 <script language="javascript" type="text/javascript" src="{% static 'js/jquery.js' %}"></script>
 <script language="javascript" type="text/javascript" src="{% static 'js/jquery.easing.js' %}"></script>
 <script language="javascript" type="text/javascript" src="{% static 'js/script.js' %}"></script>
@@ -69,9 +70,7 @@ ddsmoothmenu.init({
   });
 </script>
  
-{% block scripts %}
-    <script type="text/javascript" href="{% static 'js/main.js' %}"></script>
-{% endblock %}
+
 
 
 {% block head %}
@@ -95,7 +94,7 @@ ddsmoothmenu.init({
              {% else %}
               <button type="button" class="submit_btn"><a href="{% url 'login'%}?next={{request.path}}"> Zaloguj </a></button>
              {% endif %} 
-
+             
         </div>
         <div class="cleaner"></div>
     </div> <!-- END of header -->

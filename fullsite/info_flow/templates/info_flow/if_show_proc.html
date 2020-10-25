@@ -116,7 +116,7 @@
                                 </div>
                                 <div class="cleaner"></div>
                                 {% if user.is_authenticated and user == z.com_author %}
-                                      <div class="comment_text"><div class="reply"><a href="{% url 'info_flow:if_delete_com' object_type='proc' e_id=proc.id com_id=z.id  %}" type="button">Usuń</a></div></div>
+                                      <div class="comment_text"><div class="reply"><a class="del" href="{% url 'info_flow:if_delete_com' object_type='proc' e_id=proc.id com_id=z.id  %}" type="button">Usuń</a></div></div>
                                 {% endif %}
                                 <div class="cleaner h20"></div>
                             {% endfor %}

@@ -157,7 +157,8 @@ def if_show_proc(request, pid):
 		com_form=CommForm()
 		fi=files.objects.filter(files_proc_id = pid)
 		coms=comments.objects.filter(com_proc_id=pid, com_is_deleted=False)
-		task=get_objects_for_user(request.user, 'info_flow.connect_task', tasks.objects.filter(tasks_proc_id=pid, tasks_is_deleted=False, tasks_tasks_id__isnull=True), accept_global_perms=False)
+		task_list=get_objects_for_user(request.user, 'info_flow.connect_task', tasks.objects.filter(tasks_proc_id=pid, tasks_is_deleted=False, tasks_tasks_id__isnull=True), accept_global_perms=False)
+		task=task_list.order_by('tasks_created')
 		context={'proc':proc,'task':task, 'com_form':com_form, 'coms':coms, 'fi':fi, 'tasks_data':tasks_data}
 	return render(request, 'info_flow/if_show_proc.html', context)
 
@@ -177,13 +178,19 @@ def if_show_task(request, tid):
 				newFile.files_by_user_id=request.user.id
 				newFile.files_name=f
 				newFile.save()
+			return redirect('info_flow:if_show_task', tid=tid)
 		else:
 			return redirect('info_flow:if_show_task', tid=tid)
+			
 		if com_form.is_valid():
 			newCom=com_form.save(commit=False)
 			newCom.com_author_id=request.user.id
 			newCom.com_tasks_id=tid
 			newCom.save()
+			if task.tasks_tasks_id == None:
+				return redirect('info_flow:if_show_task', tid=tid)
+			else:
+				return redirect('info_flow:if_show_point', tid=tid)
 		else:
 			if task.tasks_tasks_id == None:
 				return redirect('info_flow:if_show_task', tid=tid)
@@ -196,7 +203,8 @@ def if_show_task(request, tid):
 		coms=comments.objects.filter(com_tasks_id=tid, com_is_deleted=False)
 		fi=files.objects.all().filter(files_tasks_id = tid)
 		#point=tasks.objects.filter(tasks_tasks_id=tid, tasks_is_deleted=False)
-		point=get_objects_for_user(request.user, 'info_flow.connect_task', tasks.objects.filter(tasks_tasks_id=tid, tasks_is_deleted=False), accept_global_perms=False)
+		point_list=get_objects_for_user(request.user, 'info_flow.connect_task', tasks.objects.filter(tasks_tasks_id=tid, tasks_is_deleted=False), accept_global_perms=False)
+		point=point_list.order_by('tasks_created')
 		context={'point':point,'task':task, 'fi':fi, 'points_data':points_data, 'com_form':com_form, 'coms':coms, 'file_form':file_form}
 		if task.tasks_tasks_id == None:
 			return render(request, 'info_flow/if_show_task.html', context)

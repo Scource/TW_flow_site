@@ -16,6 +16,7 @@ Lista procesów uzytkownika
 <link href="{% static 'css/templatemo_style.css' %}" rel="stylesheet" type="text/css" />
 
 <script src="{% static 'info_flow/js/if_js.js' %}"></script>
+
 {% endblock %}
 
 
@@ -78,7 +79,7 @@ Lista procesów uzytkownika
 
 		<td>
 			{% if user.is_authenticated and user == p.proc_author %}
-			<a href="{% url 'info_flow:if_delete_proc' proc_id=p.id cat=p.proc_category %}"  >Usuń</a>
+			<a class="del" href="{% url 'info_flow:if_delete_proc' proc_id=p.id cat=p.proc_category %}"  >Usuń</a>
 			{% endif %}
 		</td>
 

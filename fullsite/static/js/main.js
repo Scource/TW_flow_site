@@ -32,6 +32,16 @@ $(document).ready(function(){
     $(".osdn_template").toggle();
     });
 
+
+    $(document).ready(function(){
+      $(".del").click(function(){
+        if (!confirm("Czy na pewno usuąnć?")){
+              return false;
+            }
+          });
+        });
+
+
 $("ul.dropdown li").hover(function(){
     
         $(this).addClass("hover");
