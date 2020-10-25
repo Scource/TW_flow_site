@@ -178,10 +178,8 @@ def if_show_task(request, tid):
 				newFile.files_by_user_id=request.user.id
 				newFile.files_name=f
 				newFile.save()
-			return redirect('info_flow:if_show_task', tid=tid)
 		else:
 			return redirect('info_flow:if_show_task', tid=tid)
-			
 		if com_form.is_valid():
 			newCom=com_form.save(commit=False)
 			newCom.com_author_id=request.user.id
