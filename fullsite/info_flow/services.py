@@ -47,13 +47,14 @@ def create_corrections_template(user, cor_data, cor):
 	'Zadania związane z przygotowaniem i wysłaniem dokumentów DGMB w WIRE']
 
 	#standard coorrections points
-	first_point=[('Zatwierdzanie danych v1','Uruchomienie zatwierdzania formuł mocowych/obliczeniowych, a następnie zatwierdzenie wszystkie MBo'),
+	first_point=[('Zatwierdzanie danych v1','Uruchomienie zatwierdzania formuł mocowych/obliczeniowych, a następnie zatwierdzenie wszystkich MBo'),
 	('Generacja kodów v1','Uruchomienie programu do wyszukiwania braków i prognoz, danych niepewnych oraz PPE z brakiem schematów taryfowych'),
 	('Obliczanie innZR v1','Uruchomienie zadania złożonego obliczającego innZRY odbiorcze dla wszystkich MB'),
 	('Ręczna korekta kodów (Klepanie) v1','Weryfikacja kompletności danych na podstawie wcześniej wygenerowanej listy kodów PPE dla klepania V1'),
 	('Kopiowanie przeliczonych innZR','Kopiowanie wcześniej przeliczonych plików innZRY do odpowiednich lokalizacji na ST2')]
 
-	second_time=[('Agregacja MB i MDD','Wyłaczenie R&R i agregacja wpierw wszystkich MB, a następnie wszystkich MDD'),
+	second_time=[('Zatwierdzanie danych v2','Zatwierdzenie formuł mocowych/obliczeniowych, a następnie zatwierdzenie wszystkich MBo'),
+	('Agregacja MB i MDD','Wyłaczenie R&R i agregacja wpierw wszystkich MB, a następnie wszystkich MDD'),
 	('Generacja kodów v2','Uruchomienie programu do wyszukiwania problematycznych kodów'),
 	('Obliczanie innZR v2','Uruchomienie zadania złożonego liczącego innZRY odbiorcze dla wszystkich MB'),
 	('Ręczna korekta kodów (Klepanie) v2','Ostateczna weryfikacja kompletności danych na podstawie wygenerowanej listy kodów PPE'),
