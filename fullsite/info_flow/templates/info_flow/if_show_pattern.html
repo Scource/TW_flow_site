@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'info_flow/css/if_css.css' %}">
+
+{% load widget_tweaks %}
+{% block title%}
+Nowy szablon
+{% endblock %}
+
+
+{% block head %}
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" crossorigin="anonymous" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" rel="stylesheet"/>
+<link href="{% static 'css/templatemo_style.css' %}" rel="stylesheet" type="text/css" />
+<link href="{% static 'info_flow/css/if_css.css' %}" rel="stylesheet" type="text/css" />
+
+{% endblock %}
+
+
+{% block content %}
+	<a href="{% url 'info_flow:if_delete_pattern' pat_id %}" type="submit" class="float_l">Usuń cały szablon</a>
+	<a href="{% url 'info_flow:if_patterns_list' %}" type="submit" class="float_r">Wróć</a>
+	<div class="cleaner h20"></div>
+
+	{% for p in pat_elements_proc %}
+		    <div class="pattern_proc">{{p.pele_order}}. {{p.pele_name}} 	
+			    	{% if user.is_authenticated and user == pe.pele_pattern.pat_author %}
+						<a href='{% url "info_flow:if_edit_pattern" p.id %}' type="submit" class="patter_edit">Edytuj</a>
+						<a href='{% url "info_flow:if_delete_pattern_element" p.id %}' type="submit" class="patter_edit">Usuń</a>
+					{% endif %}</div>
+			<div class="pattern_desc">{{p.pele_desc}}</div>
+	{% endfor %}
+
+	{% for pe in pat_elements_task %}
+			<div class="pattern_task"> {{pe.pele_order}}. {{pe.pele_name}} 
+			    	{% if user.is_authenticated and user == pe.pele_pattern.pat_author %}
+						<a href='{% url "info_flow:if_edit_pattern" pe.id %}' type="submit" class="patter_edit">Edytuj</a>
+						<a href='{% url "info_flow:if_delete_pattern_element" pe.id %}' type="submit" class="patter_edit">Usuń</a>
+					{% endif %}</div>	
+			<div class="pattern_desc">{{pe.pele_desc}}</div>
+
+
+			{% for pi in pat_elements_point %}			
+				{% if pi.pele_task == pe.id %}
+				<div class="pattern_point"> {{pi.pele_order}}. {{pi.pele_name}} 	
+				    	{% if user.is_authenticated and user == pi.pele_pattern.pat_author %}
+							<a href='{% url "info_flow:if_edit_pattern" pi.id %}' type="submit" class="patter_edit">Edytuj</a>
+							<a href='{% url "info_flow:if_delete_pattern_element" pi.id %}' type="submit" class="patter_edit">Usuń</a>
+						{% endif %}</div>
+				<div class="pattern_desc">{{pi.pele_desc}}</div>
+				{% endif %}
+		{% endfor %}
+	{% endfor %}
+
+
+	
+{% endblock %}

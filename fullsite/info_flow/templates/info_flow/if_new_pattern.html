@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'info_flow/css/if_css.css' %}">
+
+{% load widget_tweaks %}
+{% block title%}
+Nowy szablon
+{% endblock %}
+
+
+{% block head %}
+<link href="{% static 'css/templatemo_style.css' %}" rel="stylesheet" type="text/css" />
+{% endblock %}
+
+
+{% block content %}
+<h3>Utwórz nowy szablon</h3>
+
+		<div id="contact_form">
+		<form  method="POST" action="{% url 'info_flow:if_new_pattern' proc_id %}" enctype="multipart/form-data" autocomplete="off">
+		{% csrf_token %}
+
+
+			<label for='{{pattern_form.pat_name}}'>Nazwa:</label><div class=""> {{pattern_form.pat_name|add_class:"input_field"}}</div>
+			<div class="cleaner h10"></div>
+
+			<label for='{{pattern_form.pat_is_private}}'>Prywatny:</label><div class=""> {{pattern_form.pat_is_private|add_class:"input_field"}}</div>
+			<div class="cleaner h10"></div>
+
+			<label for='{{pattern_form.pat_category}}'>Kategoria:</label><div class=""> {{pattern_form.pat_category|add_class:"input_field"}}</div>
+			<div class="cleaner h10"></div>
+
+			<input type="submit" name='save_post' value="Zapisz szablon" class="submit_btn float_l">
+
+		</form>
+		</div>	
+
+
+{% endblock %}

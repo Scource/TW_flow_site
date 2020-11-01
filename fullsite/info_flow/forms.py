@@ -1,5 +1,5 @@
 from django import forms
-from .models import tasks, process, comments, posts, files, messages
+from .models import tasks, process, comments, posts, files, messages, patterns, patterns_elements
 from bootstrap_datepicker_plus import DateTimePickerInput, MonthPickerInput
 from django.forms import modelformset_factory, ClearableFileInput
 from django.contrib.auth.models import User
@@ -104,15 +104,29 @@ class MessageForm(forms.ModelForm):
             'mess_text': '',
         }
 
-class CorrectionsProcForm(forms.Form):
-    Korekty = [
-    ('M+2', 'Korekta M+2'),
-    ('M+4', 'Korekta M+4'),
-    ('M+14', 'Korekta M+14'),
-    ('M+15', 'Korekta M+15'),
-]
-    cor_chosen = forms.ChoiceField(choices=Korekty) 
-    month_picked = forms.DateTimeField(widget=MonthPickerInput())
+class PatternForm(forms.ModelForm):
+    class Meta(object):
+        model=patterns
+        fields=['pat_name','pat_is_private', 'pat_category']
 
-class OSDnTemplateForm(forms.Form):
-    month_picked = forms.DateTimeField(widget=MonthPickerInput())
+
+class CreateFromPattern(forms.Form):
+    start_date = forms.DateTimeField(widget=DateTimePickerInput(format=('%Y-%m-%d %H:%M'), options={
+                    "showClose": True,
+                    "showClear": True,
+                    "showTodayButton": True,
+                    "sideBySide": True,
+                }))
+
+    end_date = forms.DateTimeField(widget=DateTimePickerInput(format=('%Y-%m-%d %H:%M'), options={
+                    "showClose": True,
+                    "showClear": True,
+                    "showTodayButton": True,
+                    "sideBySide": True,
+                }))
+
+
+class Edit_pattern_elements(forms.ModelForm):
+    class Meta(object):
+        model=patterns_elements
+        fields=['pele_order','pele_name', 'pele_desc']

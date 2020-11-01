@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'info_flow/css/if_css.css' %}">
+
+{% load widget_tweaks %}
+{% block title%}
+Nowy szablon
+{% endblock %}
+
+
+{% block head %}
+<link href="{% static 'css/templatemo_style.css' %}" rel="stylesheet" type="text/css" />
+{% endblock %}
+
+
+{% block content %}
+<h3>Edytuj element szablonu:</h3>
+
+		<div id="contact_form">
+		<form  method="POST" action="{% url 'info_flow:if_edit_pattern' p_element.id %}" enctype="multipart/form-data" autocomplete="off">
+		{% csrf_token %}
+			<label for ='{{edit_elem.pele_order}}'>Liczba porządkowa:</label><div class=""> {{edit_elem.pele_order|add_class:"input_field"}}</div>
+			<div class="cleaner h10"></div>
+
+			<label for='{{edit_elem.pele_name}}'>Nazwa:</label><div class=""> {{edit_elem.pele_name|add_class:"input_field"}}</div>
+			<div class="cleaner h10"></div>
+
+			<label for='{{edit_elem.pele_desc}}'>Opis:</label><div class=""> {{edit_elem.pele_desc|add_class:"input_field"}}</div>
+			<div class="cleaner h10"></div>
+
+			<input type="submit" name='save_post' value="Zmień" class="submit_btn float_l">
+
+		</form>
+		</div>	
+
+
+{% endblock %}

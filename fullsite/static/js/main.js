@@ -23,16 +23,15 @@ $(document).ready(function(){
     $(".adv_filter_tasks").toggle();
     });
 
-    $("#cor_template").click(function(){
-    $(".cor_template").toggle();
+    $(".hide_button").click(function(){
+    var grabID = $(this).attr('id'); 
+    $('#div'+grabID).toggle();
     });
 
-
-    $("#osdn_template").click(function(){
-    $(".osdn_template").toggle();
+    $("clickable-row_task").hover(function(){
+    $(this).css("background-color", "red");
     });
-
-
+    
     $(document).ready(function(){
       $(".del").click(function(){
         if (!confirm("Czy na pewno usuąnć?")){

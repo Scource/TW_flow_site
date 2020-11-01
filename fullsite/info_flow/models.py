@@ -189,3 +189,27 @@ class files(models.Model):
 		os.remove(os.path.join(settings.MEDIA_ROOT, str(self.files_document)))
         
 
+class patterns(models.Model):
+	pat_author=models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+	pat_name=models.CharField(max_length=150)
+	pat_is_private=models.BooleanField(default=False)
+	pat_category=models.ForeignKey(category, on_delete=models.CASCADE)
+
+
+class patterns_elements(models.Model):
+	pele_pattern=models.ForeignKey(patterns, on_delete=models.CASCADE)
+	pele_order=models.IntegerField()
+	pele_type=models.IntegerField()
+	pele_name=models.CharField(max_length=150)
+	pele_desc=models.TextField(null=True)
+	pele_proc=models.IntegerField(blank=True, null=True)
+	pele_task=models.IntegerField(blank=True, null=True)
+
+	class Meta():
+		ordering = ['pele_order']
+
+	@classmethod
+	def save_pat_elements(cls, data):
+		#proc=process(**data)
+		new_ele=patterns_elements.objects.create(**data)
+		return new_ele.id

@@ -5,3 +5,55 @@ margin-top: 50px;
 margin: 30px;
 background-color: red;
 }
+
+
+
+.pattern_proc
+{
+width: 800;
+margin-left: 20;
+padding-top: 15;
+padding-bottom: 15;
+color: white;
+font-size: 120%;
+font-weight: 800;
+
+}
+
+
+.pattern_task
+{
+width: 800;
+margin-left: 50;
+font-size: 110%;
+padding-top: 10;
+padding-bottom: 10;
+font-weight: 900;
+}
+
+
+.pattern_point
+{
+width: 800;
+margin-left: 90;
+padding-top: 5;
+padding-bottom: 5;
+font-weight: 700;
+}
+
+.pattern_desc
+{
+margin-left: 110;
+padding-top: 5;
+padding-bottom: 5;
+font-weight: 100;
+}
+
+
+
+
+.patter_edit
+{
+	text-align: right;
+
+}

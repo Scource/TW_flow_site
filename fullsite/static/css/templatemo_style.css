@@ -747,3 +747,7 @@ progress::-moz-progress-bar {
 .hidden { 
 	display:none; 
 }
+
+.table-hover tbody tr:hover td {
+  background-color: black;
+}

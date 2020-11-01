@@ -2,9 +2,9 @@ from django.shortcuts import render, get_object_or_404, get_list_or_404, redirec
 from django.http import HttpResponse, FileResponse
 from django.core.exceptions import PermissionDenied
 from django.db.models import Max, Q
-from .models import tasks, process, comments, posts, messages, files, category
+from .models import tasks, process, comments, posts, messages, files, category, patterns_elements, patterns
 from .filters import ProcessFilter, PostsFilter, UserProcessFilter, UsersFilter, UserTasksFilter
-from .forms import TaskFormSet, ProcessForm, TaskForm, CommForm, TaskFormPos, PostsForm, FileForm, MessageForm, TaskFormPoint, TaskFormPointEdit, CorrectionsProcForm, OSDnTemplateForm
+from .forms import TaskFormSet, ProcessForm, TaskForm, CommForm, TaskFormPos, PostsForm, FileForm, MessageForm, TaskFormPoint, TaskFormPointEdit, PatternForm, CreateFromPattern, Edit_pattern_elements
 from django.contrib.auth.models import User
 
 from django.views.decorators.csrf import csrf_protect, ensure_csrf_cookie
@@ -14,7 +14,7 @@ from django.http import HttpResponseForbidden, HttpResponseRedirect
 import mimetypes
 import os
 from django.conf import settings
-from .services import get_tasks_in_proc, get_points_in_task, create_corrections_template, create_OSDN_template
+from .services import get_tasks_in_proc, get_points_in_task, get_proc_elemenets, create_proc_from_pattern
 from .permissions import add_perms_to_new_object, toggle_perm_on_object
 from django.contrib.auth import get_user_model
 from guardian.shortcuts import assign_perm, get_objects_for_user, get_users_with_perms, get_perms
@@ -563,32 +563,6 @@ def assign_task(request, object_type, task_id):
 
 
 @login_required
-@permission_required(['info_flow.view_process', 'info_flow.add_process'])
-def if_proc_templates(request):
-	if request.method=='POST':
-		#somehow determine whitch submit form was clicked () and pass this form to unversal variable to perform later operations
-		#instead of multiple if construction
-		cor_form=CorrectionsProcForm(request.POST)
-		osdn_from=OSDnTemplateForm(request.POST)
-
-		if 'cor_template_form' in request.POST:
-			if cor_form.is_valid():
-				month=cor_form.cleaned_data.get('month_picked')
-				cor=cor_form.cleaned_data.get('cor_chosen')
-				new_proc=create_corrections_template(request.user, month, cor)
-		elif 'osdn_template_form' in request.POST:
-			if osdn_from.is_valid():
-				month=osdn_from.cleaned_data.get('month_picked')
-				new_proc=create_OSDN_template(request.user, month)
-		return redirect('info_flow:if_show_proc', pid=new_proc)
-	else:
-		cor_form=CorrectionsProcForm()
-		osdn_from=OSDnTemplateForm()
-		context={'cor_form':cor_form}
-		return render(request, 'info_flow/if_proc_templates.html', context)
-
-
-@login_required
 @permission_required('info_flow.change_process')
 def if_toggle_object_permission(request, user, object_id, object_type):
 	user=User.objects.get(pk=user)
@@ -605,3 +579,77 @@ def if_toggle_object_permission(request, user, object_id, object_type):
 		return redirect('info_flow:if_edit_proc', pid=object_id)
 	elif object_type =='task':
 		return redirect('info_flow:if_edit_task', tid=object_id)
+
+
+@login_required
+@permission_required('info_flow.add_patterns')
+def if_new_pattern(request, proc_id):
+	if request.method=='POST':
+		pattern_form=PatternForm(request.POST)
+		if pattern_form.is_valid():
+			newPattern=pattern_form.save(commit=False)
+			newPattern.pat_author=request.user
+			newPattern.save()
+			get_proc_elemenets(newPattern, proc_id, request.user)
+			#create_proc_from_pattern(newPattern, request.user)
+		return redirect('info_flow:if_show_proc', pid=proc_id)
+	else:
+		pattern_form=PatternForm()		
+		context={'pattern_form':pattern_form, 'proc_id':proc_id}
+	return render(request, 'info_flow/if_new_pattern.html', context)
+
+
+@login_required
+@permission_required('info_flow.view_patterns')
+def if_patterns_list(request):
+	if request.method=='POST':
+		new_pattern=CreateFromPattern(request.POST)
+		p_id = request.POST.get("pattern_id")
+		if new_pattern.is_valid():
+			start=new_pattern.cleaned_data.get('start_date')
+			end=new_pattern.cleaned_data.get('end_date')
+			proc_id=create_proc_from_pattern(patterns.objects.get(pk=p_id), request.user, start, end)
+			return redirect('info_flow:if_show_proc', pid=proc_id)
+
+	patts=patterns.objects.all()
+	new_pattern=CreateFromPattern()
+	context={'patts':patts, 'new_pattern':new_pattern}
+	return render(request, 'info_flow/if_patterns_list.html', context)
+
+
+@login_required
+@permission_required('info_flow.view_patterns')
+def if_show_pattern(request, pat_id):
+	pat_elements_proc=patterns_elements.objects.filter(pele_pattern=pat_id, pele_type=0)
+	pat_elements_task=patterns_elements.objects.filter(pele_pattern=pat_id, pele_type=1)
+	pat_elements_point=patterns_elements.objects.filter(pele_pattern=pat_id, pele_type=2)
+	context={'pat_elements_proc':pat_elements_proc, 'pat_elements_task':pat_elements_task, 'pat_elements_point':pat_elements_point, 'pat_id':pat_id}
+	return render(request, 'info_flow/if_show_pattern.html', context)
+
+@login_required
+@permission_required('info_flow.change_patterns')
+def if_edit_pattern(request, p_ele_id):
+	p_element=patterns_elements.objects.get(pk=p_ele_id)
+	if request.method=='POST':
+		edit_elem=Edit_pattern_elements(request.POST, instance=p_element)
+		if edit_elem.is_valid():
+			edit_elem.save()
+			return redirect('info_flow:if_show_pattern', pat_id=p_element.pele_pattern.id)
+
+	edit_elem=Edit_pattern_elements(instance=p_element)
+	context={'edit_elem':edit_elem, 'p_element':p_element}
+	return render(request, 'info_flow/if_edit_pattern.html', context)
+
+@login_required
+@permission_required('info_flow.delete_patterns')
+def if_delete_pattern(request, pat_id):
+	del_pattern=patterns.objects.get(pk=pat_id)
+	del_pattern.delete()
+	return redirect('info_flow:if_patterns_list')
+
+@login_required
+@permission_required('info_flow.delete_patterns')
+def if_delete_pattern_element(request, p_ele_id):
+	del_pat_ele=patterns_elements.objects.get(pk=p_ele_id)
+	del_pat_ele.delete()	
+	return redirect('info_flow:if_show_pattern', pat_id=del_pat_ele.pele_pattern.id)

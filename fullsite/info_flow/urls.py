@@ -23,7 +23,7 @@ urlpatterns = [
     path('processes/assign/<str:object_type>/task_<int:task_id>/', views.assign_task, name='assign_task'),
 
 
-    path('processes/templates', views.if_proc_templates, name='if_proc_templates'),
+    #path('processes/templates', views.if_proc_templates, name='if_proc_templates'),
     path('processes/toggle_permissions/<int:user>/<int:object_id>/<str:object_type>', views.if_toggle_object_permission, name='if_toggle_object_permission'),
 
 
@@ -40,9 +40,15 @@ urlpatterns = [
     path('forum/post/delete/<int:mess_id>', views.if_del_mess, name='if_del_mess'),
     path('forum/delete/<int:post_id>', views.if_delete_post, name='if_delete_post'),
 
+    path('pattern/new/<int:proc_id>', views.if_new_pattern, name='if_new_pattern'),
+    path('pattern/show/<int:pat_id>', views.if_show_pattern, name='if_show_pattern'),
+    path('pattern/list/', views.if_patterns_list, name='if_patterns_list'),
+    path('pattern/show/edit/<int:p_ele_id>', views.if_edit_pattern, name='if_edit_pattern'),
+    path('pattern/show/delete/<int:pat_id>', views.if_delete_pattern, name='if_delete_pattern'),
+    path('pattern/show/delete/element/<int:p_ele_id>', views.if_delete_pattern_element, name='if_delete_pattern_element'),
 
 
-    path('<int:fid>', views.download_file, name='download_file'),
+    path('download/file/id/<int:fid>', views.download_file, name='download_file'),
     path('processes/delete/file/<int:file_id>', views.if_delete_file, name='if_delete_file'),
     path('forum/delete/file/<int:file_id>', views.if_delete_post_file, name='if_delete_post_file'),
     path('processes/task/delete/file/<int:file_id>', views.if_delete_task_file, name='if_delete_task_file'),

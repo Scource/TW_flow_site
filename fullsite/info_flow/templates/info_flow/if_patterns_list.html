@@ -16,38 +16,36 @@ Lista procesów
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" crossorigin="anonymous" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"></script>
 <link href="{% static 'css/templatemo_style.css' %}" rel="stylesheet" type="text/css" />
 
-<script src="{% static 'info_flow/js/if_js.js' %}"></script>
-{{ cor_form.media }}
+
+{{ new_pattern.media }}
 {% endblock %}
 
 {% block content %}
 
 <div id="templatemo_main">
 	<h4>Szablony procesów</h4>
+	{% if patts|length > 0 %}
+	{% for pat in patts %}
+	    Nazwa: {{pat.pat_name}} Autor: {{pat.pat_author}}  Kategoria: {{pat.pat_category}} 
+	    <button class="hide_button" id='{{pat.id}}'>Dodaj</button>
+	    <a href='{% url "info_flow:if_show_pattern" pat.id %}' type="submit">Przejdź</a>
+		<div class='hidden' id='div{{pat.id}}'>
+		        <div id="contact_form">
+		        <form  method="POST" action="{% url 'info_flow:if_patterns_list'  %}" enctype="multipart/form-data">
+		            {% csrf_token %}
+		            <input type="hidden" name="pattern_id" value='{{pat.id}}'>
+					{{new_pattern.start_date|add_class:"input_field"}}
+					{{new_pattern.end_date|add_class:"input_field"}}
+		            <input type="submit" name='osdn_template_form' value="Utwórz" class="submit_btn float_l">
+		        </form>
+		        </div>  
+	 	</div> 
+	 	<div class="cleaner h20"></div>
+	 	{% endfor %}
+	{% else %}
+		<p style="text-align: center;">Brak dostępnych szablonów</p>
+	{% endif %}
 
 
-	Comiesięczne korekty na RB <button id="cor_template">Pokaż</button>
-		<div class='cor_template hidden'>
-	        <div id="contact_form">
-	        <form  method="POST" action="{% url 'info_flow:if_proc_templates' %}" enctype="multipart/form-data">
-	            {% csrf_token %}
-	            {{cor_form.cor_chosen|add_class:"input_field"}} 
-				{{cor_form.month_picked|add_class:"input_field"}}
-	            <input type="submit" name='cor_template_form' value="Utwórz" class="submit_btn float_l">
-	        </form>
-	        </div>  
-        </div>
-    <div class="cleaner h20"></div>
-    Kontrola obszarów OSDn <button id="osdn_template">Pokaż</button>
-		<div class='osdn_template hidden'>
-	        <div id="contact_form">
-	        <form  method="POST" action="{% url 'info_flow:if_proc_templates' %}" enctype="multipart/form-data">
-	            {% csrf_token %}
-				{{cor_form.month_picked|add_class:"input_field"}}
-	            <input type="submit" name='osdn_template_form' value="Utwórz" class="submit_btn float_l">
-	        </form>
-	        </div>  
-        </div>
-    <div class="cleaner h20"></div>
 </div>
 {% endblock %}
