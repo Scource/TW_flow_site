@@ -23,12 +23,27 @@ Lista procesów
 {% block content %}
 
 <div id="templatemo_main">
-	<h4>Szablony procesów</h4>
-	{% if patts|length > 0 %}
-	{% for pat in patts %}
-	    Nazwa: {{pat.pat_name}} Autor: {{pat.pat_author}}  Kategoria: {{pat.pat_category}} 
-	    <button class="hide_button" id='{{pat.id}}'>Dodaj</button>
-	    <a href='{% url "info_flow:if_show_pattern" pat.id %}' type="submit">Przejdź</a>
+	<h4 class="float_r">Szablony procesów</h4>
+	<div class="cleaner h20"></div>
+		<form method="get">
+				<label for="name">Nazwa</label>  {{ patterns_filter.form.pat_name }}
+				<label for="author">Autor</label>  {{ patterns_filter.form.pat_author }}
+				<label for="category">Kategoria</label>  {{ patterns_filter.form.pat_category }}  
+	    <button type="submit" class="btn btn-outline-secondary btn-sm btn-cst">Szukaj</button>
+	</form>
+	<div class="cleaner h20"></div>
+
+	{% if patterns_filter.qs|length > 0 %}
+	{% for pat in patterns_filter.qs %}
+		{% url "info_flow:if_show_pattern" pat.id as the_url %}
+	    <h6><b>{{pat.pat_name}}</b></h6> 
+	    <input type="button" class="hide_button" id='{{pat.id}}' value="Utwórz"/>
+      	<input type="button" onclick="window.location.href='{{ the_url }}';" value="Przejdź" />
+      	{% if user.is_authenticated and user == pat.pat_author %}
+	    	<input type="button" class="edit_button" id='{{pat.id}}' value="Edytuj">
+	    {% endif %}
+	    By <b>{{pat.pat_author}}</b>, kat:  <b>{{pat.pat_category}}</b>
+
 		<div class='hidden' id='div{{pat.id}}'>
 		        <div id="contact_form">
 		        <form  method="POST" action="{% url 'info_flow:if_patterns_list'  %}" enctype="multipart/form-data">
@@ -40,7 +55,26 @@ Lista procesów
 		        </form>
 		        </div>  
 	 	</div> 
-	 	<div class="cleaner h20"></div>
+
+	 	<div class='hidden' id='edit{{pat.id}}'>
+		        <div id="contact_form">
+					<form  method="POST" action="{% url 'info_flow:if_edit_pattern_name' pat.id %}" enctype="multipart/form-data" autocomplete="off">
+					{% csrf_token %}
+						<label for='{{pattern_form.pat_name}}'>Nazwa:</label><div class=""> {{pattern_form.pat_name|add_class:"input_field"}}</div>
+						<div class="cleaner h10"></div>
+
+						<label for='{{pattern_form.pat_is_private}}'>Prywatny:</label><div class=""> {{pattern_form.pat_is_private|add_class:"input_field"}}</div>
+						<div class="cleaner h10"></div>
+
+						<label for='{{pattern_form.pat_category}}'>Kategoria:</label><div class=""> {{pattern_form.pat_category|add_class:"input_field"}}</div>
+						<div class="cleaner h10"></div>
+
+						<input type="submit" name='save_post' value="Zapisz szablon" class="submit_btn float_l">
+					</form>
+		        </div>  
+	 	</div> 
+	 	<div class="cleaner"></div>
+	 	<hr style="background-color:white">
 	 	{% endfor %}
 	{% else %}
 		<p style="text-align: center;">Brak dostępnych szablonów</p>

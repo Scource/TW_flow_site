@@ -3,7 +3,7 @@ from django.http import HttpResponse, FileResponse
 from django.core.exceptions import PermissionDenied
 from django.db.models import Max, Q
 from .models import tasks, process, comments, posts, messages, files, category, patterns_elements, patterns
-from .filters import ProcessFilter, PostsFilter, UserProcessFilter, UsersFilter, UserTasksFilter
+from .filters import ProcessFilter, PostsFilter, UserProcessFilter, UsersFilter, UserTasksFilter, PatternFilter
 from .forms import TaskFormSet, ProcessForm, TaskForm, CommForm, TaskFormPos, PostsForm, FileForm, MessageForm, TaskFormPoint, TaskFormPointEdit, PatternForm, CreateFromPattern, Edit_pattern_elements
 from django.contrib.auth.models import User
 
@@ -14,8 +14,8 @@ from django.http import HttpResponseForbidden, HttpResponseRedirect
 import mimetypes
 import os
 from django.conf import settings
-from .services import get_tasks_in_proc, get_points_in_task, get_proc_elemenets, create_proc_from_pattern
-from .permissions import add_perms_to_new_object, toggle_perm_on_object
+from .services import get_tasks_in_proc, get_points_in_task, get_proc_elemenets, create_proc_from_pattern, save_pattern
+from .permissions import add_perms_to_new_object, toggle_perm_on_object, set_perm_to_subs
 from django.contrib.auth import get_user_model
 from guardian.shortcuts import assign_perm, get_objects_for_user, get_users_with_perms, get_perms
 # Create your views here.
@@ -581,6 +581,17 @@ def if_toggle_object_permission(request, user, object_id, object_type):
 		return redirect('info_flow:if_edit_task', tid=object_id)
 
 
+
+
+@login_required
+@permission_required('info_flow.change_process')
+@permission_required('info_flow.change_tasks')
+def if_set_perms_to_all(request, proc_id):
+	set_perm_to_subs(proc_id)
+	return redirect('info_flow:if_edit_proc', pid=proc_id)
+
+
+
 @login_required
 @permission_required('info_flow.add_patterns')
 def if_new_pattern(request, proc_id):
@@ -613,7 +624,9 @@ def if_patterns_list(request):
 
 	patts=patterns.objects.all()
 	new_pattern=CreateFromPattern()
-	context={'patts':patts, 'new_pattern':new_pattern}
+	pattern_form=PatternForm()
+	patterns_filter=PatternFilter(request.GET, queryset=patts)
+	context={'patterns_filter':patterns_filter, 'new_pattern':new_pattern, 'pattern_form':pattern_form}
 	return render(request, 'info_flow/if_patterns_list.html', context)
 
 
@@ -653,3 +666,27 @@ def if_delete_pattern_element(request, p_ele_id):
 	del_pat_ele=patterns_elements.objects.get(pk=p_ele_id)
 	del_pat_ele.delete()	
 	return redirect('info_flow:if_show_pattern', pat_id=del_pat_ele.pele_pattern.id)
+
+
+@login_required
+@permission_required('info_flow.change_patterns')
+def if_edit_pattern_name(request, pat_id):
+	cur_pat=patterns.objects.get(pk=pat_id)
+	if request.method=='POST':
+		pattern_form=PatternForm(request.POST, instance=cur_pat)
+		if pattern_form.is_valid():
+			pattern_form.save()
+		return redirect('info_flow:if_patterns_list')
+
+@login_required
+@permission_required('info_flow.change_patterns')
+def if_change_pattern_element(request, p_ele_id):
+	ele_cl=patterns_elements.objects.get(pk=p_ele_id)
+	if ele_cl.pele_type==0:
+		number=patterns_elements.objects.filter(pele_pattern=ele_cl.pele_pattern, pele_type=1).count()
+		save_pattern(pat_id=ele_cl.pele_pattern, pat_order=number+1, el_type=1, el_name="Nowe zadanie", el_desc="Opis", el_proc=ele_cl.id)
+	elif ele_cl.pele_type==1:
+		number=patterns_elements.objects.filter(pele_pattern=ele_cl.pele_pattern, pele_task=ele_cl.id, pele_type=2).count()
+		save_pattern(pat_id=ele_cl.pele_pattern, pat_order=number+1, el_type=2, el_name="Nowy punkt", el_desc="Opis", el_proc=ele_cl.pele_proc, el_task=ele_cl.id)
+
+	return redirect('info_flow:if_show_pattern', pat_id=ele_cl.pele_pattern.id)

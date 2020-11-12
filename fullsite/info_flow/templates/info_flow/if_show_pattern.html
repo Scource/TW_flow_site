@@ -17,15 +17,19 @@ Nowy szablon
 
 
 {% block content %}
-	<a href="{% url 'info_flow:if_delete_pattern' pat_id %}" type="submit" class="float_l">Usuń cały szablon</a>
+	{% if user.is_authenticated and user == p.pele_pattern.pat_author %}
+		<a href="{% url 'info_flow:if_delete_pattern' pat_id %}" type="submit" class="del float_l">Usuń cały szablon</a>
+	{% endif %}
 	<a href="{% url 'info_flow:if_patterns_list' %}" type="submit" class="float_r">Wróć</a>
 	<div class="cleaner h20"></div>
 
 	{% for p in pat_elements_proc %}
 		    <div class="pattern_proc">{{p.pele_order}}. {{p.pele_name}} 	
-			    	{% if user.is_authenticated and user == pe.pele_pattern.pat_author %}
+			    	{% if user.is_authenticated and user == p.pele_pattern.pat_author %}
 						<a href='{% url "info_flow:if_edit_pattern" p.id %}' type="submit" class="patter_edit">Edytuj</a>
-						<a href='{% url "info_flow:if_delete_pattern_element" p.id %}' type="submit" class="patter_edit">Usuń</a>
+						<a href='{% url "info_flow:if_delete_pattern_element" p.id %}' type="submit" class="del patter_edit">Usuń</a>
+						<a href='{% url "info_flow:if_change_pattern_element" p.id %}' type="submit" class="patter_edit">Dodaj Zadanie</a>
+
 					{% endif %}</div>
 			<div class="pattern_desc">{{p.pele_desc}}</div>
 	{% endfor %}
@@ -34,7 +38,8 @@ Nowy szablon
 			<div class="pattern_task"> {{pe.pele_order}}. {{pe.pele_name}} 
 			    	{% if user.is_authenticated and user == pe.pele_pattern.pat_author %}
 						<a href='{% url "info_flow:if_edit_pattern" pe.id %}' type="submit" class="patter_edit">Edytuj</a>
-						<a href='{% url "info_flow:if_delete_pattern_element" pe.id %}' type="submit" class="patter_edit">Usuń</a>
+						<a href='{% url "info_flow:if_delete_pattern_element" pe.id %}' type="submit" class="del patter_edit">Usuń</a>
+						<a href='{% url "info_flow:if_change_pattern_element" pe.id %}' type="submit" class="patter_edit">Dodaj Punkt</a>
 					{% endif %}</div>	
 			<div class="pattern_desc">{{pe.pele_desc}}</div>
 
@@ -44,7 +49,7 @@ Nowy szablon
 				<div class="pattern_point"> {{pi.pele_order}}. {{pi.pele_name}} 	
 				    	{% if user.is_authenticated and user == pi.pele_pattern.pat_author %}
 							<a href='{% url "info_flow:if_edit_pattern" pi.id %}' type="submit" class="patter_edit">Edytuj</a>
-							<a href='{% url "info_flow:if_delete_pattern_element" pi.id %}' type="submit" class="patter_edit">Usuń</a>
+							<a href='{% url "info_flow:if_delete_pattern_element" pi.id %}' type="submit" class="del patter_edit">Usuń</a>
 						{% endif %}</div>
 				<div class="pattern_desc">{{pi.pele_desc}}</div>
 				{% endif %}

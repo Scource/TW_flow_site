@@ -23,9 +23,8 @@ urlpatterns = [
     path('processes/assign/<str:object_type>/task_<int:task_id>/', views.assign_task, name='assign_task'),
 
 
-    #path('processes/templates', views.if_proc_templates, name='if_proc_templates'),
     path('processes/toggle_permissions/<int:user>/<int:object_id>/<str:object_type>', views.if_toggle_object_permission, name='if_toggle_object_permission'),
-
+    path('processes/edit/set_perms_to_all/<int:proc_id>/', views.if_set_perms_to_all, name='if_set_perms_to_all'),
 
     path('processes/delete/<str:cat>/<int:proc_id>/', views.if_delete_proc, name='if_delete_proc'),
     path('processes/delete/<str:object_type>/<int:e_id>/<int:com_id>/', views.if_delete_com, name='if_delete_com'),
@@ -44,6 +43,8 @@ urlpatterns = [
     path('pattern/show/<int:pat_id>', views.if_show_pattern, name='if_show_pattern'),
     path('pattern/list/', views.if_patterns_list, name='if_patterns_list'),
     path('pattern/show/edit/<int:p_ele_id>', views.if_edit_pattern, name='if_edit_pattern'),
+    path('pattern/show/edit/pat/<int:pat_id>', views.if_edit_pattern_name, name='if_edit_pattern_name'),
+    path('pattern/show/edit/add_element/<int:p_ele_id>', views.if_change_pattern_element, name='if_change_pattern_element'),
     path('pattern/show/delete/<int:pat_id>', views.if_delete_pattern, name='if_delete_pattern'),
     path('pattern/show/delete/element/<int:p_ele_id>', views.if_delete_pattern_element, name='if_delete_pattern_element'),
 

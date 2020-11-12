@@ -111,7 +111,9 @@ Edytuj {{task.tasks_name}}
     </table>
 
     <div class="cleaner h20"></div>
-    <h6>Użytkownicy z dostępem do procesu</h6>
+    <h6>Użytkownicy z dostępem do procesu
+        {% url "info_flow:if_set_perms_to_all" proc.id as the_url %}
+    <input type="button" onclick="window.location.href='{{ the_url }}';" value="Zastosuj do podrzędnych" /></h6>
     <table class="table table-sm">
         <tr>
             <th>Konto</th>

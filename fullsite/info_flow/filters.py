@@ -1,6 +1,6 @@
 import django_filters
 from django import forms
-from .models import process, posts, tasks
+from .models import process, posts, tasks, patterns
 from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
 
@@ -110,3 +110,12 @@ class UsersFilter(django_filters.FilterSet):
 	class Meta:
 		model = User
 		fields = [ 'first_name', 'last_name']
+
+
+class PatternFilter(django_filters.FilterSet):
+	pat_author=django_filters.CharFilter(field_name='pat_author', lookup_expr='icontains', label='Autor')
+	pat_name=django_filters.CharFilter(field_name='pat_name', lookup_expr='icontains', label='Nazwa')
+
+	class Meta:
+		model = patterns
+		fields = [ 'pat_name', 'pat_author', 'pat_category']

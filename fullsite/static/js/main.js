@@ -23,15 +23,23 @@ $(document).ready(function(){
     $(".adv_filter_tasks").toggle();
     });
 
+
     $(".hide_button").click(function(){
     var grabID = $(this).attr('id'); 
     $('#div'+grabID).toggle();
     });
 
+    $(".edit_button").click(function(){
+    var grabID = $(this).attr('id'); 
+    $('#edit'+grabID).toggle();
+    });
+
+
     $("clickable-row_task").hover(function(){
     $(this).css("background-color", "red");
     });
     
+
     $(document).ready(function(){
       $(".del").click(function(){
         if (!confirm("Czy na pewno usuąnć?")){
