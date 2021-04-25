@@ -22,9 +22,9 @@ class ElementList(generics.ListCreateAPIView):
     def get_queryset(self):
         el_type = self.kwargs['type']
         if el_type == 'POB':
-            return Element.objects.filter(element_type=1)
-        elif el_type == 'SE':
             return Element.objects.filter(element_type=0)
+        elif el_type == 'SE':
+            return Element.objects.filter(element_type=1)
 
 
 class ElementCreateView(generics.CreateAPIView):

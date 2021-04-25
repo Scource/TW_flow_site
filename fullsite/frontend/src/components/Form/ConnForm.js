@@ -6,10 +6,11 @@ import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
 import axios from 'axios'
 import moment from 'moment'
+import { withRouter } from "react-router";
 
-
-function ConnForm() {
-const [newData, setNewData]=useState([])
+const  ConnForm =({match}) => {
+const [POBList, setPOBList]=useState([])
+const [SEList, setSEList]=useState([])
 const [newConn, setNewConn] =useState({
     dt_from:'', 
     dt_to:'', 
@@ -19,7 +20,7 @@ const [newConn, setNewConn] =useState({
     modified_by:1 
 });
 
-
+console.log({match})
 
 const updateField = e => {
 setNewConn({...newConn, [e.target.name]: e.target.value})
@@ -41,14 +42,22 @@ const handleSubmit = event => {
 };
 
     useEffect(() => {
-    const fetchData = async () => {
+    const fetchPOB = async () => {
       const result = await axios.get(
-        'http://localhost:8000/RB/element/',
+        `http://localhost:8000/RB/element/POB/`,
       );
       console.log(result)
-      setNewData(result.data);
+      setPOBList(result.data);
     };
-     fetchData();
+    const fetchSE = async () => {
+      const result = await axios.get(
+        `http://localhost:8000/RB/element/SE/`,
+      );
+      
+      setSEList(result.data);
+    };
+     fetchPOB();
+     fetchSE();
   }, []);
 
 return(
@@ -71,7 +80,7 @@ return(
             <Form.Group as={Col} controlId="formSelectPOB">
                 <Form.Label>Wybierz POB</Form.Label>
                 <Form.Control name='POB' onChange={updateField} as="select" htmlSize={7} custom>
-                  {newData.filter(el => 
+                  {POBList.filter(el => 
                         el.element_type === 0).map(ele => (
                         <option key={ele.pk} value={ele.pk}>{ele.code}</option>
                     ))}
@@ -81,8 +90,7 @@ return(
             <Form.Group as={Col} controlId="formSelectSE">
                 <Form.Label>Wybierz SE</Form.Label>
                 <Form.Control name='SE' onChange={updateField} as="select" htmlSize={7} custom>
-                  {newData.filter(el => 
-                        el.element_type === 1).map(ele => (
+                  {SEList.map(ele => (
                         <option key={ele.pk} value={ele.pk}>{ele.code}</option>
                     ))}
                 </Form.Control>
@@ -100,4 +108,4 @@ return(
 };
 
 
-export default ConnForm
+export default withRouter(ConnForm)

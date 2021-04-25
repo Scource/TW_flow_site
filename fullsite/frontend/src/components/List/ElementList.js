@@ -29,7 +29,7 @@ const ElementList = (props) => {
             <td>{ele.element_type}</td>
             <td>{moment(ele.dt_from).format('YYYY-MM-DD HH:mm')}</td>
             <td>{moment(ele.dt_to).format('YYYY-MM-DD HH:mm')}</td>
-            <td style={{width: '150px'}}><Link to={`${props.match.url}/edit/${ele.pk}`}><Button>Edytuj</Button></Link>
+            <td style={{width: '150px'}}><Link to={`${props.match.url}/${ele.pk}/show/`}><Button>Pokaż</Button></Link>
             <Button onClick={() => props.delFunc(ele.pk)}>Usuń</Button></td>
             </tr>))}
         </tbody>

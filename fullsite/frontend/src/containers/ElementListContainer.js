@@ -3,6 +3,7 @@ import axios from 'axios'
 import {Route} from 'react-router-dom'
 import ElementList from '../components/List/ElementList'
 import UpdateElement from '../components/Form/UpdateElement'
+import ShowElement from '../components/ItemList/ShowElement'
 import moment from 'moment'
 
 
@@ -19,7 +20,7 @@ const ElementListContainer = ({match}) => {
     element_type:''
 });
   
-console.log(match)
+console.log('aa',match)
   useEffect(() => {
     const fetchData = async () => {
       const result = await axios.get(
@@ -63,7 +64,13 @@ console.log(match)
     <Route path={`${match.url}`} exact >
       <ElementList data={ElementData} delFunc={deleteElement} />
     </Route>
-    <Route path={`${match.url}/edit/:id/`}><UpdateElement 
+    <Route path={`${match.url}/:id/show/`}><ShowElement 
+    setFunc={setNewElement}
+    data={newElement}
+    prev_match={match}
+    />
+    </Route>
+        <Route path={`${match.url}/:id/edit/`}><UpdateElement 
     updateStartFunc={updateStartField}
     updateEndFunc={updateEndField}
     submitFunc={handleSubmit}

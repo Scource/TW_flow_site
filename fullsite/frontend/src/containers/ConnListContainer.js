@@ -3,6 +3,7 @@ import axios from 'axios'
 import {Route} from 'react-router-dom'
 import ConnList from '../components/List/ConnList'
 import UpdateConn from '../components/Form/UpdateConn'
+import ShowConn from '../components/ItemList/ShowConn'
 import moment from 'moment'
 
 
@@ -24,7 +25,6 @@ const ConnListContainer = ({match}) => {
       );
       console.log(result.data)
       setConn(result.data);
-
     };
      fetchData();
  
@@ -61,7 +61,14 @@ const ConnListContainer = ({match}) => {
     <Route path={`${match.url}`} exact >
       <ConnList data={connData} delFunc={deleteConn} />
     </Route>
-    <Route path={`${match.url}/edit/:id/`}><UpdateConn 
+    <Route path={`${match.url}/:id/show/`}><ShowConn 
+    data={newConn}
+    prev_match={match}
+    setFunc={setNewConn}
+
+    />
+    </Route>
+        <Route path={`${match.url}/:id/edit/`}><UpdateConn 
     updateStartFunc={updateStartField}
     updateEndFunc={updateEndField}
     submitFunc={handleSubmit}

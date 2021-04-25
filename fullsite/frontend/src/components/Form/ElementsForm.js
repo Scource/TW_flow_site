@@ -77,13 +77,6 @@ return(
                 </Form.Control>
             </Form.Group>
             </Form.Row>
-
-            <Form.Row>
-            <Form.Group>
-                <Form.File id="formEleFileInput" label="Dodaj plik" />
-            </Form.Group>
-            </Form.Row>
-
             <Form.Row>
                 <Col md={{ span: 2, offset: 11 }}><Button onClick={handleSubmit} type="submit">Utwórz</Button></Col>
                 

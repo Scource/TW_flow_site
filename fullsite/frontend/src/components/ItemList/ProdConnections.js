@@ -1,7 +1,7 @@
 import {React, useEffect, useState, Fragment} from 'react'
 import Table from 'react-bootstrap/Table';
+import { Collapse } from 'reactstrap';
 import Button from 'react-bootstrap/esm/Button';
-import {Link} from 'react-router-dom';
 import moment from 'moment'
 import axios from 'axios'
 import { withRouter } from "react-router";
@@ -9,9 +9,11 @@ import { withRouter } from "react-router";
 
 
 const  ProdConnections = (props) => {
-    
+
+    const [isOpen, setIsOpen] = useState(false);
     const [ProdData, setProd] = useState([]);
     const [showEdit, setshowEdit] = useState(false);
+
 
     useEffect(() => {
     const fetchData = async () => {
@@ -26,7 +28,10 @@ const  ProdConnections = (props) => {
     console.log(ProdData)
     return (
     <Fragment>
-        <h5>Historia konfiguracji handlowej</h5>
+
+        <h5>Historia konfiguracji handlowej<Button
+        onClick={() => setIsOpen(!isOpen)}>Pokaż</Button></h5>
+      <Collapse isOpen={isOpen}>
         { showEdit ? '<Results />' : null }
         <Table hover size="sm">
         <thead>
@@ -44,8 +49,9 @@ const  ProdConnections = (props) => {
             <td>{prod.POB_code}</td>
             <td>{moment(prod.dt_from).format('YYYY-MM-DD HH:mm')}</td>
             <td>{moment(prod.dt_to).format('YYYY-MM-DD HH:mm')}</td>
-            <td> {{ 1: 'Wytwórca',
-                    0: 'Mikroinstalacja'
+            <td> {{ 0: 'Wytwórca',
+                    1: 'Mikroinstalacja',
+                    2: 'Prosument'
                     }[prod.element_type]
                     }</td>
             <td style={{width: '150px'}}><Button onClick={() => setshowEdit(prevshowEdit => !prevshowEdit)}>Edytuj</Button>
@@ -57,6 +63,7 @@ const  ProdConnections = (props) => {
         
         </tbody> 
         </Table>
+        </Collapse>
     </Fragment>
     
     )}

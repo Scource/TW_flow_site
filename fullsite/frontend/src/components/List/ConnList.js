@@ -28,7 +28,7 @@ const  ConnList = (props) => {
             <td>{conn.SE_code}</td>
             <td>{moment(conn.dt_from).format('YYYY-MM-DD HH:mm')}</td>
             <td>{moment(conn.dt_to).format('YYYY-MM-DD HH:mm')}</td>
-            <td style={{width: '150px'}}><Link to={`${props.match.url}/edit/${conn.pk}`}><Button>Edytuj</Button></Link>
+            <td style={{width: '150px'}}><Link to={`${props.match.url}/${conn.pk}/show/`}><Button>Pokaż</Button></Link>
             <Button onClick={() => props.delFunc(conn.pk)}>Usuń</Button></td>
             </tr>))}
         </tbody> 

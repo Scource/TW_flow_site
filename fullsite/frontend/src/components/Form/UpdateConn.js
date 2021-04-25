@@ -11,7 +11,6 @@ import { withRouter } from "react-router";
 
 const  UpdateConn = (props) => {
 
-    //const [newData, setNewData]=useState([])
     
     useEffect(() => {
     const fetchData = async () => {
@@ -22,47 +21,6 @@ const  UpdateConn = (props) => {
     };
      fetchData();
    }, [])// eslint-disable-line
-
-
-
-// const [newConn, setNewConn] =useState({
-//     dt_from:'', 
-//     dt_to:'', 
-//     POB:'', 
-//     SE:'', 
-//     author:1, 
-//     modified_by:1 
-// });
-
-// const updateField = e => {
-// setNewConn({...newConn, [e.target.name]: e.target.value})
-// console.log(newConn)};
-
-// const updateStartField = event => {
-//     setNewConn({...newConn, dt_from: moment(event._d).format('YYYY-MM-DD HH:mm') }); 
-//     console.log(event)
-// console.log(newConn)};
-
-// const updateEndField = event => {
-//     setNewConn({...newConn, dt_to: moment(event._d).format('YYYY-MM-DD HH:mm') }); 
-// console.log(newConn)};
-
-// const handleSubmit = event => {
-//     event.preventDefault();
-//     console.log(newConn)
-//     axios.post('http://localhost:8000/RB/connection/create/', newConn)
-// };
-
-  //   useEffect(() => {
-  //   const fetchData = async () => {
-  //     const result = await axios.get(
-  //       'http://localhost:8000/RB/element/',
-  //     );
-  //     console.log(result)
-  //     setNewData(result.data);
-  //   };
-  //    fetchData();
-  // }, []);
 
 return(
     <Container>
@@ -80,32 +38,8 @@ return(
                 </Form.Group>
             </Form.Row>
 
-            {/* <Form.Row>
-            <Form.Group as={Col} controlId="formSelectPOB">
-                <Form.Label>Wybierz POB</Form.Label>
-                <Form.Control name='POB' onChange={props.UpdateFunc} as="select" htmlSize={7} custom>
-                  {newData.filter(el => 
-                        el.element_type === 0).map(ele => (
-                        <option key={ele.pk} value={ele.pk}>{ele.code}</option>
-                    ))}
-                </Form.Control>
-            </Form.Group>
-
-            <Form.Group as={Col} controlId="formSelectSE">
-                <Form.Label>Wybierz SE</Form.Label>
-                <Form.Control name='SE' onChange={props.UpdateFunc} as="select" htmlSize={7} custom>
-                  {newData.filter(el => 
-                        el.element_type === 1).map(ele => (
-                        <option key={ele.pk} value={ele.pk}>{ele.code}</option>
-                    ))}
-                </Form.Control>
-            </Form.Group>
-            </Form.Row> */}
-
-
             <Form.Row>
                 <Col md={{ span: 2, offset: 11 }}><Button onClick={props.submitFunc} type="submit">Edytuj</Button></Col>
-                
             </Form.Row>
         </Form>
     </Container>

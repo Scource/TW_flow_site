@@ -31,7 +31,7 @@ function ProdList(props) {
             <td>{pp.element_type}</td>
             <td>{moment(pp.dt_from).format('YYYY-MM-DD HH:mm')}</td>
             <td>{moment(pp.dt_to).format('YYYY-MM-DD HH:mm')}</td>
-            <td style={{width: '150px'}}><Link to={`${props.match.url}/edit/${pp.pk}`}><Button>Edytuj</Button></Link>
+            <td style={{width: '150px'}}><Link to={`${props.match.url}/${pp.pk}/show`}><Button>Pokaż</Button></Link>
             <Button onClick={() => props.delFunc(pp.pk)}>Usuń</Button></td>
             </tr>))}
         </tbody>

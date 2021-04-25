@@ -2,6 +2,7 @@ import {React, useState, useEffect} from 'react'
 import axios from 'axios'
 import {Route} from 'react-router-dom'
 import ProdList from '../components/List/ProdList'
+import ShowProd from '../components/ItemList/ShowProd'
 import UpdateProd from '../components/Form/UpdateProd'
 import moment from 'moment'
 
@@ -62,7 +63,14 @@ const ProdListContainer = ({match}) => {
     <Route path={`${match.url}`} exact >
       <ProdList data={ProdData} delFunc={deleteProd} />
     </Route>
-    <Route path={`${match.url}/edit/:id/`}><UpdateProd 
+    <Route path={`${match.url}/:id/show/`}><ShowProd 
+    data={newProd}
+    prev_match={match}
+    setFunc={setNewProd}
+
+    />
+    </Route>
+        <Route path={`${match.url}/:id/edit/`}><UpdateProd 
     updateStartFunc={updateStartField}
     updateEndFunc={updateEndField}
     submitFunc={handleSubmit}
