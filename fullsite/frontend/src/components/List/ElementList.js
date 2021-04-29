@@ -9,28 +9,26 @@ const ElementList = (props) => {
     return (
     <div>
         <h4>Lista użytkowników RB</h4>
-            <Table bordered hover size="sm">
+            <Table bordered hover size="sm" >
         <thead>
             <tr>
             <th>ID</th>
             <th>Nazwa</th>
             <th>Kod</th>
-            <th>Typ</th>
             <th>Data od</th>
             <th>Data do</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody > 
             {props.data.map(ele => (
             <tr key={ele.pk}>
             <td>{ele.pk}</td>
             <td>{ele.name}</td>
             <td>{ele.code}</td>
-            <td>{ele.element_type}</td>
             <td>{moment(ele.dt_from).format('YYYY-MM-DD HH:mm')}</td>
             <td>{moment(ele.dt_to).format('YYYY-MM-DD HH:mm')}</td>
-            <td style={{width: '150px'}}><Link to={`${props.match.url}/${ele.pk}/show/`}><Button>Pokaż</Button></Link>
-            <Button onClick={() => props.delFunc(ele.pk)}>Usuń</Button></td>
+            <td style={{width: '80px'}}><Link to={`${props.match.url}/${ele.pk}/show/`}><Button>Pokaż</Button></Link>
+            </td>
             </tr>))}
         </tbody>
         </Table>

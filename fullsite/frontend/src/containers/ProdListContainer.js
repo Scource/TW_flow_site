@@ -8,7 +8,8 @@ import moment from 'moment'
 
 
 const ProdListContainer = ({match}) => {
-  
+  const [redirectDelete, setRedirectDelete]=useState(false)
+  const [redirect, setRedirect]=useState(false)
   const [ProdData, setProd] = useState([]);
   const [newProd, setNewProd] =useState({
     name:'', 
@@ -20,7 +21,7 @@ const ProdListContainer = ({match}) => {
     modified_by:1,
     element_type:''
 });
-  console.log(newProd)
+
   useEffect(() => {
     const fetchData = async () => {
       const result = await axios.get(
@@ -28,15 +29,19 @@ const ProdListContainer = ({match}) => {
       );
       setProd(result.data);
     };
+    setRedirectDelete(false)
      fetchData();
  
-  }, []);
+  }, [redirectDelete]);
 
 
   const deleteProd = (id, e) => {
     axios.delete(`http://localhost:8000/RB/powerplant/${id}/delete/`)
-    const elements = ProdData.filter(item => item.pk !== id);
-    setProd([...elements])
+    // const elements = ProdData.filter(item => item.pk !== id);
+    // setProd([...elements])
+    .then(res => {
+      if (res.status === 204) {
+      setRedirectDelete(true)}})
      };
 
   const updateField = e => {
@@ -54,29 +59,33 @@ const ProdListContainer = ({match}) => {
   const handleSubmit = (event) => {
     event.preventDefault();
     axios.put(`http://localhost:8000/RB/powerplant/${newProd.pk}/edit/`, newProd)
-    
+    .then(res => {
+      if (res.status === 200) {
+      setRedirect(true)}})   
 };
   
 
     return (
       <div>
     <Route path={`${match.url}`} exact >
-      <ProdList data={ProdData} delFunc={deleteProd} />
+      <ProdList data={ProdData} />
     </Route>
     <Route path={`${match.url}/:id/show/`}><ShowProd 
     data={newProd}
     prev_match={match}
     setFunc={setNewProd}
-
+    delFunc={deleteProd}
+    redirectDelete={redirectDelete}
     />
     </Route>
-        <Route path={`${match.url}/:id/edit/`}><UpdateProd 
+    <Route path={`${match.url}/:id/edit/`}><UpdateProd 
     updateStartFunc={updateStartField}
     updateEndFunc={updateEndField}
     submitFunc={handleSubmit}
     UpdateFunc={updateField}
     setFunc={setNewProd}
     data={newProd}
+    redirect={redirect}
     />
     </Route>
 

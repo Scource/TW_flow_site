@@ -6,12 +6,11 @@ import Container from 'react-bootstrap/Container';
 import {Link} from 'react-router-dom';
 import moment from 'moment'
 import axios from 'axios';
-import { withRouter } from "react-router";
+import { withRouter, Redirect } from "react-router";
 
 
 const  ShowConn = (props) => {
 
-    console.log(props)
     useEffect(() => {
     const fetchData = async () => {
       const result = await axios.get(
@@ -21,14 +20,21 @@ const  ShowConn = (props) => {
     };
      fetchData();
    }, []);// eslint-disable-line
-console.log('AAA', props)
+
+   if (props.redirectDelete) {
+       return <Redirect to="/connections" />
+   }
+
 return(
     <Container>
-       <h3>Połączenie ID {props.data.pk}</h3>
+        <h3>Połączenie ID {props.data.pk}</h3>
        <br/>
         <Form>
             <Form.Row>
-                <Col md={{ span: 2, offset: 11 }}><Link to={`${props.prev_match.url}/${props.match.params.id}/edit`}><Button>Edytuj</Button></Link></Col>
+                <Col md={{ span: 2, offset: 11 }}><Link to={`${props.prev_match.url}/${props.match.params.id}/edit`}>
+                    <Button>Edytuj</Button></Link>
+                <Button onClick={() => props.delFunc(props.match.params.id)}>Usuń</Button>
+                </Col>
             </Form.Row>
             <Form.Row>
             <Form.Group as={Col} controlId="formSelectPOB">

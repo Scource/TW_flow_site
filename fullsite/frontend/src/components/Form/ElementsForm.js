@@ -6,9 +6,10 @@ import Form from 'react-bootstrap/Form';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
-import { withRouter } from "react-router";
+import { withRouter, Redirect } from "react-router";
 
 const ElementsForm = (props) => {
+const [redirect, setRedirect]=useState(false)
 const [newElement, setNewElement] =useState({
     code:'', 
     name:'', 
@@ -21,26 +22,32 @@ const [newElement, setNewElement] =useState({
 
 const updateField = e => {
 setNewElement({...newElement, [e.target.name]: e.target.value})
-console.log(newElement)};
+};
 
 const updateStartField = event => {
     setNewElement({...newElement, dt_from: moment(event._d).format('YYYY-MM-DD HH:mm') }); 
     console.log(event)
-console.log(newElement)};
+};
 
 const updateEndField = event => {
     setNewElement({...newElement, dt_to: moment(event._d).format('YYYY-MM-DD HH:mm') }); 
-console.log(newElement)};
+};
 
 const handleSubmit = event => {
     event.preventDefault();
-    console.log(newElement)
     axios.post('http://localhost:8000/RB/element/create/', newElement)
-    
+        .then(res => {
+                if (res.status === 201) {
+          setRedirect(true)}})
 };
+
+if (redirect) {
+return <Redirect to={`/element/${(newElement.element_type)==='0' ? 'POB' : 'SE'}`} />
+}
 
 return(
     <Container>
+    {/* /{redirect ? <Redirect to={`/element/${(newElement.element_type)==='0' ? 'POB' : 'SE'}/`} /> : null} */}
        <h3>Utwórz nowego użytkownika Rynku Bilansującego</h3>
        <br/>
         <Form>

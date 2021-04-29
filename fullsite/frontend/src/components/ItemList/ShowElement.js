@@ -1,4 +1,4 @@
-import { withRouter } from "react-router";
+import { withRouter, Redirect } from "react-router";
 import {React, useEffect} from 'react'
 import axios from 'axios'
 import Form from 'react-bootstrap/Form';
@@ -10,7 +10,7 @@ import moment from 'moment'
 import ElementConnections from './ElementConnections'
 
 const ShowElement = (props) => {
-
+    
     useEffect(() => {
     const fetchData = async () => {
       const result = await axios.get(
@@ -21,15 +21,20 @@ const ShowElement = (props) => {
      fetchData();
    }, []);// eslint-disable-line
 
+    if (props.redirectDelete) {        
+       return <Redirect to={`${props.prev_match.url}`} />
+    }
+
     return(
-        <div>
- 
     <Container>
-       <h3>Edytuj użytkownika Rynku Bilansującego</h3>
+       <h3>Użytkownik Rynku Bilansującego</h3>
        <br/>
         <Form>
             <Form.Row>
-                <Col md={{ span: 2, offset: 11 }}><Link to={`${props.prev_match.url}/${props.match.params.id}/edit`}><Button>Edytuj</Button></Link></Col>
+                <Col md={{ span: 2, offset: 11 }}>
+                    <Link to={`${props.prev_match.url}/${props.match.params.id}/edit`} className="btn btn-primary">Edytuj</Link>
+                    <Button onClick={() => props.delFunc(props.match.params.id)}>Usuń</Button>
+                </Col>
 
             </Form.Row>
             <Form.Row>
@@ -65,7 +70,6 @@ const ShowElement = (props) => {
 
     <ElementConnections pk={props.data.pk}/>    
     </Container>
-    </div>
     )
 };
 

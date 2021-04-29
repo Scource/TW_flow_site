@@ -6,11 +6,10 @@ import moment from 'moment'
 import { withRouter } from "react-router";
 
 const  ConnList = (props) => {
-    console.log(props.match)
     return (
         <div>
         <h4>Lista połączeń użytkowników RB</h4>
-        <Table hover size="sm">
+        <Table hover bordered size="sm">
         <thead>
             <tr>
             <th>ID</th>
@@ -28,8 +27,8 @@ const  ConnList = (props) => {
             <td>{conn.SE_code}</td>
             <td>{moment(conn.dt_from).format('YYYY-MM-DD HH:mm')}</td>
             <td>{moment(conn.dt_to).format('YYYY-MM-DD HH:mm')}</td>
-            <td style={{width: '150px'}}><Link to={`${props.match.url}/${conn.pk}/show/`}><Button>Pokaż</Button></Link>
-            <Button onClick={() => props.delFunc(conn.pk)}>Usuń</Button></td>
+            <td style={{width: '80px'}}><Link to={`${props.match.url}/${conn.pk}/show/`}><Button>Pokaż</Button></Link>
+            </td>
             </tr>))}
         </tbody> 
         </Table>

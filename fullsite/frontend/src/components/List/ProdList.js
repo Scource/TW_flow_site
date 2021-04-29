@@ -27,12 +27,13 @@ function ProdList(props) {
             <td>{pp.pk}</td>
             <td>{pp.name}</td>
             <td>{pp.PPE}</td>
-            <td>{pp.POB}</td>            
-            <td>{pp.element_type}</td>
+            <td>{pp.POB_code}</td>            
+            <td>{pp.element_type===0 ? "Wytwórca" 
+                : props.data.element_type ===1 ? "Mikroinstalacja" : "Prosument"}</td>
             <td>{moment(pp.dt_from).format('YYYY-MM-DD HH:mm')}</td>
             <td>{moment(pp.dt_to).format('YYYY-MM-DD HH:mm')}</td>
-            <td style={{width: '150px'}}><Link to={`${props.match.url}/${pp.pk}/show`}><Button>Pokaż</Button></Link>
-            <Button onClick={() => props.delFunc(pp.pk)}>Usuń</Button></td>
+            <td style={{width: '80px'}}><Link to={`${props.match.url}/${pp.pk}/show`}><Button>Pokaż</Button></Link>
+            </td>
             </tr>))}
         </tbody>
         </Table>

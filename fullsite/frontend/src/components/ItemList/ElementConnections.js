@@ -4,7 +4,7 @@ import { Collapse } from 'reactstrap';
 import Button from 'react-bootstrap/esm/Button';
 import moment from 'moment'
 import axios from 'axios'
-import { withRouter } from "react-router";
+import { withRouter} from "react-router";
 import {Link} from 'react-router-dom';
 
 
@@ -12,8 +12,6 @@ const  ElementConnections = (props) => {
 
     const [isOpen, setIsOpen] = useState(false);
     const [ConnData, setConnData] = useState([]);
-    console.log(props)
-    console.log(ConnData)
 
     useEffect(() => {
     const fetchData = async () => {
@@ -25,7 +23,9 @@ const  ElementConnections = (props) => {
      fetchData();
  
   }, []);
-    console.log(ConnData)
+  
+
+
     return (
     <Fragment>
 
@@ -45,13 +45,13 @@ const  ElementConnections = (props) => {
         <tbody>
             
             {ConnData.filter(p => 
-                        (p.POB === props.pk || p.SE===props.pk)).map(conn => (
+            (p.POB === props.pk || p.SE===props.pk)).map(conn => (
             <tr key={conn.pk}>
             <td>{conn.POB_code}</td>
             <td>{conn.SE_code}</td>
             <td>{moment(conn.dt_from).format('YYYY-MM-DD HH:mm')}</td>
             <td>{moment(conn.dt_to).format('YYYY-MM-DD HH:mm')}</td>
-            <td style={{width: '150px'}}><Link to={`connections/${conn.pk}/edit`}><Button>Edytuj</Button></Link>
+            <td style={{width: '150px'}}><Link to={`/connections/${conn.pk}/edit`} className="btn btn-primary">Edytuj</Link>
             </td>
            </tr>
             ))}

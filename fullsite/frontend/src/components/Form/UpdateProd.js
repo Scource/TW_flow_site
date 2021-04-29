@@ -7,7 +7,7 @@ import Container from 'react-bootstrap/Container';
 import ProdConnections from '../ItemList/ProdConnections'
 import axios from 'axios'
 import moment from 'moment'
-import { withRouter } from "react-router";
+import { withRouter, Redirect } from "react-router";
 
 const UpdateProd = (props) => {
 
@@ -20,13 +20,10 @@ const UpdateProd = (props) => {
     };
      fetchData();
    }, [])// eslint-disable-line
-    console.log(moment(props.data.dt_to).format('YYYY-MM-DD HH:mm'))
-
-
-
+ 
 return(
     <Container>
-       
+       {props.redirect ? <Redirect to={`/producers/${props.match.params.id}/show/`} /> : null}
        <h3>Edytuj wytwórcę</h3>
        <br/>
         <Form>
@@ -48,7 +45,7 @@ return(
                 </Form.Group>
                 <Form.Group as={Col} controlId="formProdToDate">            
                     <Form.Label>Data końca bilansowania</Form.Label>
-                    <Datetime onChange={props.updateEndFunc} value={moment(props.data.dt_from).format('YYYY-MM-DD HH:mm')} dateFormat="YYYY-MM-DD" timeFormat="HH:mm" />
+                    <Datetime onChange={props.updateEndFunc} value={moment(props.data.dt_to).format('YYYY-MM-DD HH:mm')} dateFormat="YYYY-MM-DD" timeFormat="HH:mm" />
                 </Form.Group>
             </Form.Row>
 

@@ -6,9 +6,10 @@ import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
 import axios from 'axios'
 import moment from 'moment'
-
+import { withRouter, Redirect } from "react-router";
 
 function ProdForm() {
+    const [redirect, setRedirect]=useState(false)
     const [ppData, setPpData] = useState([])
     const [postPp, setPostPp] = useState({
         name:'',
@@ -25,7 +26,7 @@ function ProdForm() {
     useEffect(() => {
     const fetchData = async () => {
       const result = await axios.get(
-        'http://localhost:8000/RB/element/',
+        'http://localhost:8000/RB/element/POB/',
       );
       setPpData(result.data);
     };
@@ -47,8 +48,14 @@ function ProdForm() {
     const handleSubmit = event => {
     event.preventDefault();
     axios.post('http://localhost:8000/RB/powerplant/create/', postPp)
+        .then(res => {
+                if (res.status === 201) {
+          setRedirect(true)}})
 };
 
+if (redirect) {
+return <Redirect to="/producers" />
+}
 
 return(
     <Container>
@@ -94,8 +101,8 @@ return(
                 <Form.Label>Wybierz typ</Form.Label>
                 <Form.Control as="select" name='element_type' onChange={updateField}>
                 <option>---wybierz typ---</option>
-                <option value='0'>Wytw</option>
-                <option value='1'>Mikro</option>
+                <option value='0'>Wytwórca</option>
+                <option value='1'>Mikroinstalacja</option>
                 <option value='2'>Prosument</option>
 
                 </Form.Control>
@@ -111,4 +118,4 @@ return(
 };
 
 
-export default ProdForm
+export default withRouter(ProdForm)

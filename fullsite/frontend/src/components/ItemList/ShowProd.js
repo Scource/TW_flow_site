@@ -6,11 +6,10 @@ import Container from 'react-bootstrap/Container';
 import ProdConnections from './ProdConnections'
 import axios from 'axios'
 import moment from 'moment'
-import { withRouter} from "react-router";
+import { withRouter, Redirect} from "react-router";
 import {Link} from 'react-router-dom';
 
 const ShowProd = (props) => {
-
 
     useEffect(() => {
     const fetchData = async () => {
@@ -22,13 +21,18 @@ const ShowProd = (props) => {
      fetchData();
    }, [])// eslint-disable-line
 
+    if (props.redirectDelete) {
+       return <Redirect to="/producers" />
+   }
 return(
     <Container>
        
        <h3>{props.data.name}</h3>
         <Form style={{marginBottom: '40px'}}>
             <Form.Row>
-                <Col md={{ span: 2, offset: 11 }}><Link to={`${props.prev_match.url}/${props.match.params.id}/edit`}><Button>Edytuj</Button></Link></Col>
+                <Col md={{ span: 2, offset: 11 }}>
+                    <Link to={`${props.prev_match.url}/${props.match.params.id}/edit/`}><Button>Edytuj</Button></Link>
+                    <Button onClick={() => props.delFunc(props.match.params.id)}>Usuń</Button></Col>
                 
             </Form.Row>
             <Form.Row>
@@ -49,7 +53,7 @@ return(
                 </Form.Group>
                 <Form.Group as={Col} controlId="formProdToDate">            
                     <Form.Label>Data końca bilansowania</Form.Label>
-                    <Form.Control value={moment(props.data.dt_from).format('YYYY-MM-DD HH:mm')} disabled/>
+                    <Form.Control value={moment(props.data.dt_to).format('YYYY-MM-DD HH:mm')} disabled/>
                 </Form.Group>
             </Form.Row>
 

@@ -20,7 +20,6 @@ function App() {
      const onButtonClick=(state) => {setModalState(state)}
 
 
-     // POZMIENIAĆ WYGLĄD MENU I SPRAWIC BY TORZENIE NOWYCH PRZECHODZILO PRZEZ KONTENERY
   return (
     <BrowserRouter>
         <Navbar bg="primary" variant="dark" expand="lg">
@@ -29,14 +28,14 @@ function App() {
             <Nav className="mr-auto">
               <Nav.Link as={Link} to="/">Home</Nav.Link>
               <NavDropdown title="Zarządzenie RB" id="basic-nav-dropdown1">
-                <NavDropdown.Item ><Link to="/element/new">Nowy użytkownik RB</Link></NavDropdown.Item>
-                <NavDropdown.Item ><Link to="/connections/new">Nowe połączenie</Link></NavDropdown.Item>
-                <NavDropdown.Item ><Link to="/producers/new">Nowy wytwórca</Link></NavDropdown.Item>
+                <NavDropdown.Item as={Link} to="/element/new">Nowy użytkownik RB</NavDropdown.Item>
+                <NavDropdown.Item as={Link} to="/connections/new">Nowe połączenie</NavDropdown.Item>
+                <NavDropdown.Item as={Link} to="/producers/new">Nowy wytwórca</NavDropdown.Item>
                 <NavDropdown.Divider />
-                <NavDropdown.Item ><Link to="/element/POB">Lista POB</Link></NavDropdown.Item>
-                <NavDropdown.Item ><Link to="/element/SE">Lista SE</Link></NavDropdown.Item>
-                <NavDropdown.Item ><Link to="/connections">Lista połączeń</Link></NavDropdown.Item>                
-                <NavDropdown.Item ><Link to="/producers">Lista wytwórców</Link></NavDropdown.Item>
+                <NavDropdown.Item as={Link} to="/element/POB">Lista POB</NavDropdown.Item>
+                <NavDropdown.Item as={Link} to="/element/SE">Lista SE</NavDropdown.Item>
+                <NavDropdown.Item as={Link} to="/connections">Lista połączeń</NavDropdown.Item>                
+                <NavDropdown.Item as={Link} to="/producers">Lista wytwórców</NavDropdown.Item>
               </NavDropdown>
             </Nav>
           </Navbar.Collapse>

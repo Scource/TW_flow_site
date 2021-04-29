@@ -1,4 +1,4 @@
-import { withRouter } from "react-router";
+import { withRouter, Redirect } from "react-router";
 import {React, useEffect} from 'react'
 import Datetime from "react-datetime";
 import axios from 'axios'
@@ -23,12 +23,13 @@ const UpdateElement = (props) => {
      fetchData();
    }, []);// eslint-disable-line
 
+    if (props.redirect) {
+       return <Redirect to={`/element/${(props.data.element_type)==='0' ? 'POB' : 'SE'}/${props.match.params.id}/show/`} />
+    }
+
     return(
-        <div>
- 
-    <Container>
-       <h3>Edytuj użytkownika Rynku Bilansującego</h3>
-       <br/>
+     <Container>
+        <h3>Edytuj użytkownika Rynku Bilansującego</h3>
         <Form>
             <Form.Row>
                 <Form.Group as={Col} controlId="formEleName">            
@@ -58,7 +59,7 @@ const UpdateElement = (props) => {
             </Form.Row>
         </Form>
     </Container>
-    </div>
+
     )
 };
 

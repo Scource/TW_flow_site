@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect} from 'react'
 import axios from 'axios'
 import {Route} from 'react-router-dom'
 import ConnList from '../components/List/ConnList'
@@ -8,7 +8,10 @@ import moment from 'moment'
 
 
 const ConnListContainer = ({match}) => {
-
+ 
+  const [redirectUpdate, setRedirectUpdate]=useState(false)
+  const [redirectDelete, setRedirectDelete]=useState(false)
+  const [redirect, setRedirect]=useState(false)
   const [connData, setConn] = useState([]);
   const [newConn, setNewConn] =useState({
       dt_from:'', 
@@ -18,22 +21,27 @@ const ConnListContainer = ({match}) => {
       author:1, 
       modified_by:1 
   });
+
+
     useEffect(() => {
     const fetchData = async () => {
       const result = await axios.get(
         'http://localhost:8000/RB/connection/',
       );
-      console.log(result.data)
       setConn(result.data);
     };
      fetchData();
- 
-  }, []);
+    setRedirectDelete(false)
+  }, [redirectUpdate, redirect, redirectDelete]);
   
   const deleteConn = (id, e) => {
-    axios.delete(`http://localhost:8000/RB/connection/${id}/delete/`)
-    const newConn = connData.filter(item => item.pk !== id);
-    setConn([...newConn])
+    axios.delete(`http://localhost:8000/RB/connection/${id}/delete/`)    
+    .then(res => {
+                if (res.status === 204) {
+          setRedirectDelete(true)}})
+    // const newConn = connData.filter(item => item.pk !== id);
+    // setConn([...newConn])
+
      };
 
   const updateField = e => {
@@ -52,23 +60,29 @@ const ConnListContainer = ({match}) => {
  const handleSubmit = (event) => {
     event.preventDefault();
     axios.put(`http://localhost:8000/RB/connection/${newConn.pk}/edit/`, newConn)
+      .then(res => {
+                if (res.status === 200) {
+          setRedirectUpdate(true)}})
 };
-
 
 
     return (
     <div>
     <Route path={`${match.url}`} exact >
-      <ConnList data={connData} delFunc={deleteConn} />
+      <ConnList data={connData}  />
     </Route>
     <Route path={`${match.url}/:id/show/`}><ShowConn 
     data={newConn}
     prev_match={match}
+    delFunc={deleteConn}
     setFunc={setNewConn}
-
+    redirect={redirect}
+    redirectDelete={redirectDelete}
     />
     </Route>
         <Route path={`${match.url}/:id/edit/`}><UpdateConn 
+    redirectUpdate={redirectUpdate}
+    setRedirect={setRedirect}
     updateStartFunc={updateStartField}
     updateEndFunc={updateEndField}
     submitFunc={handleSubmit}

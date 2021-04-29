@@ -6,12 +6,11 @@ import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
 import axios from 'axios'
 import moment from 'moment'
-import { withRouter } from "react-router";
+import { withRouter, Redirect } from "react-router";
 
 
 const  UpdateConn = (props) => {
 
-    
     useEffect(() => {
     const fetchData = async () => {
       const result = await axios.get(
@@ -22,9 +21,14 @@ const  UpdateConn = (props) => {
      fetchData();
    }, [])// eslint-disable-line
 
+   if (props.redirectUpdate) {
+       return <Redirect to={`/connections/${props.match.params.id}/show/`} />
+
+   }
+
 return(
     <Container>
-       <h3>Edytuj połączenie między elementami</h3>
+        <h3>Edytuj połączenie między elementami</h3>
        <br/>
         <Form>
             <Form.Row>

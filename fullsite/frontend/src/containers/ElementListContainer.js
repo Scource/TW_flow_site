@@ -8,7 +8,8 @@ import moment from 'moment'
 
 
 const ElementListContainer = ({match}) => {
-
+  const [redirectDelete, setRedirectDelete]=useState(false)
+  const [redirect, setRedirect]=useState(false)
   const [ElementData, setElement] = useState([]);
   const [newElement, setNewElement] =useState({
     code:'', 
@@ -19,8 +20,7 @@ const ElementListContainer = ({match}) => {
     modified_by:1,
     element_type:''
 });
-  
-console.log('aa',match)
+
   useEffect(() => {
     const fetchData = async () => {
       const result = await axios.get(
@@ -28,15 +28,19 @@ console.log('aa',match)
       );
       setElement(result.data);
     };
-     fetchData();
- 
-  }, [match.path]);
+    setRedirectDelete(false)
+    fetchData();
+    
+  }, [match.path, redirectDelete]);
 
 
   const deleteElement = (id, e) => {
     axios.delete(`http://localhost:8000/RB/element/${id}/delete/`)
-    const elements = ElementData.filter(item => item.pk !== id);
-    setElement([...elements])
+    // const elements = ElementData.filter(item => item.pk !== id);
+    // setElement([...elements])
+        .then(res => {
+                if (res.status === 204) {
+          setRedirectDelete(true)}})
      };
 
   const updateField = e => {
@@ -54,20 +58,23 @@ console.log('aa',match)
   const handleSubmit = (event) => {
     event.preventDefault();
     axios.put(`http://localhost:8000/RB/element/${newElement.pk}/edit/`, newElement)
-    
-    
+    .then(res => {
+      if (res.status === 200) {
+      setRedirect(true)}})   
 };
   
 
     return (
       <div>
     <Route path={`${match.url}`} exact >
-      <ElementList data={ElementData} delFunc={deleteElement} />
+      <ElementList data={ElementData} />
     </Route>
     <Route path={`${match.url}/:id/show/`}><ShowElement 
     setFunc={setNewElement}
+    delFunc ={deleteElement}
     data={newElement}
     prev_match={match}
+    redirectDelete={redirectDelete}
     />
     </Route>
         <Route path={`${match.url}/:id/edit/`}><UpdateElement 
@@ -76,7 +83,9 @@ console.log('aa',match)
     submitFunc={handleSubmit}
     UpdateFunc={updateField}
     setFunc={setNewElement}
+    
     data={newElement}
+    redirect={redirect}
     />
     </Route>
 

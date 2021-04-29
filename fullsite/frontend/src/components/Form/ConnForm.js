@@ -4,11 +4,13 @@ import Form from 'react-bootstrap/Form';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
-import axios from 'axios'
-import moment from 'moment'
-import { withRouter } from "react-router";
+import axios from 'axios';
+import moment from 'moment';
+import { withRouter, Redirect} from "react-router";
 
 const  ConnForm =({match}) => {
+
+const [redirect, setRedirect]=useState(false)
 const [POBList, setPOBList]=useState([])
 const [SEList, setSEList]=useState([])
 const [newConn, setNewConn] =useState({
@@ -19,8 +21,6 @@ const [newConn, setNewConn] =useState({
     author:1, 
     modified_by:1 
 });
-
-console.log({match})
 
 const updateField = e => {
 setNewConn({...newConn, [e.target.name]: e.target.value})
@@ -39,6 +39,9 @@ const handleSubmit = event => {
     event.preventDefault();
     console.log(newConn)
     axios.post('http://localhost:8000/RB/connection/create/', newConn)
+        .then(res => {
+                if (res.status === 201) {
+          setRedirect(true)}})
 };
 
     useEffect(() => {
@@ -59,6 +62,11 @@ const handleSubmit = event => {
      fetchPOB();
      fetchSE();
   }, []);
+
+
+if (redirect) {
+return <Redirect to={`/connections`} />
+}
 
 return(
     <Container>
