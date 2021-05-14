@@ -1,12 +1,13 @@
 import {React, useState} from 'react'
 import moment from 'moment'
 import Datetime from "react-datetime";
-import axios from 'axios'
 import Form from 'react-bootstrap/Form';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
 import { withRouter, Redirect } from "react-router";
+import axiosConfig from '../../actions/axiosConfig'
+
 
 const ElementsForm = (props) => {
 const [redirect, setRedirect]=useState(false)
@@ -35,7 +36,7 @@ const updateEndField = event => {
 
 const handleSubmit = event => {
     event.preventDefault();
-    axios.post('http://localhost:8000/RB/element/create/', newElement)
+    axiosConfig.post('/RB/element/create/', newElement)
         .then(res => {
                 if (res.status === 201) {
           setRedirect(true)}})

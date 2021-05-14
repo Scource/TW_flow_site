@@ -6,40 +6,38 @@ import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
 import moment from 'moment';
 import { withRouter, Redirect} from "react-router";
-import axiosConfig from '../../actions/axiosConfig';
+import axiosConfig from '../../actions/axiosConfig'
 
-
-const  ConnForm =({match}) => {
-
+const  ProdConnForm =(props) => {
+console.log(props)
 const [redirect, setRedirect]=useState(false)
 const [POBList, setPOBList]=useState([])
-const [SEList, setSEList]=useState([])
 const [newConn, setNewConn] =useState({
     dt_from:'', 
     dt_to:'', 
     POB:'', 
-    SE:'', 
+    PowerPlantItem: props.data.pk, 
     author:1, 
-    modified_by:1 
+    modified_by:1,
+    element_type: 1
 });
 
 const updateField = e => {
 setNewConn({...newConn, [e.target.name]: e.target.value})
-console.log(newConn)};
+};
 
 const updateStartField = event => {
     setNewConn({...newConn, dt_from: moment(event._d).format('YYYY-MM-DD HH:mm') }); 
-    console.log(event)
-console.log(newConn)};
+    };
 
 const updateEndField = event => {
     setNewConn({...newConn, dt_to: moment(event._d).format('YYYY-MM-DD HH:mm') }); 
-console.log(newConn)};
+};
 
 const handleSubmit = event => {
     event.preventDefault();
     console.log(newConn)
-    axiosConfig.post('/RB/connection/create/', newConn)
+    axiosConfig.post('/RB/powerplant/connection/create/', newConn)
         .then(res => {
                 if (res.status === 201) {
           setRedirect(true)}})
@@ -50,28 +48,20 @@ const handleSubmit = event => {
       const result = await axiosConfig.get(
         `/RB/element/POB/`,
       );
-      console.log(result)
       setPOBList(result.data);
     };
-    const fetchSE = async () => {
-      const result = await axiosConfig.get(
-        `/RB/element/SE/`,
-      );
-      
-      setSEList(result.data);
-    };
      fetchPOB();
-     fetchSE();
+
   }, []);
 
 
 if (redirect) {
-return <Redirect to={`/connections`} />
+return <Redirect to={`/producers/${props.data.pk}/show`} />
 }
 
 return(
     <Container>
-       <h3>Utwórz połączenie między elementami</h3>
+       <h3>Utwórz połączenie do POB</h3>
        <br/>
         <Form>
             <Form.Row>
@@ -95,15 +85,6 @@ return(
                     ))}
                 </Form.Control>
             </Form.Group>
-
-            <Form.Group as={Col} controlId="formSelectSE">
-                <Form.Label>Wybierz SE</Form.Label>
-                <Form.Control name='SE' onChange={updateField} as="select" htmlSize={7} custom>
-                  {SEList.map(ele => (
-                        <option key={ele.pk} value={ele.pk}>{ele.code}</option>
-                    ))}
-                </Form.Control>
-            </Form.Group>
             </Form.Row>
 
 
@@ -117,4 +98,4 @@ return(
 };
 
 
-export default withRouter(ConnForm)
+export default withRouter(ProdConnForm)

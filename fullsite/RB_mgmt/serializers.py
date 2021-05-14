@@ -31,13 +31,13 @@ class ConnectionSerializer(serializers.ModelSerializer):  # pylint: disable=too-
 
 class PowerPlantSerializer(serializers.ModelSerializer):  # pylint: disable=too-few-public-methods
     """Powerplant model serializer"""
-    POB_code = serializers.CharField(
-        source='POB.code', read_only=True)
+    POB = serializers.StringRelatedField(
+        read_only=True)
 
     class Meta:
         """Meta data for model"""
         model = Powerplant
-        fields = ['pk', 'name', 'PPE', 'POB', 'POB_code', 'dt_from',
+        fields = ['pk', 'name', 'PPE', 'POB', 'dt_from',
                   'dt_to', 'author', 'modified_by', 'is_added', 'element_type']
 
 

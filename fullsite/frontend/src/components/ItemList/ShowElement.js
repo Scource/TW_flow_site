@@ -1,6 +1,6 @@
 import { withRouter, Redirect } from "react-router";
 import {React, useEffect} from 'react'
-import axios from 'axios'
+import axiosConfig from '../../actions/axiosConfig'
 import Form from 'react-bootstrap/Form';
 import {Link} from 'react-router-dom';
 import Col from 'react-bootstrap/Col';
@@ -9,12 +9,13 @@ import Container from 'react-bootstrap/Container';
 import moment from 'moment'
 import ElementConnections from './ElementConnections'
 
+
 const ShowElement = (props) => {
     
     useEffect(() => {
     const fetchData = async () => {
-      const result = await axios.get(
-        `http://localhost:8000/RB/element/${props.match.params.id}/edit/`,
+      const result = await axiosConfig.get(
+        `/RB/element/${props.match.params.id}/edit/`,
       );
       props.setFunc(result.data);
     };
@@ -33,7 +34,7 @@ const ShowElement = (props) => {
             <Form.Row>
                 <Col md={{ span: 2, offset: 11 }}>
                     <Link to={`${props.prev_match.url}/${props.match.params.id}/edit`} className="btn btn-primary">Edytuj</Link>
-                    <Button onClick={() => props.delFunc(props.match.params.id)}>Usuń</Button>
+                    <Button onClick={() => {if (window.confirm('Are you sure you wish to delete this item?')) {props.delFunc(props.match.params.id)}}}>Usuń</Button>
                 </Col>
 
             </Form.Row>

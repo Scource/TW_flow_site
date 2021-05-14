@@ -2,7 +2,6 @@ import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import Button from 'react-bootstrap/Button';
-import Breadcrumb from 'react-bootstrap/Breadcrumb';
 import ElementsForm from './components/Form/ElementsForm'
 import ConnForm from './components/Form/ConnForm'
 import ProdForm from './components/Form/ProdForm'
@@ -10,14 +9,24 @@ import LoginModal from './components/Base/LoginModal'
 import ConnListContainer from './containers/ConnListContainer'
 import ElementListContainer from './containers/ElementListContainer'
 import ProdListContainer from './containers/ProdListContainer'
-
-
 import React, { useState} from 'react';
 import {BrowserRouter, Route, Link, Switch} from 'react-router-dom';
 
 function App() {
   const [modalState, setModalState] = useState(false);
-     const onButtonClick=(state) => {setModalState(state)}
+  const [loginState, setLoginState] = useState(false);
+  const onButtonClick=(state) => {
+    setModalState(state)}
+
+
+
+  const LogOut = () => {
+    localStorage.clear()
+    setLoginState(false)
+
+  }
+
+  
 
 
   return (
@@ -40,23 +49,23 @@ function App() {
             </Nav>
           </Navbar.Collapse>
 
-        {/* if statement for changing betweenh log in and log out button */}
 
+        {(localStorage.getItem('token')) ?
+        <div>
+        <Button variant={'secondary'}>{localStorage.getItem('username')}</Button>     
+        <Button variant={'secondary'} onClick={() => LogOut()}>Wyloguj</Button>
+        </div>
+        :
+        <div>
+        Niezalogowano
         <Button variant={'secondary'} onClick={() => onButtonClick(true)}>Zaloguj</Button>
+        </div>
+        }
 
-        <Route path="/RB"><ConnForm/></Route>
-        </Navbar>
-  
-      <Breadcrumb>
-        <Breadcrumb.Item href="#">Home</Breadcrumb.Item>
-        <Breadcrumb.Item href="https://getbootstrap.com/docs/4.0/components/breadcrumb/">
-          Library
-        </Breadcrumb.Item>
-        <Breadcrumb.Item active>Data</Breadcrumb.Item>
-      </Breadcrumb>
 
-      
-      <LoginModal modalState={{modalState: modalState, setModalState:setModalState}}/>
+      </Navbar>
+      <LoginModal modalState={{modalState: modalState, setModalState:setModalState}}
+       username={setLoginState}/>
       <div className="container mt-2" style={{ marginTop: 40 }}>
 
     <Switch>

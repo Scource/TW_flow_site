@@ -4,11 +4,12 @@ import Form from 'react-bootstrap/Form';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
-import axios from 'axios'
 import moment from 'moment'
 import { withRouter, Redirect } from "react-router";
+import axiosConfig from '../../actions/axiosConfig'
 
 function ProdForm() {
+
     const [redirect, setRedirect]=useState(false)
     const [ppData, setPpData] = useState([])
     const [postPp, setPostPp] = useState({
@@ -25,8 +26,8 @@ function ProdForm() {
 
     useEffect(() => {
     const fetchData = async () => {
-      const result = await axios.get(
-        'http://localhost:8000/RB/element/POB/',
+      const result = await axiosConfig.get(
+        '/RB/element/POB/',
       );
       setPpData(result.data);
     };
@@ -47,7 +48,7 @@ function ProdForm() {
 
     const handleSubmit = event => {
     event.preventDefault();
-    axios.post('http://localhost:8000/RB/powerplant/create/', postPp)
+    axiosConfig.post('/RB/powerplant/create/', postPp)
         .then(res => {
                 if (res.status === 201) {
           setRedirect(true)}})

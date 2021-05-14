@@ -7,6 +7,7 @@ import { withRouter } from "react-router";
 
 const  ConnList = (props) => {
     return (
+        
         <div>
         <h4>Lista połączeń użytkowników RB</h4>
         <Table hover bordered size="sm">

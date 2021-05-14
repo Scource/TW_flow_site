@@ -4,17 +4,16 @@ import Form from 'react-bootstrap/Form';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
-import ProdConnections from '../ItemList/ProdConnections'
-import axios from 'axios'
 import moment from 'moment'
 import { withRouter, Redirect } from "react-router";
+import axiosConfig from '../../actions/axiosConfig'
 
 const UpdateProd = (props) => {
 
     useEffect(() => {
     const fetchData = async () => {
-      const result = await axios.get(
-        `http://localhost:8000/RB/powerplant/${props.match.params.id}/edit/`,
+      const result = await axiosConfig.get(
+        `/RB/powerplant/${props.match.params.id}/edit/`,
       );
       props.setFunc(result.data);
     };
@@ -67,8 +66,6 @@ return(
                 
             </Form.Row>
         </Form>
-
-        <ProdConnections />
     </Container>
     )
 };

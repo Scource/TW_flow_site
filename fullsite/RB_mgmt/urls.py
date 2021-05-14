@@ -23,6 +23,11 @@ urlpatterns = [
     path('powerplant/<int:pk>/edit/', views.PowerPlantUpdateView.as_view()),
     path('powerplant/<int:pk>/delete/', views.PowerPlantDeleteView.as_view()),
 
-    path('powerplant/connection/', views.PowerPlantConnectionList.as_view()),
 
+    path('powerplant/connection/<int:ppid>/',
+         views.PowerPlantConnectionList.as_view()),
+    path('powerplant/connection/create/',
+         views.PowerPlantConnectionCreateView.as_view()),
+    path('powerplant/connection/<int:pk>/edit/',
+         views.PowerPlantConnectionUpdateView.as_view()),
 ]

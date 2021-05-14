@@ -1,11 +1,10 @@
 import React, { useState, useEffect} from 'react'
-import axios from 'axios'
 import {Route} from 'react-router-dom'
 import ConnList from '../components/List/ConnList'
 import UpdateConn from '../components/Form/UpdateConn'
 import ShowConn from '../components/ItemList/ShowConn'
 import moment from 'moment'
-
+import axiosConfig from '../actions/axiosConfig'
 
 const ConnListContainer = ({match}) => {
  
@@ -22,11 +21,12 @@ const ConnListContainer = ({match}) => {
       modified_by:1 
   });
 
-
+  
+  
     useEffect(() => {
     const fetchData = async () => {
-      const result = await axios.get(
-        'http://localhost:8000/RB/connection/',
+      const result = await axiosConfig.get(
+        '/RB/connection/',
       );
       setConn(result.data);
     };
@@ -35,7 +35,7 @@ const ConnListContainer = ({match}) => {
   }, [redirectUpdate, redirect, redirectDelete]);
   
   const deleteConn = (id, e) => {
-    axios.delete(`http://localhost:8000/RB/connection/${id}/delete/`)    
+    axiosConfig.delete(`/RB/connection/${id}/delete/`)    
     .then(res => {
                 if (res.status === 204) {
           setRedirectDelete(true)}})
@@ -59,7 +59,7 @@ const ConnListContainer = ({match}) => {
 
  const handleSubmit = (event) => {
     event.preventDefault();
-    axios.put(`http://localhost:8000/RB/connection/${newConn.pk}/edit/`, newConn)
+    axiosConfig.put(`/RB/connection/${newConn.pk}/edit/`, newConn)
       .then(res => {
                 if (res.status === 200) {
           setRedirectUpdate(true)}})

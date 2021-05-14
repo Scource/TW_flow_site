@@ -42,15 +42,26 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # 'django.contrib.sites',
+
+    # Local apps
     'info_flow.apps.InfoFlowConfig',
     'RB_mgmt.apps.RbMgmtConfig',
+    'AccApp.apps.AccAppConfig',
+
+    # 3rd party apps
     'bootstrap_datepicker_plus',
     'bootstrap4',
     'widget_tweaks',
     'guardian',
     'rest_framework',
     'corsheaders',
-
+    'rest_framework.authtoken',
+    # 'rest_auth',
+    # 'allauth',
+    # 'allauth.account',
+    # 'allauth.socialaccount',
+    # 'rest_auth.registration',
 ]
 
 MIDDLEWARE = [
@@ -163,6 +174,7 @@ AUTH_USER_MODEL = 'info_flow.User'
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',  # this is default
     'guardian.backends.ObjectPermissionBackend',
+
 )
 
 
@@ -172,6 +184,10 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
         'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+
     ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated', )
 
 }

@@ -6,42 +6,46 @@ import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
 import moment from 'moment';
 import { withRouter, Redirect} from "react-router";
-import axiosConfig from '../../actions/axiosConfig';
+import axiosConfig from '../../actions/axiosConfig'
 
-
-const  ConnForm =({match}) => {
+const  ProdConnForm =(props) => {
 
 const [redirect, setRedirect]=useState(false)
 const [POBList, setPOBList]=useState([])
-const [SEList, setSEList]=useState([])
-const [newConn, setNewConn] =useState({
-    dt_from:'', 
-    dt_to:'', 
-    POB:'', 
-    SE:'', 
-    author:1, 
-    modified_by:1 
-});
+const [newConn, setNewConn] =useState({})
+
+console.log(props)
+useEffect(() => {
+    const fetchProdElement = async () => {
+      const result = await axiosConfig.get(
+        `/RB/powerplant/connection/${props.match.params.id}/edit/`,
+      );
+      setNewConn(result.data);
+    };
+     fetchProdElement();
+     
+  }, [props.match.params.id]);
+
+
 
 const updateField = e => {
 setNewConn({...newConn, [e.target.name]: e.target.value})
-console.log(newConn)};
+};
 
-const updateStartField = event => {
+ const updateStartField = event => {
     setNewConn({...newConn, dt_from: moment(event._d).format('YYYY-MM-DD HH:mm') }); 
-    console.log(event)
-console.log(newConn)};
+    };
 
 const updateEndField = event => {
     setNewConn({...newConn, dt_to: moment(event._d).format('YYYY-MM-DD HH:mm') }); 
-console.log(newConn)};
+};
 
 const handleSubmit = event => {
     event.preventDefault();
     console.log(newConn)
-    axiosConfig.post('/RB/connection/create/', newConn)
+    axiosConfig.put(`/RB/powerplant/connection/${props.match.params.id}/edit/`, newConn)
         .then(res => {
-                if (res.status === 201) {
+                if (res.status === 200) {
           setRedirect(true)}})
 };
 
@@ -50,38 +54,29 @@ const handleSubmit = event => {
       const result = await axiosConfig.get(
         `/RB/element/POB/`,
       );
-      console.log(result)
       setPOBList(result.data);
     };
-    const fetchSE = async () => {
-      const result = await axiosConfig.get(
-        `/RB/element/SE/`,
-      );
-      
-      setSEList(result.data);
-    };
      fetchPOB();
-     fetchSE();
+
   }, []);
 
-
 if (redirect) {
-return <Redirect to={`/connections`} />
+return <Redirect to={`/producers/${newConn.PowerPlantItem}/show`} />
 }
 
 return(
     <Container>
-       <h3>Utwórz połączenie między elementami</h3>
+       <h3>Edytuj połączenie do POB</h3>
        <br/>
         <Form>
             <Form.Row>
                 <Form.Group as={Col} controlId="formMeFromDate">            
                     <Form.Label>Data początku </Form.Label>
-                    <Datetime onChange={updateStartField} dateFormat="YYYY-MM-DD" timeFormat="HH:mm"/>
+                    <Datetime onChange={updateStartField}  value={moment(newConn.dt_from).format('YYYY-MM-DD HH:mm')} dateFormat="YYYY-MM-DD" timeFormat="HH:mm"/>
                 </Form.Group>
                 <Form.Group as={Col} controlId="formMeToDate">            
                     <Form.Label>Data końca</Form.Label>
-                    <Datetime onChange={updateEndField} dateFormat="YYYY-MM-DD" timeFormat="HH:mm"/>
+                    <Datetime onChange={updateEndField} value={moment(newConn.dt_to).format('YYYY-MM-DD HH:mm')} dateFormat="YYYY-MM-DD" timeFormat="HH:mm"/>
                 </Form.Group>
             </Form.Row>
 
@@ -95,20 +90,11 @@ return(
                     ))}
                 </Form.Control>
             </Form.Group>
-
-            <Form.Group as={Col} controlId="formSelectSE">
-                <Form.Label>Wybierz SE</Form.Label>
-                <Form.Control name='SE' onChange={updateField} as="select" htmlSize={7} custom>
-                  {SEList.map(ele => (
-                        <option key={ele.pk} value={ele.pk}>{ele.code}</option>
-                    ))}
-                </Form.Control>
-            </Form.Group>
             </Form.Row>
 
 
             <Form.Row>
-                <Col md={{ span: 2, offset: 11 }}><Button onClick={handleSubmit} type="submit">Utwórz</Button></Col>
+                <Col md={{ span: 2, offset: 11 }}><Button onClick={handleSubmit} type="submit">Edytuj</Button></Col>
                 
             </Form.Row>
         </Form>
@@ -117,4 +103,4 @@ return(
 };
 
 
-export default withRouter(ConnForm)
+export default withRouter(ProdConnForm)

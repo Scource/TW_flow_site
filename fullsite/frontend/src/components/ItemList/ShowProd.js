@@ -3,18 +3,18 @@ import Form from 'react-bootstrap/Form';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
-import ProdConnections from './ProdConnections'
-import axios from 'axios'
+import ProdConnections from './ProdConnections';
 import moment from 'moment'
 import { withRouter, Redirect} from "react-router";
 import {Link} from 'react-router-dom';
+import axiosConfig from '../../actions/axiosConfig'
 
 const ShowProd = (props) => {
 
     useEffect(() => {
     const fetchData = async () => {
-      const result = await axios.get(
-        `http://localhost:8000/RB/powerplant/${props.match.params.id}/edit/`,
+      const result = await axiosConfig.get(
+        `/RB/powerplant/${props.match.params.id}/edit/`,
       );
       props.setFunc(result.data);
     };
@@ -24,21 +24,25 @@ const ShowProd = (props) => {
     if (props.redirectDelete) {
        return <Redirect to="/producers" />
    }
+   
 return(
     <Container>
-       
        <h3>{props.data.name}</h3>
         <Form style={{marginBottom: '40px'}}>
             <Form.Row>
-                <Col md={{ span: 2, offset: 11 }}>
+                <Col>
+                <Link to={`${props.prev_match.url}/${props.match.params.id}/setup/new`}
+                ><Button>Dodaj konfigurację handlową</Button></Link></Col>
+                <Col md={{ span: 2}}>
                     <Link to={`${props.prev_match.url}/${props.match.params.id}/edit/`}><Button>Edytuj</Button></Link>
-                    <Button onClick={() => props.delFunc(props.match.params.id)}>Usuń</Button></Col>
+                    <Button onClick={() => {if (window.confirm('Are you sure you wish to delete this item?')){props.delFunc(props.match.params.id)}}}>Usuń</Button></Col>
                 
             </Form.Row>
             <Form.Row>
                 <Form.Group as={Col} controlId="formProcName">            
                     <Form.Label>Nazwa wytwórcy</Form.Label>
-                    <Form.Control defaultValue={props.data.name} name='name' type="text" disabled />
+                    <Form.Control defaultValue={props.data.name}
+                        name='name' type="text" disabled />
                 </Form.Group>
                 <Form.Group as={Col} controlId="formProdCode">            
                     <Form.Label>Kod PPE</Form.Label>
@@ -67,7 +71,7 @@ return(
             </Form.Row>
         </Form>
 
-        <ProdConnections />
+        <ProdConnections prev_match={props.prev_match} pp_id={props.match.params.id}  />
     </Container>
     )
 };

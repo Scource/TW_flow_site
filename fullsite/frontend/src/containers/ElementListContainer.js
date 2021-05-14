@@ -1,11 +1,10 @@
 import {React, useState, useEffect} from 'react'
-import axios from 'axios'
 import {Route} from 'react-router-dom'
 import ElementList from '../components/List/ElementList'
 import UpdateElement from '../components/Form/UpdateElement'
 import ShowElement from '../components/ItemList/ShowElement'
 import moment from 'moment'
-
+import axiosConfig from '../actions/axiosConfig'
 
 const ElementListContainer = ({match}) => {
   const [redirectDelete, setRedirectDelete]=useState(false)
@@ -23,8 +22,8 @@ const ElementListContainer = ({match}) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const result = await axios.get(
-        `http://localhost:8000/RB${match.path}/`,
+      const result = await axiosConfig.get(
+        `/RB${match.path}/`,
       );
       setElement(result.data);
     };
@@ -35,7 +34,7 @@ const ElementListContainer = ({match}) => {
 
 
   const deleteElement = (id, e) => {
-    axios.delete(`http://localhost:8000/RB/element/${id}/delete/`)
+    axiosConfig.delete(`/RB/element/${id}/delete/`)
     // const elements = ElementData.filter(item => item.pk !== id);
     // setElement([...elements])
         .then(res => {
@@ -57,7 +56,7 @@ const ElementListContainer = ({match}) => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    axios.put(`http://localhost:8000/RB/element/${newElement.pk}/edit/`, newElement)
+    axiosConfig.put(`/RB/element/${newElement.pk}/edit/`, newElement)
     .then(res => {
       if (res.status === 200) {
       setRedirect(true)}})   

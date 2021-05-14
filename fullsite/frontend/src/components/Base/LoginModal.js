@@ -1,12 +1,44 @@
-import React from 'react';
+import React, { useState} from 'react';
 import Modal from 'react-bootstrap/Modal'
 import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
 import Col from 'react-bootstrap/Col'
+import axios from 'axios'
+
 
 function LoginModal(props) {
 
-    const handleClose = () => props.modalState.setModalState(false);
+  const [userName, setUserName] = useState('');
+  const [password, setPassword] = useState('');
+
+    const handleSubmit = (event) => {
+    event.preventDefault();
+
+    const user = {
+      username: userName,
+      password: password
+    };
+
+    axios.post(`http://localhost:8000/AccApp/login/`, user)
+    .then(res => {
+      if (res.data.token) {
+              localStorage.clear();
+              localStorage.setItem('token', res.data.token);
+              localStorage.setItem('username', user.username);
+              props.username(true)
+            } else {
+              setUserName('');
+              setPassword('');
+              localStorage.clear();
+
+            }
+          });
+      handleClose()  
+      };
+
+
+  const handleClose = () => props.modalState.setModalState(false);
+
   return (
     <>
       <Modal show={props.modalState.modalState} onHide={handleClose}>
@@ -19,7 +51,7 @@ function LoginModal(props) {
                   Nazwa
                 </Form.Label>
                 <Col>
-                  <Form.Control placeholder="Nazwa użytkownika"/>
+                  <Form.Control placeholder="Nazwa użytkownika" onChange={e => setUserName(e.target.value)}/>
                 </Col>
             </Form.Group>
         <Form.Group controlId="formLoginPassword">
@@ -27,7 +59,7 @@ function LoginModal(props) {
                   Hasło
                 </Form.Label>
                 <Col>
-                  <Form.Control type="password" placeholder="Hasło"/>
+                  <Form.Control type="password" placeholder="Hasło" onChange={e => setPassword(e.target.value)}/>
                 </Col>
             </Form.Group>
 
@@ -36,7 +68,7 @@ function LoginModal(props) {
           <Button variant="secondary" onClick={handleClose}>
             Anuluj
           </Button>
-          <Button variant="primary" onClick={handleClose}>
+          <Button variant="primary" onClick={handleSubmit}>
             Zaloguj
           </Button>
         </Modal.Footer>

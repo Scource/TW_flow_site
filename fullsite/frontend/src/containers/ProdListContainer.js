@@ -1,11 +1,12 @@
 import {React, useState, useEffect} from 'react'
-import axios from 'axios'
 import {Route} from 'react-router-dom'
 import ProdList from '../components/List/ProdList'
 import ShowProd from '../components/ItemList/ShowProd'
+import ProdConnForm from '../components/Form/ProdConnForm';
+import UpdateProdConn from '../components/Form/UpdateProdConn';
 import UpdateProd from '../components/Form/UpdateProd'
 import moment from 'moment'
-
+import axiosConfig from '../actions/axiosConfig'
 
 const ProdListContainer = ({match}) => {
   const [redirectDelete, setRedirectDelete]=useState(false)
@@ -24,19 +25,19 @@ const ProdListContainer = ({match}) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const result = await axios.get(
-        'http://localhost:8000/RB/powerplant/',
+      const result = await axiosConfig.get(
+        '/RB/powerplant/',
       );
       setProd(result.data);
     };
     setRedirectDelete(false)
      fetchData();
+    
  
   }, [redirectDelete]);
 
-
   const deleteProd = (id, e) => {
-    axios.delete(`http://localhost:8000/RB/powerplant/${id}/delete/`)
+    axiosConfig.delete(`/RB/powerplant/${id}/delete/`)
     // const elements = ProdData.filter(item => item.pk !== id);
     // setProd([...elements])
     .then(res => {
@@ -58,7 +59,7 @@ const ProdListContainer = ({match}) => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    axios.put(`http://localhost:8000/RB/powerplant/${newProd.pk}/edit/`, newProd)
+    axiosConfig.put(`/RB/powerplant/${newProd.pk}/edit/`, newProd)
     .then(res => {
       if (res.status === 200) {
       setRedirect(true)}})   
@@ -88,7 +89,10 @@ const ProdListContainer = ({match}) => {
     redirect={redirect}
     />
     </Route>
-
+    <Route path={`${match.url}/:id/setup/new`}> 
+    <ProdConnForm 
+    data={newProd}/> </Route>
+    <Route path={`${match.url}/:id/setup/edit`}> <UpdateProdConn data={newProd} /> </Route>
     
       </div>
 )}

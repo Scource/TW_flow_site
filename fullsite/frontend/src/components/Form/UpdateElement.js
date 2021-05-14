@@ -1,13 +1,12 @@
 import { withRouter, Redirect } from "react-router";
 import {React, useEffect} from 'react'
 import Datetime from "react-datetime";
-import axios from 'axios'
 import Form from 'react-bootstrap/Form';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
 import moment from 'moment'
-
+import axiosConfig from '../../actions/axiosConfig'
 
 //dodatkowo sprawdzić czy można elementsform dopisać do elementlistcontainer tak żeby jego logikę też dodac piertro wyzej
 
@@ -15,8 +14,8 @@ const UpdateElement = (props) => {
 
     useEffect(() => {
     const fetchData = async () => {
-      const result = await axios.get(
-        `http://localhost:8000/RB/element/${props.match.params.id}/edit/`,
+      const result = await axiosConfig.get(
+        `/RB/element/${props.match.params.id}/edit/`,
       );
       props.setFunc(result.data);
     };

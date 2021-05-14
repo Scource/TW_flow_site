@@ -1,19 +1,12 @@
 """
 RB-mgmt module using class based views and django REST API
 """
-#from rest_framework.response import Response
-#from rest_framework.views import APIView
-from rest_framework import generics  # , viewsets
-#from django.shortcuts import render
 
+from rest_framework import generics
 from .models import Element, Connection, Powerplant, PowerPlantConnection
 from .serializers import ElementSerializer, ConnectionSerializer, PowerPlantSerializer, PowerPlantConnectionSerializer
 from django.http import JsonResponse
-# Create your views here.
-
-
-def hello(request):
-    return JsonResponse({'response_text': 'hello world!'})
+#from rest_framework.permissions import IsAuthenticated
 
 
 class ElementList(generics.ListCreateAPIView):
@@ -43,6 +36,7 @@ class ElementUpdateView(generics.RetrieveUpdateAPIView):
 
 
 class ConnList(generics.ListCreateAPIView):
+    #permission_classes = (IsAuthenticated,)
     queryset = Connection.objects.all()
     serializer_class = ConnectionSerializer
 
@@ -66,6 +60,9 @@ class PowerPlantList(generics.ListCreateAPIView):
     queryset = Powerplant.objects.all()
     serializer_class = PowerPlantSerializer
 
+    # def get_queryset(self):
+    #     queryset = Powerplant.objects.all()
+
 
 class PowerPlantCreateView(generics.CreateAPIView):
     queryset = Powerplant.objects.all()
@@ -83,5 +80,19 @@ class PowerPlantUpdateView(generics.RetrieveUpdateAPIView):
 
 
 class PowerPlantConnectionList(generics.ListCreateAPIView):
+    queryset = PowerPlantConnection.objects.all()
+    serializer_class = PowerPlantConnectionSerializer
+
+    def get_queryset(self):
+        ppid = self.kwargs['ppid']
+        return PowerPlantConnection.objects.filter(PowerPlantItem=ppid)
+
+
+class PowerPlantConnectionCreateView(generics.CreateAPIView):
+    queryset = PowerPlantConnection.objects.all()
+    serializer_class = PowerPlantConnectionSerializer
+
+
+class PowerPlantConnectionUpdateView(generics.RetrieveUpdateAPIView):
     queryset = PowerPlantConnection.objects.all()
     serializer_class = PowerPlantConnectionSerializer
