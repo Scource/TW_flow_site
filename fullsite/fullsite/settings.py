@@ -25,6 +25,7 @@ mimetypes.add_type("text/css", ".css", True)
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'u2hka!$b-e8yr-*)8b0m#f@ct0l=y@h^yz9qv-e_=1b1)@&q!w'
+#SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -46,8 +47,7 @@ INSTALLED_APPS = [
 
     # Local apps
     'info_flow.apps.InfoFlowConfig',
-    'RB_mgmt.apps.RbMgmtConfig',
-    'AccApp.apps.AccAppConfig',
+
 
     # 3rd party apps
     'bootstrap_datepicker_plus',
@@ -179,6 +179,7 @@ AUTHENTICATION_BACKENDS = (
 
 
 CORS_ORIGIN_ALLOW_ALL = True
+
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
