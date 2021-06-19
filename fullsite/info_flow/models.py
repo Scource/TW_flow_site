@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User, AbstractUser
 from django.conf import settings
+from django.urls import reverse
 import os
 
 # Create your models here.
@@ -36,6 +37,9 @@ class process(models.Model):
 
     def __str__(self):
         return self.proc_process_name
+
+    def get_absolute_url(self):
+        return reverse('info_flow:if_show_proc', args=[str(self.id)])
 
     @property
     def task_count(self):
@@ -77,6 +81,9 @@ class tasks(models.Model):
 
     def __str__(self):
         return self.tasks_name
+
+    def get_absolute_url(self):
+        return reverse('info_flow:if_show_task', args=[str(self.id)])
 
     @property
     def points_count(self):
@@ -213,6 +220,9 @@ class patterns(models.Model):
     pat_is_private = models.BooleanField(default=False)
     pat_category = models.ForeignKey(category, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return self.pat_name
+
 
 class patterns_elements(models.Model):
     pele_pattern = models.ForeignKey(patterns, on_delete=models.CASCADE)
@@ -222,6 +232,9 @@ class patterns_elements(models.Model):
     pele_desc = models.TextField(null=True)
     pele_proc = models.IntegerField(blank=True, null=True)
     pele_task = models.IntegerField(blank=True, null=True)
+
+    def __str__(self):
+        return self.pele_name
 
     class Meta():
         ordering = ['pele_order']
