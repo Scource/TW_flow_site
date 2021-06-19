@@ -58,39 +58,3 @@ class ProcessViewTest(TestCase):
         response = self.c.delete(reverse('info_flow:if_delete_proc', kwargs={'cat': 'test', 'proc_id': self.process_object.id}),
                                  content_type='application/octet-stream', follow=True)
         self.assertEqual(response.status_code, 200)
-
-    # def test_if_new_proc_creat_new_class_object(self):
-    #     file = ContentFile(b'content', name='plain.txt')
-    #     data = {'proc_process_name': 'test',
-    #             'proc_author': self.User.id,
-    #             'proc_category': self.category_object.id,
-    #             'save_process': "Zapisz i Zakończ",
-    #             'files_document': file,
-    #             }
-    #     self.c.force_login(self.User)
-    #     self.User.user_permissions.set([
-    #         Permission.objects.get(codename='add_process')])
-    #     response = self.c.post(
-    #         '/processes/create/', data, content_type='multipart/form-data')
-
-    #     self.assertRedirects(response, reverse(
-    #         'info_flow:if_processes', kwargs={'cat': 'test', 'active': 'active'}))
-
-        # self.c.force_login(self.User)
-        # self.User.user_permissions.set([
-        #     Permission.objects.get(codename='add_process')])
-        # # {'proc_process_name': 'test',
-        # response = self.c.get('/processes/create/')
-        # # 'proc_author': self.User, 'proc_category': self.category_object})
-        # self.assertEqual(response.status_code, 200)
-
-    # def test_if_new_proc_redirect_to_proper_url(self):
-    #     self.c.force_login(self.User)
-    #     self.User.user_permissions.set([
-    #         Permission.objects.get(codename='add_process')])
-    #     response = self.c.post('/processes/create/',  {'proc_process_name': 'test',
-    #                                                    'proc_author': self.User, 'proc_category': self.category_object})
-    #     self.assertTrue(response.status_code, 200)
-    #     print(response.status_code)
-    #     self.assertRedirects(response, expected_url='processes/test/active',
-    #                          status_code=301, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
