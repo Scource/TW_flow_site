@@ -18,13 +18,13 @@ for WINDOWS
 \path\to\env\Scripts\activate
 ```
 
-### Installing dependencies:
+Installing dependencies:
 While in `TW_flow_site/fullsite`:
 ```
 (env)$ pip install -r requirements.txt
 ```
 
-### Once pip has finished downloading the dependencies:
+Once pip has finished downloading the dependencies:
 ```
 (env)$ cd TW_flow_site/fullsite
 (env)$ python manage.py runserver
