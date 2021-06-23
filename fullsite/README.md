@@ -15,6 +15,7 @@ $ source env/bin/activate
 ```
 for WINDOWS
 ```
+virtualenv env
 \path\to\env\Scripts\activate
 ```
 
