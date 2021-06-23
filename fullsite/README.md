@@ -5,7 +5,7 @@ Application for tracking team progress during pandemic
 
 The first thing to do is to clone the repository:
 ```
-$ https://github.com/Scource/TW_flow_site
+$ git clone https://github.com/Scource/TW_flow_site
 ```
 
 Create a virtual environment to install dependencies in and activate it:
