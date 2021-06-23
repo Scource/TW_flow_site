@@ -27,6 +27,7 @@ Installing dependencies while in `TW_flow_site/fullsite`:
 Once pip has finished downloading the dependencies:
 ```
 (env)$ cd TW_flow_site/fullsite
+(env)$ python manage.py migrate
 (env)$ python manage.py runserver
 ```
 
