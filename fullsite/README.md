@@ -1,5 +1,7 @@
-GoCardless sample application
-Setup
+# TW_flow_site
+Application for tracking team progress during pandemic
+
+## Setup
 
 The first thing to do is to clone the repository:
 ```
@@ -16,12 +18,13 @@ for WINDOWS
 \path\to\env\Scripts\activate
 ```
 
-While in `TW_flow_site/fullsite` directory install the dependencies:
+### Installing dependencies:
+While in `TW_flow_site/fullsite`:
 ```
 (env)$ pip install -r requirements.txt
 ```
 
-Once pip has finished downloading the dependencies:
+### Once pip has finished downloading the dependencies:
 ```
 (env)$ cd TW_flow_site/fullsite
 (env)$ python manage.py runserver
