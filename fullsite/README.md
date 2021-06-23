@@ -18,8 +18,7 @@ for WINDOWS
 \path\to\env\Scripts\activate
 ```
 
-Installing dependencies:
-While in `TW_flow_site/fullsite`:
+Installing dependencies while in `TW_flow_site/fullsite`:
 ```
 (env)$ pip install -r requirements.txt
 ```
