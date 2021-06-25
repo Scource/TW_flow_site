@@ -10,7 +10,8 @@ $ git clone https://github.com/Scource/TW_flow_site
 
 Create a virtual environment to install dependencies in and activate it:
 ```
-$ python virtualenv.py ENV
+$ pip install virtualenv
+$ virtualenv env
 $ source env/bin/activate
 ```
 for WINDOWS
