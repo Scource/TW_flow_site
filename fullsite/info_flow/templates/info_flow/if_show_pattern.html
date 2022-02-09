@@ -17,7 +17,7 @@ Nowy szablon
 
 
 {% block content %}
-	{% if user.is_authenticated and user == p.pele_pattern.pat_author %}
+	{% if user.is_authenticated and user == patt.pat_author %}
 		<a href="{% url 'info_flow:if_delete_pattern' pat_id %}" type="submit" class="del float_l">Usuń cały szablon</a>
 	{% endif %}
 	<a href="{% url 'info_flow:if_patterns_list' %}" type="submit" class="float_r">Wróć</a>

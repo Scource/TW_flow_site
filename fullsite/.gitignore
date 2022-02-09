@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
@@ -31,6 +32,8 @@ yarn-error.log*
 # C extensions
 *.so
 
+=======
+>>>>>>> c57a09e7fcd8c44b73045f1d9eb7c2ff39e51fb6
 # Compiled source #
 ###################
 *.com
@@ -40,6 +43,7 @@ yarn-error.log*
 *.o
 *.so
 
+<<<<<<< HEAD
 # Distribution / packaging
 .Python
 media/
@@ -68,6 +72,8 @@ var/
 */*/__pycache__/
 */__pycache__/
 
+=======
+>>>>>>> c57a09e7fcd8c44b73045f1d9eb7c2ff39e51fb6
 # Packages #
 ############
 # it's better to unpack these files and commit the raw source
@@ -95,4 +101,33 @@ var/
 .Spotlight-V100
 .Trashes
 ehthumbs.db
+<<<<<<< HEAD
 Thumbs.db
+=======
+Thumbs.db
+
+#media
+.xlsx
+.xls
+.doc
+.docx
+.pdf
+.css
+
+#distribution/packaging
+media/
+env/
+build/
+dist/
+static/
+static_root/
+
+
+#pyinstaller
+*/*/*/__pycache__/
+*/*/__pycache__/
+*/__pycache__/
+
+#server
+web.config
+>>>>>>> c57a09e7fcd8c44b73045f1d9eb7c2ff39e51fb6

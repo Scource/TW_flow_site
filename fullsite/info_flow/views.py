@@ -663,16 +663,12 @@ def if_patterns_list(request):
 @login_required
 @permission_required('info_flow.view_patterns')
 def if_show_pattern(request, pat_id):
-    pat_elements_proc = patterns_elements.objects.filter(
-        pele_pattern=pat_id, pele_type=0)
-    pat_elements_task = patterns_elements.objects.filter(
-        pele_pattern=pat_id, pele_type=1)
-    pat_elements_point = patterns_elements.objects.filter(
-        pele_pattern=pat_id, pele_type=2)
-    context = {'pat_elements_proc': pat_elements_proc, 'pat_elements_task': pat_elements_task,
-               'pat_elements_point': pat_elements_point, 'pat_id': pat_id}
-    return render(request, 'info_flow/if_show_pattern.html', context)
-
+	patt=patterns.objects.get(pk=pat_id)
+	pat_elements_proc=patterns_elements.objects.filter(pele_pattern=pat_id, pele_type=0)
+	pat_elements_task=patterns_elements.objects.filter(pele_pattern=pat_id, pele_type=1)
+	pat_elements_point=patterns_elements.objects.filter(pele_pattern=pat_id, pele_type=2)
+	context={'pat_elements_proc':pat_elements_proc, 'pat_elements_task':pat_elements_task, 'pat_elements_point':pat_elements_point, 'pat_id':pat_id, 'patt':patt}
+	return render(request, 'info_flow/if_show_pattern.html', context)
 
 @login_required
 @permission_required('info_flow.change_patterns')
