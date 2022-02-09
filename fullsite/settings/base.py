@@ -49,6 +49,7 @@ INSTALLED_APPS = [
 
     # Local apps
     'info_flow.apps.InfoFlowConfig',
+    'DBscripts.apps.DBscriptsConfig',
 
 
     # 3rd party apps

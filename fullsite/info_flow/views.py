@@ -63,7 +63,6 @@ def if_new_proc(request):
         process_form = ProcessForm(request.POST)
         file_form = FileForm(request.POST, request.FILES)
         if process_form.is_valid() & file_form.is_valid():
-            print('aaa')
             newProcess = process_form.save(commit=False)
             newProcess.proc_is_active = True
             newProcess.proc_author_id = request.user.id
