@@ -3,7 +3,7 @@
 {% block content %}
 <div class="done"></div>
 <div>
-<form  id="script-form">
+<form  id="script-form" method="post">
     {% csrf_token %}
     {{ form.as_p }}
     <input type="submit" value="Submit">
@@ -13,7 +13,7 @@
 
 {% block javascript %}
 
-<script>
+<!-- <script>
     /*
         On submiting the form, send the POST ajax
         request to server and after successfull submission
@@ -46,6 +46,6 @@
             }
         })
     })
-</script>
+</script> -->
 
 {% endblock javascript %}
