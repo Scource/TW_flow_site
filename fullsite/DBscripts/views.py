@@ -31,9 +31,11 @@ class ScriptsView(View):
                 function = choose_from(url, 2)
                 data = function(form.cleaned_data)
                 with pd.ExcelWriter(b) as writer:
-                    data.to_excel(writer, sheet_name="Zestawienie", index=False)
-
-                filename = f"zawyzone_dane_{form.cleaned_data['date_from']}.xlsx"
+                    data.to_excel(writer, sheet_name="Zestawienie")
+                if form.cleaned_data['date_to']:
+                    filename = f"Raport_{form.cleaned_data['date_from']}_{form.cleaned_data['date_to']}.xlsx"
+                else:
+                    filename = f"Raport_{form.cleaned_data['date_from']}.xlsx"
                 print(filename)
                 res = HttpResponse(b.getvalue(),
                     content_type='application/vnd.ms-excel')
