@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% load widget_tweaks %}
+<div>
+<form action="" method="post">
+    {% csrf_token %}
+    <label>Kod POB:</label>
+    <div class=""> {{form.POB}}</div>
+    <div class="cleaner h10"></div>
+    
+    <label>Kod SE:</label>
+    <div> {{form.SE}}</div>
+    <div class="cleaner h10"></div>
+    
+    <label>Data początku:</label>
+    <div> {{form.dt_from|add_class:"Y-m-d"}}</div>
+    <div class="cleaner h10"></div>
+    
+    <label>Data końca:</label>
+    <div> {{form.dt_to|add_class:"Y-m-d"}}</div>
+    <div class="cleaner h10"></div>
+    
+    <input type="submit" value="Ustaw połączenie" />
+</form>
+
+</div>
+
+{% endblock %}

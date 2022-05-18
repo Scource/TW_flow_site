@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% load widget_tweaks %}
+
+<button type="button" class="float_r"><a href="{% url 'BalancingMarket:connection_form_update' object.id %}">Edytuj
+        połączenie</a></button>
+
+<p>ID: {{ object.id }}</p>
+<p>POB: {{ object.POB }}</p>
+<p>SE: {{ object.SE }}</p>
+<p>Data od: {{ object.dt_from|date:"Y-m-d" }}</p>
+<p>Data do: {{ object.dt_to|date:"Y-m-d" }}</p>
+<p>Utworzono: {{ object.created }}</p>
+<p>Autor: {{ object.author }}</p>
+<p>Zmodyfikowano: {{ object.modified }}</p>
+<p>Zmodyfikowane przez: {{ object.modified_by }}</p>
+
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% load widget_tweaks %}
+
+<div>
+    <form id="script-form" method="post">
+        {% csrf_token %}
+            <label>Kod:</label>
+            <div class=""> {{form.code|add_class:"input_field"}}</div>
+            <div class="cleaner h10"></div>
+
+            <label>Nazwa:</label>
+            <div> {{form.name|add_class:"input_field"}}</div>
+            <div class="cleaner h10"></div>
+
+            <label>Data początku:</label>
+            <div> {{form.dt_from|add_class:"Y-m-d"}}</div>
+            <div class="cleaner h10"></div>
+
+            <label>Data końca:</label>
+            <div> {{form.dt_to|add_class:"Y-m-d"}}</div>
+            <div class="cleaner h10"></div>
+
+            <label>ID FBT:</label>
+            <div> {{form.cspr_id|add_class:"input_field"}}</div>
+            <div class="cleaner h10"></div>
+
+            <label>ID w Starym SKOME:</label>
+            <div> {{form.old_skome_id|add_class:"input_field"}}</div>
+            <div class="cleaner h10"></div>
+
+            <label>ID WIRE:</label>
+            <div> {{form.wire_id|add_class:"input_field"}}</div>
+            <div class="cleaner h10"></div>
+
+            <label>ID RHER:</label>
+            <div> {{form.rher_id|add_class:"input_field"}}</div>
+            <div class="cleaner h10"></div>
+
+            <label>Typ użytkwnika RB:</label>
+            <div>{{form.element_type}}</div>
+            <div class="cleaner h10"></div>
+
+            <label>Uzupełniona konfiguracja:</label>
+            <div> {{form.is_added}}</div>
+            <div class="cleaner h10"></div>
+
+            <input type="submit" value="Dodaj">
+
+    </form>
+</div>
+{% endblock %}

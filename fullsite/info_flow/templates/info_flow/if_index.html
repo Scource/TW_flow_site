@@ -20,7 +20,7 @@ Lista procesów
 
 {% block content %}
 <div id="templatemo_main">
-
+	{% if user.is_authenticated %}
 	<div id="content">
 		<div class="cleaner h30"></div>
 		<h4>Najnowsze procesy</h4>
@@ -43,21 +43,30 @@ Lista procesów
 	            </ul>
 
 	    </div>
-	    
+	{%else%}
+		<h3>W celu dostepu do informacji na stronie proszę się zalogować</h3>
+	{%endif%}
 <div class="cleaner h20"></div>
 <h4>Inforamcje</h4>
-<p>Aktualnie strona jest w wersj alfa. Prosze o zgłaszanie wszystkich napotkanych błędów i nieprwidłowości.
-Wygld strony jest mocno uproszczony i możliwe że w przyszłości zostanie zaktualizowany.</p>
+<p>Aktualnie strona jest w wersj beta. Prosze o zgłaszanie wszystkich napotkanych błędów i nieprwidłowości.
+Wygląd strony jest mocno uproszczony i możliwe że w przyszłości zostanie zaktualizowany.</p>
 <div class="cleaner h10"></div>
 
 
 <div class="cleaner h20"></div>
-<h6>Dalsze etapy rozwoju:</h6>
+<h6>Ostatnia aktualizacja:</h6>
 <div class="cleaner h10"></div>
-<p>- Zarządzanie uczestnikami Rynku Bilansujacego</p>
-<p>- Integracja aktualnych programów ze stron</p>
-<p>- Dostęp do bazy z poziomu strony</p>
+<p>- Zapis raportów do bazy</p>
+<p>- Zmiana wporwadzania danych dla raportów</p>
+<p>- Wprowadzenie zarządzania uczestnikami RB</p>
 
+
+<div class="cleaner h20"></div>
+<h6>Najbliższe etapy rozwoju:</h6>
+<div class="cleaner h10"></div>
+<p>- Wprowadzenie raportów dla odbiorczego oddania i danych bieżących</p>
+<p>- Wprowadzenie harmonogramowania raportów</p>
+<p>- Implementacja serwera mailowego</p>
     
 </div> <!-- END of main -->
     

@@ -1,22 +1,18 @@
-from django.shortcuts import render, get_object_or_404, get_list_or_404, redirect
+from django.shortcuts import render, redirect
 from django.http import HttpResponse, FileResponse
 from django.core.exceptions import PermissionDenied
 from django.db.models import Max, Q
+from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
+from django.contrib.auth.decorators import login_required, permission_required
+from django.conf import settings
+
 from .models import tasks, process, comments, posts, messages, files, category, patterns_elements, patterns
 from .filters import ProcessFilter, PostsFilter, UserProcessFilter, UsersFilter, UserTasksFilter, PatternFilter
 from .forms import TaskFormSet, ProcessForm, TaskForm, CommForm, TaskFormPos, PostsForm, FileForm, MessageForm, TaskFormPoint, TaskFormPointEdit, PatternForm, CreateFromPattern, Edit_pattern_elements
-from django.contrib.auth.models import User
-
-from django.views.decorators.csrf import csrf_protect, ensure_csrf_cookie
-from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
-
-from django.http import HttpResponseForbidden, HttpResponseRedirect
-import mimetypes
-import os
-from django.conf import settings
 from .services import get_tasks_in_proc, get_points_in_task, get_proc_elemenets, create_proc_from_pattern, save_pattern
 from .permissions import add_perms_to_new_object, toggle_perm_on_object, set_perm_to_subs
-from django.contrib.auth import get_user_model
+
 from guardian.shortcuts import assign_perm, get_objects_for_user, get_users_with_perms, get_perms
 # Create your views here.
 User = get_user_model()
@@ -24,7 +20,7 @@ User = get_user_model()
 
 def index(request):
     newest_proc = get_objects_for_user(request.user, 'info_flow.connect_proc', process.objects.filter(
-        proc_is_deleted=False, proc_is_private=False).order_by('-proc_created'))
+        proc_is_deleted=False, proc_is_private=False, proc_is_active=True).order_by('-proc_created'))
     newest_proc_list = newest_proc[:4]
     newest_posts = posts.objects.filter(
         posts_is_deleted=False).order_by('-posts_created')

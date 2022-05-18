@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<button type="button" class="float_r"><a href="{% url 'BalancingMarket:connection_form' %}">Utwórz połączenie</a></button>
+    
+<div class="cleaner h20"></div>
+    <button type="button" id="toggle_filter">Filtry</button>
+    <div class="adv_filter" style="padding:20px;">
+        <form method="get">
+            <label for="POB">POB: </label> {{ filter.form.POB }}
+            <label for="SE">SE: </label> {{ filter.form.SE }}
+            <button type="submit" class="btn btn-outline-secondary btn-sm btn-cst">Szukaj</button>
+        </form>
+    </div>
+
+<table class="table table-hover table-sm"  style="width:100%">
+    <tr>
+        <th>ID</th>
+        <th>POB</th>
+        <th>Sprzedawca</th>
+        <th>Data od</th>
+        <th>Data do</th>
+        <th></th>
+    </tr>
+    {% for Conn in page_obj %}
+
+    <tr class='clickable-row' id=url data-url="{% url 'BalancingMarket:connection_detail' 123 %}" data-id={{Conn.id}}>
+        <td>{{Conn.id}}</td>
+        <td>{{Conn.POB}}</td>
+        <td>{{Conn.SE|default_if_none:"Brak"}}</td>
+        <td>{{Conn.dt_from|date:"Y-m-d"}}</td>
+        <td>{{Conn.dt_to|date:"Y-m-d"}}</td>
+        <td><a href="{% url 'BalancingMarket:connection_confirm_delete' Conn.id %}">Usuń</a></td>
+        {% endfor %}
+    </tr>
+
+</table>
+
+
+
+
+<div class="pagination">
+    <span class="step-links">
+        {% if page_obj.has_previous %}
+        <a href="?page=1">&laquo; pierwsza</a>
+        <a href="?page={{ page_obj.previous_page_number }}">poprzednia</a>
+        {% endif %}
+
+        <span class="current">
+            Strona {{ page_obj.number }} z {{ page_obj.paginator.num_pages }}.
+        </span>
+
+        {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}">następna</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}">ostatnia &raquo;</a>
+        {% endif %}
+    </span>
+</div>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% load widget_tweaks %}
+<h4>{{info}}</h4>
+<div>
+    <form id="script-form" method="post">
+        {% csrf_token %}
+        <label>POB:</label>
+        <div class=""> {{form.POB|add_class:"input_field"}}</div>
+        <div class="cleaner h10"></div>
+        
+        <label>Wytwórca:</label>
+        <div> {{form.powerplant|add_class:"input_field"}}</div>
+        <div class="cleaner h10"></div>
+        
+        <label>Data początku:</label>
+        <div> {{form.dt_from|add_class:"Y-m-d"}}</div>
+        <div class="cleaner h10"></div>
+        
+        <label>Data końca:</label>
+        <div> {{form.dt_to|add_class:"Y-m-d"}}</div>
+        <div class="cleaner h10"></div>
+        
+        <input type="submit" value="Aktualizuj">
+    </form>
+</div>
+{% endblock %}

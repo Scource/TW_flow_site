@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% load widget_tweaks %}
+<div>
+    <form id="script-form" method="post">
+        {% csrf_token %}
+        <label>Nawa:</label>
+        <div class=""> {{form.name|add_class:"input_field"}}</div>
+        <div class="cleaner h10"></div>
+        
+        <label>PPE:</label>
+        <div> {{form.PPE|add_class:"input_field"}}</div>
+        <div class="cleaner h10"></div>
+        
+        <label>ID MDM:</label>
+        <div> {{form.cspr_id|add_class:"input_field"}}</div>
+        <div class="cleaner h10"></div>
+        
+        <label>Typ wytwórcy:</label>
+        <div>{{form.element_type}}</div>
+        <div class="cleaner h10"></div>
+        
+        <label>Uzupełniona konfiguracja:</label>
+        <div> {{form.is_added}}</div>
+        <div class="cleaner h10"></div>
+        
+        <input type="submit" value="Aktualizuj">
+    </form>
+</div>
+{% endblock %}

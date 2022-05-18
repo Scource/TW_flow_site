@@ -1,13 +1,26 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block content %}
+
 <h4>{{info}}</h4>
 <div>
 <form  id="script-form" method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" value="Oblicz">
+        <div >
+            <fieldset>
+                <legend>Wypełnij wymagane pola</legend>
+                <form>
+                    {% csrf_token %}
+                    <table>
+                        {{ form.media }}
+                        {{ form.as_table }}
+                    </table>
+                    <input type="submit" value="Oblicz">
+                </form>
+            </fieldset>
+        </div>
 </form>
+<link rel="stylesheet" type="text/css" href="/static/admin/css/widgets.css" />
 </div>
 {% endblock %}
 

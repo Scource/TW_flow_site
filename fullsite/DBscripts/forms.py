@@ -1,14 +1,22 @@
 from django import forms
+from django.contrib.admin.widgets import FilteredSelectMultiple
 
+
+from BalancingMarket.models import Element
+
+
+class DateInput(forms.DateInput):
+    input_type = 'date'
+    format='%Y-%m-%d'
 
 class GetPeakValuesForm(forms.Form):
     login = forms.CharField(
         label='Login', required=True)
     password = forms.CharField(
         label='Hasło', required=True, widget=forms.PasswordInput())
-    date_from = forms.CharField(
-        label='Data', max_length=10, min_length=10, help_text="format (yyyy-mm-dd)", required=True)
+    date_from = forms.DateField(widget=DateInput())
     value = forms.IntegerField(label='Wartosc w kWh', required=True)
+
 
 
 class GetStandardDataForm(forms.Form):
@@ -16,20 +24,24 @@ class GetStandardDataForm(forms.Form):
         label='Login', required=True)
     password = forms.CharField(
         label='Hasło', required=True, widget=forms.PasswordInput())
-    date_from = forms.CharField(
-        label='Data od', max_length=10, min_length=10, help_text="format (yyyy-mm-dd)", required=True)
-    date_to = forms.CharField(
-        label='Data do', max_length=10, min_length=10, help_text="format (yyyy-mm-dd)", required=True)
-    ID = forms.IntegerField(label='ID płachty', required=True)
+    date_from = forms.DateField(widget=DateInput())
+    date_to = forms.DateField(widget=DateInput())
+    #ID = forms.IntegerField(label='ID płachty', required=True)
+    POB_elements = forms.ModelMultipleChoiceField(queryset=Element.objects.filter(element_type=0
+                ), widget=FilteredSelectMultiple("", is_stacked=False), label='POB')
 
+    class Media:
+        js = ('/jquery.js','/jsi18n/')
 
-class GetPPEListForm(forms.Form):
-    login = forms.CharField(
-        label='Login', required=True)
-    password = forms.CharField(
-        label='Hasło', required=True, widget=forms.PasswordInput())
-    date_from = forms.CharField(
-        label='Data od', max_length=10, min_length=10, help_text="format (yyyy-mm-dd)", required=True)
-    date_to = forms.CharField(
-        label='Data do', max_length=10, min_length=10, help_text="format (yyyy-mm-dd)", required=True)
-    ID = forms.IntegerField(label='ID FBT', required=True)
+    def clean(self):
+        # data from the form is fetched using super function
+        super(GetStandardDataForm, self).clean()
+
+        dt_from = self.cleaned_data.get('date_from')
+        dt_to = self.cleaned_data.get('date_to')
+        if dt_from > dt_to:
+            self._errors['text'] = self.error_class([
+                'Błędna data'])
+
+        # return any errors if found
+        return self.cleaned_data

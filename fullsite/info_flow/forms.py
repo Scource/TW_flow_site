@@ -7,6 +7,10 @@ from django.contrib.auth.models import User
 from django.conf import settings  #settings.AUTH_USER_MODEL   to zmaiast user bo mam AbstractUsera
 
 
+class DateTimeInput(forms.DateInput):
+	input_type = 'datetime-local'
+
+
 class TaskForm(forms.ModelForm):
 
     # def __init__(self, user, *args,**kwargs):  trzeba dodać request.user w viewsie tworzcym forma zeby przekazał usera 

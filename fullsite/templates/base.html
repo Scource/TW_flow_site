@@ -82,20 +82,31 @@ ddsmoothmenu.init({
         <ul>
             <li><a href="{% url 'info_flow:if_index' %}" class="selected">Start<span>Zacznij tutaj</span></a></li>
             <li><a href="{% url 'info_flow:if_process_list' %}" class="selected">Praca<span>Zadania do wykonania</span></a></li>
-            <li><a href="#">Uczestnicy RB<span>Aktualna konfiguracja</span></a>
+            <li><a href="">Uczestnicy RB<span>Aktualna konfiguracja</span></a>
                 <ul>
-                    <li><a href="#submenu1">Zestawienie MDD</a></li>
-                    <li><a href="#submenu2">Zestawieniw Wytw</a></li>
+                  <li><a href="">Bilansowanie</a>
+                    <ul>
+                      <li><a href="{% url 'BalancingMarket:element_list_POB' %}">POB</a></li>
+                      <li><a href="{% url 'BalancingMarket:element_list_SE' %}">SE</a></li>
+                      <li><a href="{% url 'BalancingMarket:connection_list' %}">Połączenia UR</a></li>
+                    </ul>
+                  </li>
+                  <li><a href="{% url 'BalancingMarket:powerplant_list' %}">Wytwórcy</a></li>
                 </ul>
             </li>
-            <li><a href="#">Programy<span>Skrypty do użycia</span></a>
+            <li><a href="">Programy<span>Skrypty do użycia</span></a>
                 <ul>
-                    <li><a href="{% url 'DBscripts:dbs_peak_values' %}">Zawyżone dane</a></li>
-                    <li><a href="{% url 'DBscripts:dbs_statuses' %}">Braki i Prognozy</a></li>
-                    <li><a href="{% url 'DBscripts:dbs_check_node' %}">Braki węzła</a></li>
-                    <li><a href="{% url 'DBscripts:dbs_check_conf' %}">Braki zatwierdzeń</a></li>
-                    <li><a href="{% url 'DBscripts:dbs_get_PPE' %}">Klienci w MB</a></li>
-                    <li><a href="{% url 'DBscripts:dbs_check_MB_PPE' %}">Porównanie MB z PPE</a></li>
+                    <li><a href="{% url 'DBscripts:report_list' %}">Zapisane raporty</a></li>
+                    <li><a href="">Oblicz raport</a>
+                        <ul>
+                          <li><a href="{% url 'DBscripts:dbs_peak_values' %}">Zawyżone dane</a></li>
+                          <li><a href="{% url 'DBscripts:dbs_statuses' %}">Braki i Prognozy</a></li>
+                          <li><a href="{% url 'DBscripts:dbs_check_node' %}">Braki węzła</a></li>
+                          <li><a href="{% url 'DBscripts:dbs_check_conf' %}">Braki zatwierdzeń</a></li>
+                          <li><a href="{% url 'DBscripts:dbs_get_PPE' %}">Klienci w MB</a></li>
+                          <li><a href="{% url 'DBscripts:dbs_check_MB_PPE' %}">Porównanie MB z PPE</a></li>
+                        </ul>
+                    </li>
                </ul>
       </li>
       <li><a href ="{% url 'info_flow:if_post_list' %}">Forum<span>Najnowsze info</span></a></li>

@@ -6,7 +6,7 @@ http://www.templatemo.com/preview/templatemo_347_dark_pro
 body {
 	margin: 0;
 	padding: 0;
-	color: #666;
+	color: rgb(156, 156, 156);
 	font-family: Tahoma, Geneva, sans-serif;
 	font-size: 13px;
 	line-height: 1.4em; 
@@ -67,7 +67,7 @@ h6 { font-size: 12px; margin: 0 0 5px; padding: 0; }
 }
 
 .templatemo_list li { 
-	color:#666; 
+	color:rgb(145, 145, 145)
 	margin: 0 0 10px 0; 
 	padding: 0 5px 0 20px; 
 	background: url(../images/templatemo_list.png) no-repeat scroll 0 5px;  

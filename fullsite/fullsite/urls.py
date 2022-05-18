@@ -17,12 +17,22 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.conf.urls import url
+from django.views.i18n import JavaScriptCatalog
+
+javascript_catalog = JavaScriptCatalog.as_view()
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('info_flow.urls')),
     path('', include('DBscripts.urls')),
+    path('', include('BalancingMarket.urls')),
 
     path('accounts/', include('django.contrib.auth.urls')),
+    url(r'^jsi18n/$',
+        javascript_catalog,
+        name='jsi18n')
 
 ]
+
+

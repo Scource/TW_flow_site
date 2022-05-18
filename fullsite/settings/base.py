@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     # Local apps
     'info_flow.apps.InfoFlowConfig',
     'DBscripts.apps.DBscriptsConfig',
+    'BalancingMarket.apps.BalancingmarketConfig',
 
 
     # 3rd party apps

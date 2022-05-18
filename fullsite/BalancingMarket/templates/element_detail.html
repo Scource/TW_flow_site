@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% load widget_tweaks %}
+
+<button type="button" class="float_r"><a href="{% url 'BalancingMarket:element_form_update' object.id %}">Edytuj
+        UR</a></button>
+<p>Kod: {{ object.code }}</p>
+<p>Nazwa: {{ object.name }}</p>
+<p>Data od: {{ object.dt_from|date:"Y-m-d" }}</p>
+<p>Data do: {{ object.dt_to|date:"Y-m-d" }}</p>
+<p>ID FBT: {{ object.cspr_id }}</p>
+<p>ID RHER: {{ object.rher_id }}</p>
+<p>ID w Starym Skome: {{ object.old_skome_id }}</p>
+<p>ID w WIRE: {{ object.wire_id }}</p>
+<p>Utworzono: {{ object.created }}</p>
+<p>Autor: {{ object.author }}</p>
+<p>Zmodyfikowano: {{ object.modified }}</p>
+<p>Zmodyfikowane przez: {{ object.modified_by }}</p>
+{% if object.element_type == 0 %}
+    <p>Typ: Podmiot Odpowiedzialny za Bilansowanie</p>
+{% else %}
+    <p>Typ: Sprzedawca Energii</p>
+{% endif %}
+
+{% if object.is_added == 0 %}
+    <p>Stan konfiguracaji: Nieuzupełniona</p>
+{% else %}
+    <p>Stan konfiguracaji: Uzupełniona</p>
+{% endif %}
+
+<p>Pliki:</p>
+{% for f in added_files%}
+    <p><a type= "button" href="{% url 'BalancingMarket:BM_download_file' f.id %}" download>{{f.name}}</a></p>
+{% endfor %}
+
+
+<div>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+    <div> Załącz plik
+        {{ form.document|add_class:"input_field"}}
+    </div>
+        <input type="submit" value="Dodaj plik" multiple />
+    </form>
+
+</div>
+
+<table class="table table-hover table-sm" style="width:100%; border: 1px solid silver" >
+    <tr>
+        <th>ID</th>
+        <th>POB</th>
+        <th>Sprzedawca</th>
+        <th>Data od</th>
+        <th>Data do</th>
+        <th></th>
+    </tr>
+    {% for Conn in connections %}
+
+    <tr class='clickable-row' id=url data-url="{% url 'BalancingMarket:connection_detail' 123 %}" data-id={{Conn.id}}>
+        <td>{{Conn.id}}</td>
+        <td>{{Conn.POB}}</td>
+        <td>{{Conn.SE|default_if_none:"Brak"}}</td>
+        <td>{{Conn.dt_from|date:"Y-m-d"}}</td>
+        <td>{{Conn.dt_to|date:"Y-m-d"}}</td>
+        <td><a href="{% url 'BalancingMarket:connection_confirm_delete' Conn.id %}">Usuń</a></td>
+        {% endfor %}
+    </tr>
+
+</table>
+
+{% endblock %}
