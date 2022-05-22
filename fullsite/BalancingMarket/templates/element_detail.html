@@ -1,5 +1,7 @@
 {% extends "base.html" %}
-
+{% block title%}
+URB {{ object.name }}
+{% endblock %}
 {% block content %}
 {% load widget_tweaks %}
 
@@ -46,6 +48,7 @@
 
 </div>
 
+<h5>Połączenia URB</h5>
 <table class="table table-hover table-sm" style="width:100%; border: 1px solid silver" >
     <tr>
         <th>ID</th>

@@ -1,5 +1,7 @@
 {% extends "base.html" %}
-
+{% block title%}
+Lista połączeń
+{% endblock %}
 {% block content %}
 
 <button type="button" class="float_r"><a href="{% url 'BalancingMarket:connection_form' %}">Utwórz połączenie</a></button>
@@ -14,7 +16,7 @@
         </form>
     </div>
 
-<table class="table table-hover table-sm"  style="width:100%">
+<table class="table table-hover table-sm"  style="width:100%; font-size:14px;">
     <tr>
         <th>ID</th>
         <th>POB</th>

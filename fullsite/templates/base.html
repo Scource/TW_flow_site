@@ -10,6 +10,8 @@ http://www.templatemo.com/preview/templatemo_347_dark_pro
 -->
 {% load static %}
  
+<script type="text/javascript" src="{% static 'js/jquery.min.js' %}"></script>
+
 <link href="{% static 'css/templatemo_style.css' %}" rel="stylesheet" type="text/css" />
 <script language="javascript" type="text/javascript">
 function clearText(field)
@@ -21,8 +23,7 @@ function clearText(field)
 
 
 <link rel="stylesheet" type="text/css" href="{% static 'css/ddsmoothmenu.css' %}" />
-
-<script type="text/javascript" src="{% static 'js/jquery.min.js' %}"></script>
+<link rel="stylesheet" type="text/css" href="{% static 'css/style1.css' %}" />
 <script type="text/javascript" src="{% static 'js/ddsmoothmenu.js' %}">
 
 /***********************************************
@@ -44,13 +45,18 @@ ddsmoothmenu.init({
 </script>
 
 
-<link rel="stylesheet" type="text/css" href="{% static 'css/style1.css' %}" />
+
 
 
 <script language="javascript" type="text/javascript" src="{% static 'js/main.js' %}"></script>
 <script language="javascript" type="text/javascript" src="{% static 'js/jquery.js' %}"></script>
 <script language="javascript" type="text/javascript" src="{% static 'js/jquery.easing.js' %}"></script>
 <script language="javascript" type="text/javascript" src="{% static 'js/script.js' %}"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+
+<script language="javascript" type="text/javascript" src="{% static 'js/if_js.js' %}"></script>
 
 {% block head %}
 {% endblock %}
@@ -121,8 +127,7 @@ ddsmoothmenu.init({
       
     {% block content %}
     {% endblock %}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+
     {% block javascript %}
     {% endblock javascript %}
 

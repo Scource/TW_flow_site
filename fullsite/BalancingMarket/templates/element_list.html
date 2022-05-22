@@ -1,17 +1,27 @@
 {% extends "base.html" %}
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'info_flow/css/if_css.css' %}">
+
+{% block title%}
+Lista URB 
+{% endblock %}
+{% load guardian_tags %}
+
+{% block head %}
+
+<script language="javascript" type="text/javascript" src="{% static 'info_flow/js/if_js.js' %}"></script>
+{% endblock %}
+
 
 {% block content %}
-
-
-{% if page_obj.0.element_type %}
+{% if request.path == "/element/SE/" %}
 <button type="button" ><a href="{% url 'BalancingMarket:element_list_POB' %}">Przejdź do listy POB</a></button>
-{% else%} 
+{% elif request.path == "/element/POB/" %}
 <button type="button"><a href="{% url 'BalancingMarket:element_list_SE' %}">Przejdź do listy SE</a></button>
 {%endif%}
 
 <button type="button" class="float_r"><a href="{% url 'BalancingMarket:element_form' %}">Nowy użytkownik RB</a></button>
 <div class="cleaner h20"></div>
-<button type="button" id="toggle_filter">Filtry</button>
     <div class="adv_filter" style="padding:20px;">
         <form method="get">
                 <label for="code">Kod:  </label> {{ filter.form.code }}
@@ -20,7 +30,7 @@
             <input type="submit" value="Szukaj" />
         </form>
     </div>
-<table class="table table-hover table-sm"  style="width:100%">
+<table class="table table-hover table-sm"  style="width:100%; font-size:14px;">
     <tr>
         <th>ID</th>
         <th>Nazwa</th>

@@ -2,7 +2,6 @@
 
 {% block content %}
 
-<button type="button" id="toggle_filter">Filtry</button>
 <div class="adv_filter" style="padding:20px;">
     <form method="get">
         <label for="report_type">Typ: </label> {{ filter.form.report_type }}
@@ -12,7 +11,7 @@
     </form>
 </div>
 
-<table class="table table-hover table-sm"  style="width:100%">
+<table class="table table-hover table-sm"  style="width:100%; font-size:14px;">
     <tr>
         <th>ID</th>
         <th>Typ</th>
@@ -28,7 +27,13 @@
         <td>{{Report.report_type}}</td>
         <td>{{Report.report_author}}</td>
         <td>{{Report.start|date:"Y-m-d H:i"}}</td>
-        <td>{{Report.end|date:"Y-m-d H:i"}}</td>
+        <td>
+            {% if Report.end == Report.start %}
+                Brak daty końca
+            {%else%}
+                {{Report.end|date:"Y-m-d H:i"}}
+            {%endif%}
+        </td>
         <td><a href="{% url 'DBscripts:report_zip_download' Report.id %}">Pobierz ZIP</a></td>
         {% endfor %}
     </tr>

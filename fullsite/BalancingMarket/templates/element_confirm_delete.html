@@ -1,5 +1,7 @@
 {% extends "base.html" %}
-
+{% block title%}
+Usuń URB
+{% endblock %}
 {% block content %}
 <form method="post">{% csrf_token %}
     <p>Czy napewno usunąć "{{ object }}"?</p>

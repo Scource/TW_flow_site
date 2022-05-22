@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.views import View
 from django.http import HttpResponseRedirect, FileResponse
 from django.urls import resolve, reverse_lazy
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.db.models import Q
 from django.views.generic.edit import CreateView, DeleteView, FormMixin
 from django.views.generic import ListView, UpdateView, DetailView
@@ -13,14 +13,17 @@ from .filters import ElementFilter, ConnectionFilter, PowerplantFilter
 
 
 #Files Views
-class DeleteFileView(LoginRequiredMixin, DeleteView):
+class DeleteFileView(PermissionRequiredMixin, LoginRequiredMixin, DeleteView):
     model = File
     template_name = 'file_confirm_delete.html'
+    permission_required = 'BalancingMarket.delete_file'
 
     def get_success_url(self):
         return reverse_lazy('BalancingMarket:element_detail', kwargs={'pk': self.object.files_element.id})
 
-class DownloadFileView(LoginRequiredMixin, View):
+class DownloadFileView(PermissionRequiredMixin, LoginRequiredMixin, View):
+    permission_required = 'BalancingMarket.view_file'
+    
     def get(self, request, *args, **kwargs):
         obj = File.objects.get(pk=self.kwargs['pk'])
         filename = settings.BASE_DIR+obj.document.url
@@ -29,7 +32,8 @@ class DownloadFileView(LoginRequiredMixin, View):
         return response
 
 #Elements Views
-class ElementView(LoginRequiredMixin, ListView):
+class ElementView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
+    permission_required = 'BalancingMarket.view_element'
     model=Element
     template_name = 'element_list.html'
     paginate_by=30
@@ -51,19 +55,21 @@ class ElementView(LoginRequiredMixin, ListView):
                              queryset=self.filter_qs()))
         return context
 
-class ElementCreateView(LoginRequiredMixin, CreateView):
+class ElementCreateView(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
     form_class = ElementForm
     template_name = 'element_form.html'
     success_url = reverse_lazy('BalancingMarket:element_list_POB')
+    permission_required = 'BalancingMarket.add_element'
 
     def form_valid(self, form):
         form.instance.author = self.request.user
         form.instance.modified_by = self.request.user
         return super().form_valid(form)
 
-class ElementUpdateView(ElementCreateView, LoginRequiredMixin, UpdateView):
+class ElementUpdateView(ElementCreateView, PermissionRequiredMixin, LoginRequiredMixin, UpdateView):
     model = Element
     template_name = 'element_form_update.html'
+    permission_required = 'BalancingMarket.change_element'
 
     def get_success_url(self):
         return reverse_lazy('BalancingMarket:element_detail', kwargs={'pk': self.object.id})
@@ -73,10 +79,11 @@ class ElementUpdateView(ElementCreateView, LoginRequiredMixin, UpdateView):
         return super().form_valid(form)
 
 
-class ElementDetailView(LoginRequiredMixin, FormMixin, DetailView):
+class ElementDetailView(PermissionRequiredMixin, LoginRequiredMixin, FormMixin, DetailView):
     model = Element
     template_name = 'element_detail.html'
     form_class = ElementFileForm
+    permission_required = 'BalancingMarket.view_element'
 
     def get_success_url(self):
         return reverse_lazy('BalancingMarket:element_detail', kwargs={'pk': self.kwargs['pk']})
@@ -104,17 +111,19 @@ class ElementDetailView(LoginRequiredMixin, FormMixin, DetailView):
         else:
             return self.form_invalid(form)
 
-class ElementDeleteView(LoginRequiredMixin, DeleteView):
+class ElementDeleteView(PermissionRequiredMixin, LoginRequiredMixin, DeleteView):
     model = Element
     template_name = 'element_confirm_delete.html'
     success_url = reverse_lazy('BalancingMarket:element_list_POB')
+    permission_required = 'BalancingMarket.delete_element'
 
 
 #Connections Views
-class ConnList(LoginRequiredMixin, ListView):
+class ConnList(PermissionRequiredMixin, LoginRequiredMixin, ListView):
     model = Connection
     template_name = 'connection_list.html'
     paginate_by = 30
+    permission_required = 'BalancingMarket.view_connection'
 
     def get_queryset(self):
         qs = super().get_queryset()
@@ -127,9 +136,10 @@ class ConnList(LoginRequiredMixin, ListView):
             filter=ConnectionFilter(self.request.GET, queryset=qs))
         return context
 
-class ConnCreateView(LoginRequiredMixin, CreateView):
+class ConnCreateView(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
     form_class = ConnectionForm
     template_name = 'connection_form.html'
+    permission_required = 'BalancingMarket.add_connection'
 
     def get_success_url(self):
         return reverse_lazy('BalancingMarket:connection_detail', kwargs={'pk': self.object.id})
@@ -140,9 +150,10 @@ class ConnCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class ConnUpdateView(ConnCreateView, LoginRequiredMixin, UpdateView):
+class ConnUpdateView(ConnCreateView, PermissionRequiredMixin, LoginRequiredMixin, UpdateView):
     model = Connection
     template_name = 'connection_form_update.html'
+    permission_required = 'BalancingMarket.change_connection'
 
     def form_valid(self, form):
         form.instance.modified_by = self.request.user
@@ -151,23 +162,26 @@ class ConnUpdateView(ConnCreateView, LoginRequiredMixin, UpdateView):
     def get_success_url(self):
         return reverse_lazy('BalancingMarket:connection_detail', kwargs={'pk': self.object.id})
 
-class ConnDetailView(LoginRequiredMixin, DetailView):
+class ConnDetailView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
     model = Connection
     template_name = 'connection_detail.html'
+    permission_required = 'BalancingMarket.view_connection'
 
-class ConnDeleteView(LoginRequiredMixin, DeleteView):
+class ConnDeleteView(PermissionRequiredMixin, LoginRequiredMixin, DeleteView):
     model = Connection
     template_name = 'connection_confirm_delete.html'
+    permission_required = 'BalancingMarket.delete_connection'
 
     def get_success_url(self):
         return reverse_lazy('BalancingMarket:element_detail', kwargs={'pk': self.object.POB.id})
 
 
 #PowerPlants Views
-class PowerPlantList(LoginRequiredMixin, ListView):
+class PowerPlantList(PermissionRequiredMixin, LoginRequiredMixin, ListView):
     model = Powerplant
     template_name = 'powerplant_list.html'
     paginate_by = 30
+    permission_required = 'BalancingMarket.view_powerplant'
 
     def get_queryset(self):
         qs = super().get_queryset()
@@ -180,19 +194,21 @@ class PowerPlantList(LoginRequiredMixin, ListView):
             filter=PowerplantFilter(self.request.GET, queryset=qs))
         return context
 
-class PowerPlantCreateView(LoginRequiredMixin, CreateView):
+class PowerPlantCreateView(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
     form_class = PowerplantForm
     template_name = 'powerplant_form.html'
     success_url = reverse_lazy('BalancingMarket:powerplant_list')
+    permission_required = 'BalancingMarket.add_powerplant'
 
     def form_valid(self, form):
         form.instance.author = self.request.user
         form.instance.modified_by = self.request.user
         return super().form_valid(form)
 
-class PowerPlantUpdateView(PowerPlantCreateView, LoginRequiredMixin, UpdateView):
+class PowerPlantUpdateView(PowerPlantCreateView, PermissionRequiredMixin, LoginRequiredMixin, UpdateView):
     model = Powerplant
     template_name = 'powerplant_form_update.html'
+    permission_required = 'BalancingMarket.change_powerplant'
 
     def get_success_url(self):
         return reverse_lazy('BalancingMarket:powerplant_detail', kwargs={'pk': self.object.id})
@@ -202,10 +218,11 @@ class PowerPlantUpdateView(PowerPlantCreateView, LoginRequiredMixin, UpdateView)
         return super().form_valid(form)
 
 
-class PowerPlantDetailView(LoginRequiredMixin, FormMixin, DetailView):
+class PowerPlantDetailView(PermissionRequiredMixin, LoginRequiredMixin, FormMixin, DetailView):
     model = Powerplant
     template_name = 'powerplant_detail.html'
     form_class = ElementFileForm
+    permission_required = 'BalancingMarket.view_powerplant'
 
     def get_success_url(self):
         return reverse_lazy('BalancingMarket:powerplant_detail', kwargs={'pk': self.kwargs['pk']})
@@ -235,16 +252,18 @@ class PowerPlantDetailView(LoginRequiredMixin, FormMixin, DetailView):
             return self.form_invalid(form)
 
 
-class PowerPlantDeleteView(LoginRequiredMixin, DeleteView):
+class PowerPlantDeleteView(PermissionRequiredMixin, LoginRequiredMixin, DeleteView):
     model = Powerplant
     template_name = 'powerplant_confirm_delete.html'
     success_url = reverse_lazy('BalancingMarket:powerplant_list')
+    permission_required = 'BalancingMarket.delete_powerplant'
 
 
 #PowerPlant Connection Views
-class PowerPlantConnectionCreateView(LoginRequiredMixin, CreateView):
+class PowerPlantConnectionCreateView(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
     form_class = PowerplantConnectionForm
     template_name = 'powerplantconn_form.html'
+    permission_required = 'BalancingMarket.add_powerplant'
 
     def get_success_url(self):
         return reverse_lazy('BalancingMarket:powerplant_detail', kwargs={'pk': self.object.powerplant.id})
@@ -255,18 +274,20 @@ class PowerPlantConnectionCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class PowerPlantConnectionUpdateView(PowerPlantConnectionCreateView, LoginRequiredMixin, UpdateView):
+class PowerPlantConnectionUpdateView(PowerPlantConnectionCreateView, PermissionRequiredMixin, LoginRequiredMixin, UpdateView):
     model = PowerPlantConnection
     template_name = 'powerplantconn_form_update.html'
+    permission_required = 'BalancingMarket.change_powerplant'
 
     def form_valid(self, form):
         form.instance.modified_by = self.request.user
         return super().form_valid(form)
 
 
-class PowerPlantConnectionDeleteView(LoginRequiredMixin, DeleteView):
+class PowerPlantConnectionDeleteView(PermissionRequiredMixin, LoginRequiredMixin, DeleteView):
     model = PowerPlantConnection
     template_name = 'powerplantconn_confirm_delete.html'
+    permission_required = 'BalancingMarket.delete_powerplant'
 
     def get_success_url(self):
         return reverse_lazy('BalancingMarket:powerplant_detail', kwargs={'pk': self.object.powerplant.id})

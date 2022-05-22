@@ -67,7 +67,7 @@ h6 { font-size: 12px; margin: 0 0 5px; padding: 0; }
 }
 
 .templatemo_list li { 
-	color:rgb(145, 145, 145)
+	color:rgb(145, 145, 145);
 	margin: 0 0 10px 0; 
 	padding: 0 5px 0 20px; 
 	background: url(../images/templatemo_list.png) no-repeat scroll 0 5px;  
@@ -81,7 +81,7 @@ h6 { font-size: 12px; margin: 0 0 5px; padding: 0; }
 }
 
 .templatemo_list li a { 
-	color: #666; 
+	color:rgb(145, 145, 145); 
 	font-weight: normal; 
 }
 
@@ -134,7 +134,7 @@ h6 { font-size: 12px; margin: 0 0 5px; padding: 0; }
 
 #sidebar { 
 	float: right; 
-	width: 300px; 
+	width: 280px; 
 }
 
 #templatemo_footer_wrapper {
@@ -561,7 +561,7 @@ p.position { color: #f3a706; font-weight: bold; font-size: 12px; font-style: ita
 }
 
 .two-third { 
-	width: 620px; 
+	width: 690px; 
 }
 
 .padding_right { 
@@ -749,5 +749,5 @@ progress::-moz-progress-bar {
 }
 
 .table-hover tbody tr:hover td {
-  background-color: black;
+  background-color: rgb(37, 37, 37);
 }

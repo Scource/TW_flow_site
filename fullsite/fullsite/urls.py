@@ -33,6 +33,6 @@ urlpatterns = [
         javascript_catalog,
         name='jsi18n')
 
-]
+]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 

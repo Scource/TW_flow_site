@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.urls import resolve
 from django.views.generic.edit import CreateView, DeleteView, FormMixin
 from django.views.generic import ListView
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.conf import settings
 from django.http import FileResponse
 from django.http import HttpResponse
@@ -22,8 +22,10 @@ from io import BytesIO
 from django.http import HttpResponse
 
 @method_decorator(login_required, name='dispatch')
-class ScriptsView(View):
+class ScriptsView(PermissionRequiredMixin, View):
     template_name = 'DBscripts/dbs_form_script.html'
+    permission_required = 'DBscripts.view_report'
+
     def get(self, request):
         url = resolve(request.path).url_name
         form = choose_from(url, 1)()
@@ -40,9 +42,10 @@ class ScriptsView(View):
             return redirect(f'DBscripts:{url}')
 
 
-class ReportListView(LoginRequiredMixin, ListView):
+class ReportListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
     model = Report
     template_name = 'report_list.html'
+    permission_required = 'DBscripts.view_report'
     paginate_by = 30
 
     def get_queryset(self):
@@ -56,16 +59,19 @@ class ReportListView(LoginRequiredMixin, ListView):
             filter=ReportFilter(self.request.GET, queryset=qs))
         return context
 
-class ReportItemListView(LoginRequiredMixin, ListView):
+class ReportItemListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
     model = ReportItem
     template_name = 'DBscripts/report_item_list.html'
     paginate_by = 40
+    permission_required = 'DBscripts.view_reportitem'
 
     def get_queryset(self):
         return ReportItem.objects.filter(report_id=self.kwargs['pk']).order_by('-start')
 
 
-class ReportItemDownloadView(LoginRequiredMixin, View):
+class ReportItemDownloadView(PermissionRequiredMixin, LoginRequiredMixin, View):
+    permission_required = 'DBscripts.view_reportitem'
+
     def get(self, request, *args, **kwargs):
         obj = ReportItem.objects.get(pk=self.kwargs['pk_item'])
         filename = settings.BASE_DIR+obj.report_file.url
@@ -75,7 +81,8 @@ class ReportItemDownloadView(LoginRequiredMixin, View):
         return response
 
 
-class ReportDownloadZipView(LoginRequiredMixin, View):
+class ReportDownloadZipView(PermissionRequiredMixin, LoginRequiredMixin, View):
+    permission_required = ('DBscripts.view_report','DBscripts.view_reportitem')
 
     def get(self, request, **kwargs):
         filenames = ReportItem.objects.filter(report=self.kwargs['pk'])
