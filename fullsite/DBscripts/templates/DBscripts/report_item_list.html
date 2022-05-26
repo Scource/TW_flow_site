@@ -17,8 +17,15 @@
             <td>{{Report_item.id}}</td>
             <td>{{Report_item.report_name}}</td>
             <td>{{Report_item.start|date:"Y-m-d H:i"}}</td>
+            {% if Report_item.end == Report_item.start %}
+            <td>&ensp;&emsp;</td>
+            <td>&ensp;&emsp;</td>
+            {%else%}
             <td>{{Report_item.end|date:"Y-m-d H:i"}}</td>
             <td><a href="{% url 'DBscripts:report_item_download' pk=Report_item.report_id pk_item=Report_item.id %}">Pobierz</a></td>
+            {%endif%}
+            
+            
             {% endfor %}
         </tr>
 

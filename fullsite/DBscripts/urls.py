@@ -16,6 +16,8 @@ urlpatterns = [
          name='dbs_get_PPE'),
     path('scripts/check_MB_PPE', views.ScriptsView.as_view(),
          name='dbs_check_MB_PPE'),
+     path('scripts/RDG', views.ScriptsView.as_view(),
+         name='dbs_RDG'),
 
     path('report/', views.ReportListView.as_view(), name='report_list'),
     path('report/<int:pk>/', views.ReportItemListView.as_view(),
