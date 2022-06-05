@@ -1,7 +1,6 @@
 from django import forms
 from django.contrib.admin.widgets import FilteredSelectMultiple
 
-
 from BalancingMarket.models import Element
 
 
@@ -10,28 +9,21 @@ class DateInput(forms.DateInput):
     format='%Y-%m-%d'
 
 class GetPeakValuesForm(forms.Form):
-    login = forms.CharField(
-        label='Login', required=True)
-    password = forms.CharField(
-        label='Hasło', required=True, widget=forms.PasswordInput())
-    date_from = forms.DateField(widget=DateInput())
+    date_from = forms.DateField(widget=DateInput(), label='Data')
     value = forms.IntegerField(label='Wartosc w kWh', required=True)
 
 
 
 class GetStandardDataForm(forms.Form):
-    login = forms.CharField(
-        label='Login', required=True)
-    password = forms.CharField(
-        label='Hasło', required=True, widget=forms.PasswordInput())
-    date_from = forms.DateField(widget=DateInput())
-    date_to = forms.DateField(widget=DateInput())
+    date_from = forms.DateField(widget=DateInput(), label='Data od')
+    date_to = forms.DateField(widget=DateInput(), label='Data do')
     #ID = forms.IntegerField(label='ID płachty', required=True)
     POB_elements = forms.ModelMultipleChoiceField(queryset=Element.objects.filter(element_type=0
-                ), widget=FilteredSelectMultiple("", is_stacked=False), label='POB')
+                ).order_by('code'), widget=FilteredSelectMultiple("", is_stacked=False), label='POB')
 
     class Media:
-        js = ('/jquery.js','/jsi18n/')
+        js = ( 'admin/js/jquery.init.js', 'admin/js/vendor/jquery/jquery.js','/jsi18n/' )
+        #js = ( '/jquery.js','/jsi18n/')
 
     def clean(self):
         # data from the form is fetched using super function
@@ -45,3 +37,8 @@ class GetStandardDataForm(forms.Form):
 
         # return any errors if found
         return self.cleaned_data
+
+class GetWIREDataForm(GetStandardDataForm, forms.Form):
+    rdg = forms.BooleanField(label='Generacja RDG', required=False)
+    get_all_FBT = forms.BooleanField(label='Wymagające korekt', required=False)
+

@@ -18,6 +18,10 @@ urlpatterns = [
          name='dbs_check_MB_PPE'),
      path('scripts/RDG', views.ScriptsView.as_view(),
          name='dbs_RDG'),
+     path('scripts/WIRE/DGMB', views.WIREDataView.as_view(),
+         name='dbs_wire_dgmb'),
+     path('scripts/WIRE/set_default', views.SetDefaultMBView.as_view(),
+         name='dbs_wire_set_default'),
 
     path('report/', views.ReportListView.as_view(), name='report_list'),
     path('report/<int:pk>/', views.ReportItemListView.as_view(),

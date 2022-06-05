@@ -114,6 +114,12 @@ ddsmoothmenu.init({
                           <li><a href="{% url 'DBscripts:dbs_RDG' %}">RDG</a></li>
                         </ul>
                     </li>
+                    <li><a href="">WIRE</a>
+                      <ul>
+                        <li><a href="{% url 'DBscripts:dbs_wire_dgmb' %}">Wysyłka korekt</a></li>
+                        <li><a href="{% url 'DBscripts:dbs_wire_set_default' %}">!!Ustaw domyślne!!</a></li>
+                      </ul>
+                  </li>
                </ul>
       </li>
       <li><a href ="{% url 'info_flow:if_post_list' %}">Forum<span>Najnowsze info</span></a></li>

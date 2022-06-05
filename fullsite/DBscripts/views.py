@@ -11,9 +11,10 @@ from django.http import FileResponse
 from django.http import HttpResponse
 
 from .models import Report, ReportItem
-from .scripts import choose_from
-from .reports import create_report
+from .scripts import choose_from, update_WIRE_to_default
+from .reports import create_report, create_for_WIRE
 from .filters import ReportFilter
+from .forms import GetWIREDataForm
 
 import os
 import zipfile
@@ -36,7 +37,7 @@ class ScriptsView(PermissionRequiredMixin, View):
         url = resolve(request.path).url_name
         form = choose_from(url, 1)(request.POST)
         if form.is_valid():
-            raport=create_report(user=request.user, url=url, **form.cleaned_data)
+            raport=create_report(user=request.user, url=url, kwargs=form.cleaned_data)
             return redirect('DBscripts:report_item_list', pk=raport)
         else:
             return redirect(f'DBscripts:{url}')
@@ -114,3 +115,27 @@ class ReportDownloadZipView(PermissionRequiredMixin, LoginRequiredMixin, View):
 
         response['Content-Disposition']="attachment; filename=" + zip_filename
         return response
+
+@method_decorator(login_required, name='dispatch')
+class WIREDataView(PermissionRequiredMixin, View):
+    template_name = 'DBscripts/WIRE_data.html'
+    permission_required = 'DBscripts.view_report'
+
+    def get(self, request):
+        form = GetWIREDataForm()
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request):
+        form = GetWIREDataForm(request.POST)
+        if form.is_valid():
+            response=create_for_WIRE(user=request.user, data=form.cleaned_data)
+            return response
+
+@method_decorator(login_required, name='dispatch')
+class SetDefaultMBView(PermissionRequiredMixin, View):
+    permission_required = 'DBscripts.view_report'
+    template_name = 'DBscripts/default_WIRE_data.html'
+
+    def get(self, request):
+        update_WIRE_to_default()
+        return render(request, self.template_name)

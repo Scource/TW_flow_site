@@ -192,6 +192,9 @@ class User(AbstractUser):
     user_is_balancing_unit = models.BooleanField(default=False)
     user_is_b_mesuring_unit = models.BooleanField(default=False)
     user_is_constracts_unit = models.BooleanField(default=False)
+    wire_user=models.IntegerField(null=True)
+    wul=models.CharField(max_length=40, blank=True, null=True)
+    wup=models.CharField(max_length=40, blank=True, null=True)
 
 
 class files(models.Model):
