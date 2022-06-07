@@ -104,8 +104,7 @@ def add_head_data(file, kwargs, pob):
 
 def create_for_WIRE(user, data):
     #select objects for correction
-    print(data['get_all_FBT'])
-    if data['get_all_FBT']:
+    if data['get_all_FBT']==False:
         list_with_changes=generate_WIRE_objects(user, data)
         data['POB_elements']=list_with_changes
     

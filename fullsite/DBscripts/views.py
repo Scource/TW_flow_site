@@ -130,6 +130,8 @@ class WIREDataView(PermissionRequiredMixin, View):
         if form.is_valid():
             response=create_for_WIRE(user=request.user, data=form.cleaned_data)
             return response
+        else:
+            return redirect(f'DBscripts:dbs_wire_dgmb')
 
 @method_decorator(login_required, name='dispatch')
 class SetDefaultMBView(PermissionRequiredMixin, View):

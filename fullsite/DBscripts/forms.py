@@ -39,6 +39,13 @@ class GetStandardDataForm(forms.Form):
         return self.cleaned_data
 
 class GetWIREDataForm(GetStandardDataForm, forms.Form):
-    rdg = forms.BooleanField(label='Generacja RDG', required=False)
+    rdg = forms.BooleanField(label='Generacja RDG', required=False, initial=True)
     get_all_FBT = forms.BooleanField(label='Wymagające korekt', required=False)
+    POB_elements = forms.ModelMultipleChoiceField(queryset=Element.objects.filter(element_type=0
+                ).order_by('code'), widget=FilteredSelectMultiple("", is_stacked=False), label='POB', required=False)
 
+    class Media:
+        js = ( 'admin/js/jquery.init.js', 'admin/js/vendor/jquery/jquery.js','/jsi18n/' )
+        #js = ( '/jquery.js','/jsi18n/')
+
+#TODO Add new form with dates and selector (split form to two versions)

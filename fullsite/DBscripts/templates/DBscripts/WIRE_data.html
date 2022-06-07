@@ -5,21 +5,34 @@
 
 <div>
 <form  id="script-form" method="post">
-        <div >
+        <div>
             <fieldset>
                 <legend>Wypełnij wymagane pola</legend>
                 <form>
                     {% csrf_token %}
                     <table>
                         {{ form.media }}
-                        {{ form.as_table }}
+                        </tr><div><strong><label >Data od: </label></strong>{{ form.date_from }}</div>
+                        <div><strong><label >Data do: </label></strong>{{ form.date_to }}</div>
+                        <div><strong><label >Generacja RDG</label></strong>{{ form.rdg }}</div>
+                        <div id="get_all_FBT"><strong><label >Tylko wybrane MB</label></strong>{{ form.get_all_FBT }}</div>
+                        <div id="POB_elements">{{ form.POB_elements }}</div>                    
+                        <div style="width:100%; bottom: 5%;"><input type="submit" value="Oblicz">
                     </table>
-                    <input type="submit" value="Oblicz">
+                    
                 </form>
             </fieldset>
         </div>
 </form>
 <link rel="stylesheet" type="text/css" href="/static/admin/css/widgets.css" />
 </div>
+
+<script>
+$("#POB_elements").hide();
+$("#get_all_FBT").click(function(){
+    $("#POB_elements").toggle();
+    });
+
+</script>
 {% endblock %}
 
