@@ -59,6 +59,7 @@ def create_report_item(user, main_rap, url, kwargs, pob=None, strow=0):
     doc = ReportItem(
         report=main_rap, report_name=set_report_name(url, kwargs, pob))
     doc.save()
+    kwargs['doc']=doc
     function = choose_from(url, 2)
     data = function(user, kwargs, pob) 
     writer = pd.ExcelWriter(in_memory_fp, engine='xlsxwriter')

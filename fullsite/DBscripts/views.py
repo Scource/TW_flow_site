@@ -67,7 +67,7 @@ class ReportItemListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
     permission_required = 'DBscripts.view_reportitem'
 
     def get_queryset(self):
-        return ReportItem.objects.filter(report_id=self.kwargs['pk']).order_by('-start')
+        return ReportItem.objects.filter(report_id=self.kwargs['pk']).prefetch_related('reportitemelement_set').order_by('-start')
 
 
 class ReportItemDownloadView(PermissionRequiredMixin, LoginRequiredMixin, View):

@@ -25,3 +25,8 @@ class ReportItem(models.Model):
     start = models.DateTimeField(auto_now_add=True)
     end = models.DateTimeField(auto_now_add=True)
 
+class ReportItemElement(models.Model):
+    report_item = models.ForeignKey(ReportItem, on_delete=models.CASCADE)
+    element_name = models.CharField(max_length=30)
+    start = models.DateTimeField(auto_now_add=True)
+    end = models.DateTimeField(null=True)
